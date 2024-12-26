@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import { FaChevronDown, FaChevronUp, FaCodeBranch } from "react-icons/fa";
 import Header from "../../sections/Header"; // Adjust the import path as necessary
+import Image from 'next/image';
+import abstractImage from '../../assets/abstract_10.png'; // Adjust the import path as necessary
 
 const updates = [
   {
@@ -52,8 +54,18 @@ const UpdatesPage: React.FC = () => {
   return (
     <>
       <Header />
-      <section className="min-h-screen bg-gradient-to-b from-white to-gray-800 py-20 px-6">
-        <div className="container mx-auto">
+      <section className="relative min-h-screen bg-white py-20 px-6">
+        {/* Background Image */}
+        <div className="absolute inset-0 overflow-hidden">
+          <Image
+            src={abstractImage}
+            alt="Abstract Background"
+            layout="fill"
+            objectFit="cover"
+            className="opacity-20"
+          />
+        </div>
+        <div className="container mx-auto relative z-10">
           <h1 className="text-5xl md:text-6xl text-center font-bold bg-gradient-to-b from-black to-gray-700 text-transparent bg-clip-text">
             Product Updates
           </h1>
