@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ArrowRight from '../assets/arrow-right.svg';
 import Logo from '../assets/smartpathslogo.png';
@@ -10,18 +10,34 @@ import Link from 'next/link'; // Import Link for navigation
 
 export const Header = () => {
   const router = useRouter();
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const handleTryForFreeClick = () => {
-    router.push('/login'); 
+    router.push('/signup'); 
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
-    <header className="sticky top-0 backdrop-blur-sm bg-white text-black">
+    <header className={`sticky top-0 backdrop-blur-sm bg-white text-black transition-all duration-300 ${isScrolled ? 'backdrop-blur-md' : ''}`}>
       <div className="flex justify-center items-center py-3 bg-black text-white text-sm gap-3">
         <p className="text-white/60 hidden md:block">
           Transforming academic workflows for smarter future
         </p>
-        <div className="inline-flex gap-1 items-center">
+        <div className="inline-flex gap-1 items-center cursor-pointer" onClick={handleTryForFreeClick}>
           <p>Get started for free</p>
           <ArrowRight className="h-4 w-4 inline-flex justify-center items-center"/>
         </div>
