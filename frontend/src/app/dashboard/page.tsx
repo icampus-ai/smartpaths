@@ -91,7 +91,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           <FaBars />
         </button>
       </div>
-      <nav className="flex-grow space-y-4">
+      <nav className="flex-grow space-y-2"> {/* Adjusted spacing */}
         <button
           onClick={() => handleNavigation("/")}
           className="text-white flex items-center px-4 py-2 hover:bg-gray-700 rounded-lg transition-all duration-200"
@@ -212,8 +212,25 @@ const Sidebar: React.FC<SidebarProps> = ({
 const BusinessOverview = ({ fileUrl, fileType }: { fileUrl: string | null, fileType: string | null }) => {
   const [showEvaluationOptions, setShowEvaluationOptions] = useState(false);
 
-  const handleEvaluateClick = () => {
+  const handleEvaluateClick = (level: string) => {
     setShowEvaluationOptions(true);
+    if (fileUrl && fileType) {
+      // Send the files to the backend for evaluation
+      fetch('/api/evaluate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ fileUrl, fileType, level }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Evaluation result:', data);
+        })
+        .catch(error => {
+          console.error('Error during evaluation:', error);
+        });
+    }
   };
 
   return (
@@ -223,7 +240,7 @@ const BusinessOverview = ({ fileUrl, fileType }: { fileUrl: string | null, fileT
 
       <div className="mt-6">
         <button
-          onClick={handleEvaluateClick}
+          onClick={() => setShowEvaluationOptions(true)}
           className="bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600 transition-all"
         >
           Evaluate
@@ -232,13 +249,22 @@ const BusinessOverview = ({ fileUrl, fileType }: { fileUrl: string | null, fileT
 
       {showEvaluationOptions && (
         <div className="mt-6 flex gap-4">
-          <button className="bg-green-500 text-white py-2 px-6 rounded-lg hover:bg-green-600 transition-all">
+          <button
+            className="bg-green-500 text-white py-2 px-6 rounded-lg hover:bg-green-600 transition-all"
+            onClick={() => handleEvaluateClick('Easy')}
+          >
             Easy
           </button>
-          <button className="bg-yellow-500 text-white py-2 px-6 rounded-lg hover:bg-yellow-600 transition-all">
+          <button
+            className="bg-yellow-500 text-white py-2 px-6 rounded-lg hover:bg-yellow-600 transition-all"
+            onClick={() => handleEvaluateClick('Medium')}
+          >
             Medium
           </button>
-          <button className="bg-red-500 text-white py-2 px-6 rounded-lg hover:bg-red-600 transition-all">
+          <button
+            className="bg-red-500 text-white py-2 px-6 rounded-lg hover:bg-red-600 transition-all"
+            onClick={() => handleEvaluateClick('Hard')}
+          >
             Hard
           </button>
         </div>
