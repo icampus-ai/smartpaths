@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartPaths</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>SmartPaths File Evaluation</h1>
+    <a href="/api/login/google"><button>Login with Google</button></a>
+    <a href="/api/login/github"><button>Login with GitHub</button></a>
+    <form id="uploadForm" enctype="multipart/form-data" style="display:none;">
+        <input type="file" id="fileInput1" name="file1">
+        <input type="file" id="fileInput2" name="file2">
+        <button type="submit">Upload and Evaluate</button>
+    </form>
+    <script src="app.js"></script>
+</body>
+</html>
