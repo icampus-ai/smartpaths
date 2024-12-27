@@ -1,3 +1,5 @@
 Flask
 Authlib
 Flasgger
+Werkzeug
+pymongo
