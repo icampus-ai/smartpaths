@@ -1,7 +1,11 @@
 from authlib.integrations.flask_client import OAuth
 from flask import url_for, request, redirect, session
+from werkzeug.security import generate_password_hash, check_password_hash
 
 oauth = OAuth()
+
+# Simulated database
+users_db = []
 
 # Configure Google OAuth
 google = oauth.register(
@@ -50,3 +54,18 @@ def auth_github_callback():
     resp = github.get('user')
     user_info = resp.json()
     return user_info
+
+def get_user_by_email(email):
+    return next((user for user in users_db if user['email'] == email), None)
+
+def create_user(first_name, last_name, middle_name, email, password):
+    hashed_password = generate_password_hash(password)
+    user = {
+        'first_name': first_name,
+        'last_name': last_name,
+        'middle_name': middle_name,
+        'email': email,
+        'password': hashed_password
+    }
+    users_db.append(user)
+    return user
