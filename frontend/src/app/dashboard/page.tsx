@@ -225,90 +225,108 @@ const Sidebar: React.FC<SidebarProps> = ({
 const BusinessOverview = ({ fileUrl, fileType }: { fileUrl: string | null, fileType: string | null }) => {
   const [showEvaluationOptions, setShowEvaluationOptions] = useState(false);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const handleEvaluateClick = (level: string) => {
     setShowEvaluationOptions(true);
   };
 
+  const handleFileUploadSuccess = () => {
+    setShowSuccessMessage(true);
+    setTimeout(() => {
+      setShowSuccessMessage(false);
+    }, 1000);
+  };
+
   return (
-    <div className="flex flex-col flex-grow items-center justify-center bg-gradient-to-b from-white to-gray-100 p-6 shadow-lg rounded-lg">
-      <h1 className="text-4xl font-bold text-gray-800 animate-bounce">Evaluate with me!</h1>
-      <p className="text-gray-500 mt-2">Simplify. Systemize. Succeed.</p>
+    <div className="flex flex-col flex-grow items-center justify-center bg-white p-6">
+      <div className="flex w-full">
+        {/* Left Section */}
+        <div className="w-1/2 flex flex-col justify-center items-start ml-20">
+          <h1 className="text-4xl font-bold text-gray-800 animate-typing text-center">Evaluate with me!</h1>
+          <p className="text-gray-800 mt-4 text-center ml-12">Simplify. Systemize. Succeed.</p>
 
-      <div className="mt-6">
-        <button
-          onClick={() => setShowEvaluationOptions(true)}
-          className="bg-gradient-to-r from-green-400 to-blue-500 text-white py-2 px-6 rounded-full shadow-lg hover:from-green-500 hover:to-blue-600 transition-all duration-300 transform hover:scale-105"
-        >
-          Evaluate
-        </button>
-      </div>
+          <div className="mt-6 flex justify-center">
+            <button
+              onClick={() => setShowEvaluationOptions(true)}
+              className="bg-gradient-to-r from-green-400 to-blue-500 text-white py-2 px-6 rounded-full shadow-lg hover:from-green-500 hover:to-blue-600 transition-all duration-300 transform hover:scale-105 ml-24"
+            >
+              Evaluate
+            </button>
+          </div>
 
-      {showEvaluationOptions && (
-        <div className="mt-6 flex gap-4">
-          <button
-            className="flex items-center border border-gray-500 text-gray-700 py-1 px-6 rounded-full relative transition-all hover:bg-gray-200"
-            onClick={() => { handleEvaluateClick('Easy'); setSelectedDifficulty('Easy'); }}
-          >
-            <span className="font-bold text-lg">Easy</span>
-            {selectedDifficulty === 'Easy' && (
-              <div className="bg-green-500 w-2 h-2 rounded-full ml-2" />
-            )}
-          </button>
-          <button
-            className="flex items-center border border-gray-500 text-gray-700 py-1 px-6 rounded-full relative transition-all hover:bg-gray-200"
-            onClick={() => { handleEvaluateClick('Medium'); setSelectedDifficulty('Medium'); }}
-          >
-            <span className="font-bold text-lg">Medium</span>
-            {selectedDifficulty === 'Medium' && (
-              <div className="bg-green-500 w-2 h-2 rounded-full ml-2" />
-            )}
-          </button>
-          <button
-            className="flex items-center border border-gray-500 text-gray-700 py-1 px-6 rounded-full relative transition-all hover:bg-gray-200"
-            onClick={() => { handleEvaluateClick('Hard'); setSelectedDifficulty('Hard'); }}
-          >
-            <span className="font-bold text-lg">Hard</span>
-            {selectedDifficulty === 'Hard' && (
-              <div className="bg-green-500 w-2 h-2 rounded-full ml-2" />
-            )}
-          </button>
-        </div>
-      )}
-
-      <div className="mt-6 relative w-full max-w-4xl">
-        {fileUrl ? (
-          <div>
-            <h2 className="text-lg font-semibold mb-2">File Preview</h2>
-            <div className="bg-gray-100 p-4 rounded-lg shadow-lg">
-              {fileUrl.endsWith(".pdf") ? (
-                <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
-                  <Viewer fileUrl={fileUrl} />
-                </Worker>
-              ) : (
-                <iframe
-                  src={fileUrl}
-                  title="File Preview"
-                  className="w-full h-96 rounded-lg"
-                ></iframe>
-              )}
+          {showEvaluationOptions && (
+            <div className="mt-6 flex gap-4 justify-center">
+              <button
+                className="flex items-center border border-gray-500 text-gray-700 py-1 px-6 rounded-full relative transition-all hover:bg-gray-200"
+                onClick={() => { handleEvaluateClick('Easy'); setSelectedDifficulty('Easy'); }}
+              >
+                <span className="font-bold text-lg">Easy</span>
+                {selectedDifficulty === 'Easy' && (
+                  <div className="bg-green-500 w-2 h-2 rounded-full ml-2" />
+                )}
+              </button>
+              <button
+                className="flex items-center border border-gray-500 text-gray-700 py-1 px-6 rounded-full relative transition-all hover:bg-gray-200"
+                onClick={() => { handleEvaluateClick('Medium'); setSelectedDifficulty('Medium'); }}
+              >
+                <span className="font-bold text-lg">Medium</span>
+                {selectedDifficulty === 'Medium' && (
+                  <div className="bg-green-500 w-2 h-2 rounded-full ml-2" />
+                )}
+              </button>
+              <button
+                className="flex items-center border border-gray-500 text-gray-700 py-1 px-6 rounded-full relative transition-all hover:bg-gray-200"
+                onClick={() => { handleEvaluateClick('Hard'); setSelectedDifficulty('Hard'); }}
+              >
+                <span className="font-bold text-lg">Hard</span>
+                {selectedDifficulty === 'Hard' && (
+                  <div className="bg-green-500 w-2 h-2 rounded-full ml-2" />
+                )}
+              </button>
             </div>
-            <p className="text-green-500 mt-4 text-center">
-              {fileType} uploaded successfully!
-            </p>
+          )}
+
+          {showSuccessMessage && (
+            <p className="text-green-500 mt-4 text-center">File uploaded successfully!</p>
+          )}
+        </div>
+
+        {/* Right Section */}
+        <div className="w-1/2 flex flex-col items-center">
+          <div className="mt-6 relative w-full max-w-4xl mr-20">
+            {fileUrl ? (
+              <div>
+                <h2 className="text-lg font-semibold mb-2">File Preview</h2>
+                {fileUrl.endsWith(".pdf") ? (
+                  <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
+                    <Viewer fileUrl={fileUrl} />
+                  </Worker>
+                ) : (
+                  <iframe
+                    src={fileUrl}
+                    title="File Preview"
+                    className="w-full h-96 rounded-lg"
+                  ></iframe>
+                )}
+                <p className="text-green-500 mt-4 text-center">
+                  {fileType} uploaded successfully!
+                </p>
+              </div>
+            ) : (
+              <div className="text-center">
+                <Image
+                  src={bookImage}
+                  alt="No File Uploaded"
+                  width={400}
+                  height={400}
+                  className="mx-auto"
+                />
+                <p className="text-gray-500 mt-4">No file uploaded yet.</p>
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="text-center">
-            <Image
-              src={bookImage}
-              alt="No File Uploaded"
-              width={400}
-              height={400}
-              className="mx-auto"
-            />
-            <p className="text-gray-500 mt-4">No file uploaded yet.</p>
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );
@@ -319,6 +337,10 @@ const DashboardLayout = () => {
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [fileType, setFileType] = useState<string | null>(null);
 
+  const handleFileUploadSuccess = () => {
+    console.log('File uploaded successfully');
+  };
+  
   const toggleSidebar = () => {
     setIsSidebarExpanded(!isSidebarExpanded);
   };
@@ -326,6 +348,7 @@ const DashboardLayout = () => {
   const handleFileUpload = (url: string, type: string) => {
     setFileUrl(url);
     setFileType(type);
+    handleFileUploadSuccess();
   };
 
   return (
@@ -338,7 +361,7 @@ const DashboardLayout = () => {
       <main
         className={`flex-grow ${
           isSidebarExpanded ? "ml-60" : "ml-16"
-        } bg-gradient-to-b from-white to-gray-200 flex flex-col min-h-screen`}
+        } bg-white flex flex-col min-h-screen`}
       >
         <div className="p-6 flex-grow">
           <BusinessOverview fileUrl={fileUrl} fileType={fileType} />
