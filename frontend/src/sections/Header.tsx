@@ -32,10 +32,10 @@ export const Header = () => {
   }, []);
 
   return (
-    <header className={`sticky top-0 backdrop-blur-sm bg-white text-black transition-all duration-300 ${isScrolled ? 'backdrop-blur-md' : ''}`}>
+    <header className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-transparent text-white shadow-lg' : 'bg-white text-black'}`}>
       <div className="flex justify-center items-center py-3 bg-black text-white text-sm gap-3">
         <p className="text-white/60 hidden md:block">
-          Transforming academic workflows for smarter future
+          Transforming academic workflows for a smarter future
         </p>
         <div className="inline-flex gap-1 items-center cursor-pointer" onClick={handleTryForFreeClick}>
           <p>Get started for free</p>
@@ -43,7 +43,7 @@ export const Header = () => {
         </div>
       </div>
       <div className="py-5">
-        <div className="container">
+        <div className="container mx-auto px-4">
           <div className="flex items-center justify-between">
             <Link href="/" legacyBehavior>
               <a className="flex items-center gap-2">
@@ -55,21 +55,18 @@ export const Header = () => {
               </a>
             </Link>
             <MenuIcon className="h-5 w-5 md:hidden"/>
-            <nav className="hidden md:flex gap-6 text-black/60 items-center">
+            <nav className="hidden md:flex gap-6 items-center">
               <Link href="/about" legacyBehavior>
-                <a>About</a>
+                <a className="hover:text-blue-500 transition-colors duration-200">About</a>
               </Link>
               <Link href="/features" legacyBehavior>
-                <a>Features</a>
+                <a className="hover:text-blue-500 transition-colors duration-200">Features</a>
               </Link>
-              {/* <Link href="/customers" legacyBehavior>
-                <a>Customers</a>
-              </Link> */}
               <Link href="/updates" legacyBehavior>
-                <a>Updates</a>
+                <a className="hover:text-blue-500 transition-colors duration-200">Updates</a>
               </Link>
               <button 
-                className="bg-black text-white px-4 py-2 rounded-lg font-medium inline-flex align-items justify-center tracking-tight"
+                className="bg-black text-white px-4 py-2 rounded-lg font-medium inline-flex items-center justify-center tracking-tight hover:bg-blue-700 transition-colors duration-200"
                 onClick={handleTryForFreeClick}
               >
                 Try for free
