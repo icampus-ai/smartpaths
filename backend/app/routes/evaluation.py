@@ -66,10 +66,12 @@ def evaluation():
     if model_question_answer.content_type not in ['application/pdf', 'text/plain']:
         return jsonify({"error": "Model question answer file must be a PDF or TXT"}), 400
     
+    invalid_files = [file.filename for file in student_answers if file.content_type not in ['application/pdf', 'text/plain']]
+    if invalid_files:
+        return jsonify({"error": f"The following student answer files must be a PDF or TXT: {', '.join(invalid_files)}"}), 400
+    
     evaluated_student_files = []
     for student_answer in student_answers:
-        if student_answer.content_type not in ['application/pdf', 'text/plain']:
-            return jsonify({"error": f"Student answer file {student_answer.filename} must be a PDF or TXT"}), 400
         evaluated_student_files.append(
             #grade_papers(model_question_answer, student_answer, difficulty_level)
             list(model_question_answer) + [student_answer]
@@ -80,3 +82,4 @@ def evaluation():
         "difficulty": difficulty_level,
         "files": evaluated_student_files
     }), 200
+
