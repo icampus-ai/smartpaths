@@ -22,6 +22,7 @@ import bookImage from "../../assets/abstract_17.png";
 import { Worker, Viewer } from "@react-pdf-viewer/core";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
+import { uploadFileToBackend } from "../../services/fileUploadService"; // Import the service function
 
 interface SidebarProps {
   isExpanded: boolean;
@@ -60,7 +61,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0 && currentFileType) {
       const fileUrl = URL.createObjectURL(files[0]);
@@ -69,6 +70,14 @@ const Sidebar: React.FC<SidebarProps> = ({
         ...prevState,
         [currentFileType]: true,
       }));
+
+      // Call the service function to upload the file to the backend
+      try {
+        await uploadFileToBackend(fileUrl, currentFileType);
+        console.log('File uploaded successfully');
+      } catch (error) {
+        console.error('Error uploading file:', error);
+      }
     }
   };
 
@@ -211,37 +220,21 @@ const Sidebar: React.FC<SidebarProps> = ({
 
 const BusinessOverview = ({ fileUrl, fileType }: { fileUrl: string | null, fileType: string | null }) => {
   const [showEvaluationOptions, setShowEvaluationOptions] = useState(false);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
 
   const handleEvaluateClick = (level: string) => {
     setShowEvaluationOptions(true);
-    if (fileUrl && fileType) {
-      // Send the files to the backend for evaluation
-      fetch('/api/evaluate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ fileUrl, fileType, level }),
-      })
-        .then(response => response.json())
-        .then(data => {
-          console.log('Evaluation result:', data);
-        })
-        .catch(error => {
-          console.error('Error during evaluation:', error);
-        });
-    }
   };
 
   return (
     <div className="flex flex-col flex-grow items-center justify-center bg-gradient-to-b from-white to-gray-100 p-6 shadow-lg rounded-lg">
-      <h1 className="text-4xl font-bold text-gray-800">Evaluate with me!</h1>
+      <h1 className="text-4xl font-bold text-gray-800 animate-bounce">Evaluate with me!</h1>
       <p className="text-gray-500 mt-2">Simplify. Systemize. Succeed.</p>
 
       <div className="mt-6">
         <button
           onClick={() => setShowEvaluationOptions(true)}
-          className="bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600 transition-all"
+          className="bg-gradient-to-r from-green-400 to-blue-500 text-white py-2 px-6 rounded-full shadow-lg hover:from-green-500 hover:to-blue-600 transition-all duration-300 transform hover:scale-105"
         >
           Evaluate
         </button>
@@ -250,22 +243,31 @@ const BusinessOverview = ({ fileUrl, fileType }: { fileUrl: string | null, fileT
       {showEvaluationOptions && (
         <div className="mt-6 flex gap-4">
           <button
-            className="bg-green-500 text-white py-2 px-6 rounded-lg hover:bg-green-600 transition-all"
-            onClick={() => handleEvaluateClick('Easy')}
+            className="flex items-center border border-gray-500 text-gray-700 py-1 px-6 rounded-full relative transition-all hover:bg-gray-200"
+            onClick={() => { handleEvaluateClick('Easy'); setSelectedDifficulty('Easy'); }}
           >
-            Easy
+            <span className="font-bold text-lg">Easy</span>
+            {selectedDifficulty === 'Easy' && (
+              <div className="bg-green-500 w-2 h-2 rounded-full ml-2" />
+            )}
           </button>
           <button
-            className="bg-yellow-500 text-white py-2 px-6 rounded-lg hover:bg-yellow-600 transition-all"
-            onClick={() => handleEvaluateClick('Medium')}
+            className="flex items-center border border-gray-500 text-gray-700 py-1 px-6 rounded-full relative transition-all hover:bg-gray-200"
+            onClick={() => { handleEvaluateClick('Medium'); setSelectedDifficulty('Medium'); }}
           >
-            Medium
+            <span className="font-bold text-lg">Medium</span>
+            {selectedDifficulty === 'Medium' && (
+              <div className="bg-green-500 w-2 h-2 rounded-full ml-2" />
+            )}
           </button>
           <button
-            className="bg-red-500 text-white py-2 px-6 rounded-lg hover:bg-red-600 transition-all"
-            onClick={() => handleEvaluateClick('Hard')}
+            className="flex items-center border border-gray-500 text-gray-700 py-1 px-6 rounded-full relative transition-all hover:bg-gray-200"
+            onClick={() => { handleEvaluateClick('Hard'); setSelectedDifficulty('Hard'); }}
           >
-            Hard
+            <span className="font-bold text-lg">Hard</span>
+            {selectedDifficulty === 'Hard' && (
+              <div className="bg-green-500 w-2 h-2 rounded-full ml-2" />
+            )}
           </button>
         </div>
       )}
