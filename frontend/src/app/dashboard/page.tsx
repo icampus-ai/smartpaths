@@ -81,6 +81,10 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   };
 
+  const handleLogout = () => {
+    router.push('/login'); // Redirect to the login page
+  };
+
   return (
     <aside
       className={`bg-gradient-to-b from-gray-800 to-gray-900 text-gray-400 ${
@@ -200,7 +204,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       </nav>
       <div className="px-4 py-4 mt-auto">
         <button
-          onClick={() => handleNavigation("/logout")}
+          onClick={handleLogout}
           className="w-full flex items-center bg-gray-800 text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700 transition-all duration-200"
         >
           <FaSignOutAlt className="mr-3" />
