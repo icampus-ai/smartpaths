@@ -2,8 +2,24 @@ from flask import session, Blueprint, redirect, url_for, request, jsonify
 from flasgger import swag_from
 from app.services.auth_service import auth_github_callback, auth_google_callback, login_github, login_google
 from app.services.user_service import create_user, get_user_by_email
+from authlib.integrations.flask_client import OAuth
 
 auth_bp = Blueprint('auth', __name__)
+oauth = OAuth()
+
+# Configure OAuth provider
+oauth_provider = oauth.register(
+    name='oauth_provider',
+    client_id='your_client_id',
+    client_secret='your_client_secret',
+    authorize_url='https://provider.com/oauth/authorize',
+    authorize_params=None,
+    access_token_url='https://provider.com/oauth/token',
+    access_token_params=None,
+    refresh_token_url=None,
+    redirect_uri='http://localhost:5000/auth',
+    client_kwargs={'scope': 'profile email'}
+)
 
 @auth_bp.route('/login/google')
 @swag_from({
@@ -142,3 +158,20 @@ def signup():
 
     user = create_user(first_name, last_name, middle_name, email, password)
     return jsonify({'message': 'Account created successfully', 'user': user}), 201
+
+@auth_bp.route('/login')
+def login():
+    redirect_uri = url_for('auth.auth', _external=True)
+    return oauth_provider.authorize_redirect(redirect_uri)
+
+@auth_bp.route('/auth')
+def auth():
+    token = oauth_provider.authorize_access_token()
+    session['oauth_token'] = token
+    user_info = oauth_provider.get('user')
+    session['user'] = user_info.json()
+    return redirect(url_for('evaluation.evaluation'))
+
+@oauth_provider.tokengetter
+def get_oauth_token():
+    return session.get('oauth_token')

@@ -72,6 +72,43 @@ def evaluation():
     
     evaluated_student_files = []
     for student_answer in student_answers:
+
+        class StudentAnswer:
+            def __init__(self, file_stream):
+                self.file_stream = file_stream
+                self.student_name = None
+                self.questions_answers = {}
+
+            def parse(self):
+                question = None
+                for line in self.file_stream:
+                    line = line.decode('utf-8').strip()
+                    if line.startswith('Student Name:'):
+                        self.student_name = line.split(':', 1)[1].strip()
+                    elif line and line[0].isdigit():
+                        question = line
+                        self.questions_answers[question] = ""
+                    elif question:
+                        self.questions_answers[question] += line + " "
+
+        student_answer_obj = StudentAnswer(student_answer.stream)
+        student_answer_obj.parse()
+        if not student_answer_obj.student_name:
+            return jsonify({"error": f"Student name not found in file: {student_answer.filename}"}), 400
+
+        evaluated_student_files.append({
+            "student_name": student_answer_obj.student_name,
+            "questions_answers": student_answer_obj.questions_answers
+        })
+        student_name = None
+        for line in student_answer.stream:
+            line = line.decode('utf-8').strip()
+            if line.startswith('Student Name:'):
+                student_name = line.split(':', 1)[1].strip()
+            break
+        if not student_name:
+            return jsonify({"error": f"Student name not found in file: {student_answer.filename}"}), 400
+        # Assuming grade_papers is a function that grades the papers and returns the result
         evaluated_student_files.append(
             #grade_papers(model_question_answer, student_answer, difficulty_level)
             list(model_question_answer) + [student_answer]
