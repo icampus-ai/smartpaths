@@ -7,9 +7,7 @@ import {
   FaChartBar,
   FaUsers,
   FaEnvelope,
-  FaBriefcase,
   FaQuestionCircle,
-  FaCog,
   FaSignOutAlt,
   FaBars,
   FaUpload,
@@ -22,7 +20,7 @@ import bookImage from "../../assets/abstract_17.png";
 import { Worker, Viewer } from "@react-pdf-viewer/core";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
-import { uploadFileToBackend, evaluateFiles } from "../../services/evaluateService"; // Corrected import statement
+import { uploadFileToBackend, evaluateFiles } from "../../services/evaluateService";
 
 interface SidebarProps {
   isExpanded: boolean;
@@ -30,11 +28,7 @@ interface SidebarProps {
   onFileUpload: (file: File, fileType: string) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({
-  isExpanded,
-  toggleSidebar,
-  onFileUpload,
-}) => {
+const Sidebar: React.FC<SidebarProps> = ({ isExpanded, toggleSidebar, onFileUpload }) => {
   const router = useRouter();
   const [isUploadMenuOpen, setIsUploadMenuOpen] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState({
@@ -54,14 +48,31 @@ const Sidebar: React.FC<SidebarProps> = ({
     setIsUploadMenuOpen(!isUploadMenuOpen);
   };
 
-  const handleFileUploadClick = (fileType: string) => {
+  interface UploadSuccessState {
+    modelQ: boolean;
+    modelQA: boolean;
+    responses: boolean;
+    additionalFile: boolean;
+  }
+
+  interface HandleFileUploadClick {
+    (fileType: string): void;
+  }
+
+  const handleFileUploadClick: HandleFileUploadClick = (fileType) => {
     setCurrentFileType(fileType);
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  interface HandleFileChangeEvent {
+    target: {
+      files: FileList | null;
+    };
+  }
+
+  const handleFileChange = async (e: HandleFileChangeEvent): Promise<void> => {
     const files = e.target.files;
     if (files && files.length > 0 && currentFileType) {
       const file = files[0];
@@ -71,18 +82,17 @@ const Sidebar: React.FC<SidebarProps> = ({
         [currentFileType]: true,
       }));
 
-      // Call the service function to upload the file to the backend
       try {
         await uploadFileToBackend(file, currentFileType);
-        console.log('File uploaded successfully');
+        console.log("File uploaded successfully");
       } catch (error) {
-        console.error('Error uploading file:', error);
+        console.error("Error uploading file:", error);
       }
     }
   };
 
   const handleLogout = () => {
-    router.push('/login'); // Redirect to the login page
+    router.push("/login");
   };
 
   return (
@@ -104,7 +114,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           <FaBars />
         </button>
       </div>
-      <nav className="flex-grow space-y-2"> {/* Adjusted spacing */}
+      <nav className="flex-grow space-y-2">
         <button
           onClick={() => handleNavigation("/")}
           className="text-white flex items-center px-4 py-2 hover:bg-gray-700 rounded-lg transition-all duration-200"
@@ -222,49 +232,49 @@ const Sidebar: React.FC<SidebarProps> = ({
   );
 };
 
-const BusinessOverview = ({ fileUrl, fileType }: { fileUrl: string | null, fileType: string | null }) => {
+interface BusinessOverviewProps {
+  fileUrl: string | null;
+  fileType: string | null;
+  uploadedFiles: { [key: string]: File | null };
+}
+
+const BusinessOverview: React.FC<BusinessOverviewProps> = ({ fileUrl, fileType, uploadedFiles }) => {
   const [showEvaluationOptions, setShowEvaluationOptions] = useState(false);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<{ [key: string]: File | null }>({
-    modelQ: null,
-    modelQA: null,
-    responses: null,
-    additionalFile: null,
-  });
 
   const handleEvaluateClick = async () => {
     if (selectedDifficulty) {
       try {
-        await evaluateFiles(uploadedFiles, selectedDifficulty);
-        console.log('Files evaluated successfully');
+        const formData = new FormData();
+        Object.entries(uploadedFiles).forEach(([fileType, file]) => {
+          if (file) {
+            formData.append(fileType, file);
+          }
+        });
+        formData.append("difficulty", selectedDifficulty);
+
+        const response = await fetch("/api/evaluate", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to evaluate files");
+        }
+
+        console.log("Files evaluated successfully");
       } catch (error) {
-        console.error('Error evaluating files:', error);
+        console.error("Error evaluating files:", error);
       }
     }
-  };
-
-  const handleFileUpload = (file: File, fileType: string) => {
-    setUploadedFiles((prevState) => ({
-      ...prevState,
-      [fileType]: file,
-    }));
-    handleFileUploadSuccess();
-  };
-
-  const handleFileUploadSuccess = () => {
-    setShowSuccessMessage(true);
-    setTimeout(() => {
-      setShowSuccessMessage(false);
-    }, 1000);
   };
 
   return (
     <div className="flex flex-col flex-grow items-center justify-center bg-white p-6">
       <div className="flex w-full">
-        {/* Left Section */}
         <div className="w-1/2 flex flex-col justify-center items-start ml-20">
-          <h1 className="text-4xl font-bold text-gray-800 animate-typing text-center">Evaluate with me!</h1>
+          <h1 className="text-4xl font-bold text-gray-800 text-center">Evaluate with me!</h1>
           <p className="text-gray-800 mt-4 text-center ml-12">Simplify. Systemize. Succeed.</p>
 
           <div className="mt-6 flex justify-center">
@@ -280,40 +290,30 @@ const BusinessOverview = ({ fileUrl, fileType }: { fileUrl: string | null, fileT
             <div className="mt-6 flex gap-4 justify-center">
               <button
                 className="flex items-center border border-gray-500 text-gray-700 py-1 px-6 rounded-full relative transition-all hover:bg-gray-200"
-                onClick={() => { setSelectedDifficulty('Easy'); handleEvaluateClick(); }}
+                onClick={() => { setSelectedDifficulty("Easy"); handleEvaluateClick(); }}
               >
                 <span className="font-bold text-lg">Easy</span>
-                {selectedDifficulty === 'Easy' && (
-                  <div className="bg-green-500 w-2 h-2 rounded-full ml-2" />
-                )}
               </button>
               <button
                 className="flex items-center border border-gray-500 text-gray-700 py-1 px-6 rounded-full relative transition-all hover:bg-gray-200"
-                onClick={() => { setSelectedDifficulty('Medium'); handleEvaluateClick(); }}
+                onClick={() => { setSelectedDifficulty("Medium"); handleEvaluateClick(); }}
               >
                 <span className="font-bold text-lg">Medium</span>
-                {selectedDifficulty === 'Medium' && (
-                  <div className="bg-green-500 w-2 h-2 rounded-full ml-2" />
-                )}
               </button>
               <button
                 className="flex items-center border border-gray-500 text-gray-700 py-1 px-6 rounded-full relative transition-all hover:bg-gray-200"
-                onClick={() => { setSelectedDifficulty('Hard'); handleEvaluateClick(); }}
+                onClick={() => { setSelectedDifficulty("Hard"); handleEvaluateClick(); }}
               >
                 <span className="font-bold text-lg">Hard</span>
-                {selectedDifficulty === 'Hard' && (
-                  <div className="bg-green-500 w-2 h-2 rounded-full ml-2" />
-                )}
               </button>
             </div>
           )}
 
           {showSuccessMessage && (
-            <p className="text-green-500 mt-4 text-center">File uploaded successfully!</p>
+            <p className="text-green-500 mt-4 text-center">Files evaluated successfully!</p>
           )}
         </div>
 
-        {/* Right Section */}
         <div className="w-1/2 flex flex-col items-center">
           <div className="mt-6 relative w-full max-w-4xl mr-20">
             {fileUrl ? (
@@ -357,15 +357,29 @@ const DashboardLayout = () => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [fileType, setFileType] = useState<string | null>(null);
+  const [uploadedFiles, setUploadedFiles] = useState({
+    modelQ: null,
+    modelQA: null,
+    responses: null,
+    additionalFile: null,
+  });
 
   const toggleSidebar = () => {
     setIsSidebarExpanded(!isSidebarExpanded);
   };
 
-  const handleFileUpload = (file: File, fileType: string) => {
+  interface HandleFileUpload {
+    (file: File, fileType: string): void;
+  }
+
+  const handleFileUpload: HandleFileUpload = (file, fileType) => {
     const fileUrl = URL.createObjectURL(file);
     setFileUrl(fileUrl);
     setFileType(fileType);
+    setUploadedFiles((prevState) => ({
+      ...prevState,
+      [fileType]: file,
+    }));
   };
 
   return (
@@ -381,7 +395,7 @@ const DashboardLayout = () => {
         } bg-white flex flex-col min-h-screen`}
       >
         <div className="p-6 flex-grow">
-          <BusinessOverview fileUrl={fileUrl} fileType={fileType} />
+          <BusinessOverview fileUrl={fileUrl} fileType={fileType} uploadedFiles={uploadedFiles} />
         </div>
       </main>
     </div>
