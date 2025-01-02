@@ -1,55 +1,50 @@
 import time
 import os
+import sys
 import logging
-from llama_integration import get_llama_response
+
 from tempfile import NamedTemporaryFile
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
+
+from llama_integration import get_llama_response
+from groq_integration import get_groq_response
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def read_file(file_path):
-    try:
-        with open(file_path, 'r', encoding='utf-8') as file:
-            return file.read()
-    except FileNotFoundError as e:
-        logging.error(f"File not found: {file_path}")
-        raise e
-    except IOError as e:
-        logging.error(f"Error reading file: {file_path}")
-        raise e
+def read_file(file):
+    
+        # with open(file_path, 'r', encoding='utf-8') as file:
+    return file.read()
+    # except FileNotFoundError as e:
+    #     logging.error(f"File not found: {file_path}")
+    #     raise e
+    # except IOError as e:
+    #     logging.error(f"Error reading file: {file_path}")
+    #     raise e
 
 def get_evaluation_report(model_answers_text, student_answers_text):
-    prompt = f"""
-    You are a highly skilled and fair Teaching Assistant (TA) tasked with grading a student's answers based on the model answers and the student's responses. Your goal is to provide an in-depth, constructive, and fair evaluation of the student's work. The evaluation must include the following:
+    prompt = """
+You are a fair and consistent AI grader. Your task is to evaluate a student's answer based on a provided model answer. Your feedback should be structured, objective, and consistent across evaluations. Focus on the following aspects of the student's answer compared to the model answer:
 
-    **Evaluation Process:**
+**Evaluation Report Format:**
 
-    1. **Compare the Student Answer with the Model Answer:**
-    For each question, compare the student's answer with the model answer provided. Assess the student's answer according to the following criteria:
-    - **Accuracy:** Is the student’s answer factually correct? Does it cover the necessary points as outlined in the model answer?
-    - **Completeness:** Does the student provide a complete response, including all necessary components as outlined in the model answer? If the question is multi-part, has the student answered all parts sufficiently?
-    - **Clarity and Organization:** Is the answer clear, logical, and well-organized? Does the student use appropriate language and terminology?
+1. **Score:**  
+   Assign a score out of 10 based on the student's accuracy, completeness, clarity, and overall understanding in comparison to the model answer.
 
-    2. **Detailed Feedback for Each Question:**
-    For each question, provide a feedback report with the following:
-    - **Score (number of marks student scored out of the total marks for the question):** Assign a score for each question based on how well the student answered it in relation to the model answer.
-    - **Strengths:** What parts of the student's answer were correct, well-organized, or insightful?
-    - **Weaknesses:** What parts of the student's answer were lacking or incorrect? Were key points missing, or did the answer fail to address critical aspects of the question?
-    - **Suggestions for Improvement:** Offer actionable advice on how the student can improve their answer for future questions. Focus on providing suggestions to help improve clarity, completeness, and depth of the response.
+2. **Strengths:**  
+   Identify specific aspects of the student's answer that are correct, well-organized, or insightful. Highlight what was done well in the student's response.
 
-    3. **Provide the Final Evaluation Report:**
-    The evaluation report should summarize:
-    - **Detailed Feedback for Each Question:** Provide feedback on strengths, weaknesses, and specific suggestions for each question.
-    - **Overall Feedback Summary:** Optionally, provide a summary of the student's overall performance, highlighting areas of strength and areas for improvement across all questions.
+3. **Weaknesses:**  
+   Point out areas where the student's answer could be improved. Mention missing key concepts, incorrect information, or lack of clarity.
 
-    **Evaluation Report Structure:**
-    - **Detailed Feedback for Each Question:** Include feedback for each question, including assigned score, strengths, weaknesses, and improvement suggestions.
-    - **General Summary:** If necessary, offer a general summary of the student's performance across all questions, pointing out areas for improvement.
+4. **Suggestions for Improvement:**  
+   Provide clear, actionable suggestions on how the student can improve their answer. Focus on providing recommendations for making the response more complete, accurate, and clear.
 
-    **Please ensure your evaluation is thorough, fair, and objective, and that the final score correctly reflects the student's performance based on the model answers. Offer specific, actionable feedback for each question to help the student improve.**
+**Model Answer:** {model_answer_text}  
+**Student Answer:** {student_answer_text}
+"""
 
-    **model_answer_text:** {model_answers_text}
-    **student_answer_text:** {student_answers_text}
-    """
     
     try:
         start_time = time.time()
@@ -61,7 +56,7 @@ def get_evaluation_report(model_answers_text, student_answers_text):
         logging.error("Error during evaluation report generation.")
         raise e
 
-def grade_paper(model_answer_path, student_answer_path):
+def grade_paper(model_answer_path, student_answer_path, difficulty_level):
     try:
         model_answers_text = read_file(model_answer_path)
         student_answers_text = read_file(student_answer_path)

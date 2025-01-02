@@ -1,10 +1,17 @@
 from flask import Blueprint, jsonify, request, redirect, url_for, session
-from ai_model import grade_paper
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
+
+from ai_model.model.evaluator import grade_paper
 
 evaluation_bp = Blueprint('evaluation', __name__)
 
-@evaluation_bp.route('/evaluation', methods=['POST'])
+@evaluation_bp.route('/evaluate', methods=['POST'])
 def evaluation():
+
+    print("Inside evaluation")
 
     if not all(key in request.files for key in ('modelQuestionAnswer', 'studentAnswers')):
         return jsonify({"error": "Both files are required"}), 400

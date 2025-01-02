@@ -5,14 +5,12 @@ def get_llama_response(prompt):
     try:
         # Run the subprocess and capture stdout and stderr
         result = subprocess.run(
-            ['ollama', 'run', 'llama3.2', prompt],
-            stdout=subprocess.PIPE,  # Capture stdout
-            stderr=subprocess.PIPE,  # Capture stderr
-            text=True,
-            encoding='utf-8',
-            # creationflags=subprocess.CREATE_NEW_CONSOLE  # Avoid the console mode error
+        ['ollama', 'run', 'llama3.2', '--temperature', '0', '--top_p', '1', '--top_k', '1', '--prompt', prompt],
+        stdout=subprocess.PIPE,  # Capture stdout
+        stderr=subprocess.PIPE,  # Capture stderr
+        text=True,
+        encoding='utf-8'
         )
-        
         if result.returncode == 0:
             # Get the response from stdout, split into lines, and remove the first two lines
             output_lines = result.stdout.strip().split('\n')[2:]  # Skip first two lines
