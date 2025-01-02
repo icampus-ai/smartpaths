@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Header } from "../../sections/Header";
 import Image from "next/image";
-import abstractImage from "../../assets/abstract_31.png";
+import abstractImage from "../../assets/abstract_33.png";
 
 const Login = () => {
   const router = useRouter();
