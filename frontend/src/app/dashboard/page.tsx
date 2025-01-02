@@ -28,7 +28,11 @@ interface SidebarProps {
   onFileUpload: (file: File, fileType: string) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isExpanded, toggleSidebar, onFileUpload }) => {
+const Sidebar: React.FC<SidebarProps> = ({
+  isExpanded,
+  toggleSidebar,
+  onFileUpload,
+}) => {
   const router = useRouter();
   const [isUploadMenuOpen, setIsUploadMenuOpen] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState({
@@ -48,31 +52,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, toggleSidebar, onFileUplo
     setIsUploadMenuOpen(!isUploadMenuOpen);
   };
 
-  interface UploadSuccessState {
-    modelQ: boolean;
-    modelQA: boolean;
-    responses: boolean;
-    additionalFile: boolean;
-  }
-
-  interface HandleFileUploadClick {
-    (fileType: string): void;
-  }
-
-  const handleFileUploadClick: HandleFileUploadClick = (fileType) => {
+  const handleFileUploadClick = (fileType: string) => {
     setCurrentFileType(fileType);
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
 
-  interface HandleFileChangeEvent {
-    target: {
-      files: FileList | null;
-    };
-  }
-
-  const handleFileChange = async (e: HandleFileChangeEvent): Promise<void> => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0 && currentFileType) {
       const file = files[0];
@@ -81,18 +68,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, toggleSidebar, onFileUplo
         ...prevState,
         [currentFileType]: true,
       }));
-
-      try {
-        await uploadFileToBackend(file, currentFileType);
-        console.log("File uploaded successfully");
-      } catch (error) {
-        console.error("Error uploading file:", error);
-      }
     }
   };
 
   const handleLogout = () => {
-    router.push("/login");
+    router.push('/login'); // Redirect to the login page
   };
 
   return (
@@ -232,13 +212,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, toggleSidebar, onFileUplo
   );
 };
 
-interface BusinessOverviewProps {
-  fileUrl: string | null;
-  fileType: string | null;
-  uploadedFiles: { [key: string]: File | null };
-}
-
-const BusinessOverview: React.FC<BusinessOverviewProps> = ({ fileUrl, fileType, uploadedFiles }) => {
+const BusinessOverview = ({ fileUrl, fileType, uploadedFiles, setUploadedFiles }: { fileUrl: string | null, fileType: string | null, uploadedFiles: { [key: string]: File | null }, setUploadedFiles: React.Dispatch<React.SetStateAction<{ [key: string]: File | null }>> }) => {
   const [showEvaluationOptions, setShowEvaluationOptions] = useState(false);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -252,7 +226,7 @@ const BusinessOverview: React.FC<BusinessOverviewProps> = ({ fileUrl, fileType, 
             formData.append(fileType, file);
           }
         });
-        formData.append("difficulty", selectedDifficulty);
+        formData.append("difficultyLevel", selectedDifficulty);
 
         const response = await fetch("/api/evaluate", {
           method: "POST",
@@ -270,11 +244,27 @@ const BusinessOverview: React.FC<BusinessOverviewProps> = ({ fileUrl, fileType, 
     }
   };
 
+  const handleFileUpload = (file: File, fileType: string) => {
+    setUploadedFiles((prevState) => ({
+      ...prevState,
+      [fileType]: file,
+    }));
+    handleFileUploadSuccess();
+  };
+
+  const handleFileUploadSuccess = () => {
+    setShowSuccessMessage(true);
+    setTimeout(() => {
+      setShowSuccessMessage(false);
+    }, 1000);
+  };
+
   return (
     <div className="flex flex-col flex-grow items-center justify-center bg-white p-6">
       <div className="flex w-full">
+        {/* Left Section */}
         <div className="w-1/2 flex flex-col justify-center items-start ml-20">
-          <h1 className="text-4xl font-bold text-gray-800 text-center">Evaluate with me!</h1>
+          <h1 className="text-4xl font-bold text-gray-800 animate-typing text-center">Evaluate with me!</h1>
           <p className="text-gray-800 mt-4 text-center ml-12">Simplify. Systemize. Succeed.</p>
 
           <div className="mt-6 flex justify-center">
@@ -290,30 +280,40 @@ const BusinessOverview: React.FC<BusinessOverviewProps> = ({ fileUrl, fileType, 
             <div className="mt-6 flex gap-4 justify-center">
               <button
                 className="flex items-center border border-gray-500 text-gray-700 py-1 px-6 rounded-full relative transition-all hover:bg-gray-200"
-                onClick={() => { setSelectedDifficulty("Easy"); handleEvaluateClick(); }}
+                onClick={() => { setSelectedDifficulty('Easy'); handleEvaluateClick(); }}
               >
                 <span className="font-bold text-lg">Easy</span>
+                {selectedDifficulty === 'Easy' && (
+                  <div className="bg-green-500 w-2 h-2 rounded-full ml-2" />
+                )}
               </button>
               <button
                 className="flex items-center border border-gray-500 text-gray-700 py-1 px-6 rounded-full relative transition-all hover:bg-gray-200"
-                onClick={() => { setSelectedDifficulty("Medium"); handleEvaluateClick(); }}
+                onClick={() => { setSelectedDifficulty('Medium'); handleEvaluateClick(); }}
               >
                 <span className="font-bold text-lg">Medium</span>
+                {selectedDifficulty === 'Medium' && (
+                  <div className="bg-green-500 w-2 h-2 rounded-full ml-2" />
+                )}
               </button>
               <button
                 className="flex items-center border border-gray-500 text-gray-700 py-1 px-6 rounded-full relative transition-all hover:bg-gray-200"
-                onClick={() => { setSelectedDifficulty("Hard"); handleEvaluateClick(); }}
+                onClick={() => { setSelectedDifficulty('Hard'); handleEvaluateClick(); }}
               >
                 <span className="font-bold text-lg">Hard</span>
+                {selectedDifficulty === 'Hard' && (
+                  <div className="bg-green-500 w-2 h-2 rounded-full ml-2" />
+                )}
               </button>
             </div>
           )}
 
           {showSuccessMessage && (
-            <p className="text-green-500 mt-4 text-center">Files evaluated successfully!</p>
+            <p className="text-green-500 mt-4 text-center">File uploaded successfully!</p>
           )}
         </div>
 
+        {/* Right Section */}
         <div className="w-1/2 flex flex-col items-center">
           <div className="mt-6 relative w-full max-w-4xl mr-20">
             {fileUrl ? (
@@ -357,7 +357,7 @@ const DashboardLayout = () => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [fileType, setFileType] = useState<string | null>(null);
-  const [uploadedFiles, setUploadedFiles] = useState({
+  const [uploadedFiles, setUploadedFiles] = useState<{ [key: string]: File | null }>({
     modelQ: null,
     modelQA: null,
     responses: null,
@@ -368,11 +368,7 @@ const DashboardLayout = () => {
     setIsSidebarExpanded(!isSidebarExpanded);
   };
 
-  interface HandleFileUpload {
-    (file: File, fileType: string): void;
-  }
-
-  const handleFileUpload: HandleFileUpload = (file, fileType) => {
+  const handleFileUpload = (file: File, fileType: string) => {
     const fileUrl = URL.createObjectURL(file);
     setFileUrl(fileUrl);
     setFileType(fileType);
@@ -395,7 +391,7 @@ const DashboardLayout = () => {
         } bg-white flex flex-col min-h-screen`}
       >
         <div className="p-6 flex-grow">
-          <BusinessOverview fileUrl={fileUrl} fileType={fileType} uploadedFiles={uploadedFiles} />
+          <BusinessOverview fileUrl={fileUrl} fileType={fileType} uploadedFiles={uploadedFiles} setUploadedFiles={setUploadedFiles} />
         </div>
       </main>
     </div>

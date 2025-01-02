@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Header } from "../../sections/Header";
 import Image from "next/image";
-import abstractImage from "../../assets/abstract_29.png";
+import abstractImage from "../../assets/abstract_33.png";
 
 const Login = () => {
   const router = useRouter();
@@ -25,7 +25,7 @@ const Login = () => {
   return (
     <>
       <Header />
-      <section className="relative bg-gradient-to-b from-gray-800 to-white py-24 min-h-screen flex flex-col justify-center items-center">
+      <section className="relative bg-white py-24 min-h-screen flex flex-col justify-center items-center">
         {/* Background Image */}
         <div className="absolute inset-0 overflow-hidden">
           <Image
