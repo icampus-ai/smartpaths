@@ -8,7 +8,6 @@ from tempfile import NamedTemporaryFile
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
 
 from llama_integration import get_llama_response
-from groq_integration import get_groq_response
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
