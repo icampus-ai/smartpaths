@@ -219,30 +219,37 @@ const BusinessOverview = ({ fileUrl, fileType, uploadedFiles, setUploadedFiles }
 
   const handleEvaluateClick = async () => {
     if (selectedDifficulty) {
-      try {
-        const formData = new FormData();
-        Object.entries(uploadedFiles).forEach(([fileType, file]) => {
-          if (file) {
-            formData.append(fileType, file);
-          }
-        });
-        formData.append("difficultyLevel", selectedDifficulty);
+        try {
+            const formData = new FormData();
 
-        const response = await fetch("/api/evaluate", {
-          method: "POST",
-          body: formData,
-        });
+            // Add specific files with the exact field names expected by the backend
+            if (uploadedFiles.modelQA) {
+                formData.append("modelQuestionAnswer", uploadedFiles.modelQA);
+            }
+            if (uploadedFiles.responses) {
+                formData.append("studentAnswers", uploadedFiles.responses);
+            }
 
-        if (!response.ok) {
-          throw new Error("Failed to evaluate files");
+            // Add the difficulty level
+            formData.append("difficultyLevel", selectedDifficulty);
+
+            // Send the request to the backend
+            const response = await fetch("http://localhost:8000/api/evaluate", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to evaluate files");
+            }
+
+            console.log("Files evaluated successfully");
+        } catch (error) {
+            console.error("Error evaluating files:", error);
         }
-
-        console.log("Files evaluated successfully");
-      } catch (error) {
-        console.error("Error evaluating files:", error);
-      }
     }
-  };
+};
+
 
   const handleFileUpload = (file: File, fileType: string) => {
     setUploadedFiles((prevState) => ({

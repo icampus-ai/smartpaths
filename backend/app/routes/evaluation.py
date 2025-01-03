@@ -8,7 +8,7 @@ from ai_model.model.evaluator import grade_paper
 
 evaluation_bp = Blueprint('evaluation', __name__)
 
-@evaluation_bp.route('/evaluate', methods=['POST'])
+@evaluation_bp.route('/api/evaluate', methods=['POST'])
 def evaluation():
 
     print("Inside evaluation")
