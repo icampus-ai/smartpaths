@@ -234,7 +234,7 @@ const BusinessOverview = ({ fileUrl, fileType, uploadedFiles, setUploadedFiles }
             formData.append("difficultyLevel", selectedDifficulty);
 
             // Send the request to the backend
-            const response = await fetch("/api/evaluate", {
+            const response = await fetch("http://localhost:8000/api/evaluate", {
                 method: "POST",
                 body: formData,
             });
