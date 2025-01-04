@@ -1,5 +1,5 @@
-from llama_utils import get_llama_response, extract_keywords_with_llama
-from feedback_summary import generate_dynamic_summary
+from ai_model.llama_utils import get_llama_response, extract_keywords_with_llama
+from ai_model.feedback_summary import generate_dynamic_summary
 
 def evaluate_answer(model_answer, student_answer, grading_criteria):
     feedback = {}
@@ -58,5 +58,5 @@ Instructions:
         "overall_improvement": overall_improvement
     }
 
-def grade_paper(model_answer, student_answer, grading_criteria):
+def grade_student_answers(model_answer, student_answer, grading_criteria):
     return evaluate_answer(model_answer, student_answer, grading_criteria)
