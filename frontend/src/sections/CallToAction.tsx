@@ -17,15 +17,16 @@ export const CallToAction = () => {
   };
 
   return (
-    <section className="relative bg-gradient-to-b from-white to-gray-800 py-40 overflow-hidden">
+    <section className="relative bg-white py-40 overflow-hidden">
       <div className="container mx-auto px-6">
         {/* Heading Section */}
         <div className="relative text-center mb-10">
-          <h2 className="text-5xl md:text-7xl font-bold tracking-tighter bg-gradient-to-b from-black to-gray-700 text-transparent bg-clip-text mt-2">
-            Ready to Get Started?
+          <h2 className="text-5xl md:text-7xl font-bold tracking-tighter text-gray-800 mt-2">
+            <span className="text-orange-500">Ready</span>
+            <span className="text-black"> to Get Started? </span>
           </h2>
-          <p className="mt-5 text-lg text-black">
-            Sign up for <span className="text-orange-500 font-bold text-black">Smart</span><span>Paths</span> today and streamline your evaluation process like never before.
+          <p className="mt-5 text-lg text-gray-600">
+            Sign up for <span className="text-orange-500 font-bold">Smart</span><span>Paths</span> today and streamline your evaluation process like never before.
           </p>
 
           {/* Floating Hand Animation */}

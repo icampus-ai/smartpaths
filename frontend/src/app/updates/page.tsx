@@ -67,9 +67,10 @@ const UpdatesPage: React.FC = () => {
         </div>
         <div className="container mx-auto relative z-10">
           <h1 className="text-5xl md:text-6xl text-center font-bold bg-gradient-to-b from-black to-gray-700 text-transparent bg-clip-text">
-            Product Updates
+            <span className="text-orange-500">Smart</span>
+            <span className="text-black">Paths Software Updates</span>
           </h1>
-          <p className="text-center text-lg text-gray-800 mt-4">
+          <p className="text-center text-lg text-black mt-4">
             Explore the evolution of SmartPaths.
           </p>
           <div className="mt-12 space-y-6 relative">
