@@ -242,7 +242,19 @@ const BusinessOverview = ({ fileUrl, fileType, uploadedFiles, setUploadedFiles }
             if (!response.ok) {
                 throw new Error("Failed to evaluate files");
             }
-
+            const result = await response.json();
+            console.log("Files evaluated successfully", result);
+    
+            // Handle the base64 encoded files and trigger download
+            result.files.forEach((file: { student_file: string; file: string }) => {
+              const link = document.createElement("a");
+              link.href = `data:application/octet-stream;base64,${file.file}`;
+              link.download = file.student_file;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            });
+            setShowSuccessMessage(true);
             console.log("Files evaluated successfully");
         } catch (error) {
             console.error("Error evaluating files:", error);
