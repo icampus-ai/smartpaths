@@ -1,6 +1,7 @@
 
 import base64
 from io import BytesIO
+import re
 from ai_model.model.grading_system.grader import grade_student_answers
 
 def evaluate_student_answers(model_question_answer, student_answers):
@@ -99,7 +100,10 @@ def append_grading_results(student_data, grading_results):
      updated_text += f"\n{question_number}. {questionAndAnswer['question']}\n"
      updated_text += f"Answer: {questionAndAnswer['answer']}\n"
      grading_result = grading_results.get(question_number, {})
-     updated_text += f"Score: {grading_result.get('score', 0)}/10\n"
+     updated_text += f"Total Score: {grading_result.get('total_score', 0)}/10\n"
      updated_text += f"Feedback: {grading_result.get('feedback', 'No feedback provided')}\n"
-
+     updated_text += f"Percentage: {grading_result.get('percentage', 0)}%\n"
+     updated_text += f"Overall Strength: {grading_result.get('overall_strengths', 0)}%\n"
+     updated_text += f"Overall Weekness: {grading_result.get('overall_weaknesses', 0)}%\n"
+     updated_text += f"Overall Improvement: {grading_result.get('overall_improvement', 0)}%\n"
     return updated_text

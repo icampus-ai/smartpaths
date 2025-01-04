@@ -1,13 +1,10 @@
 from flask import Blueprint, jsonify, request
 import sys
 import os
-from backend.app.services.evaluation_service import evaluate_student_answers
-from backend.app.utils.file_validation import append_grading_results, extract_model_data, extract_student_data
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
+from backend.app.services.evaluation_service import evaluate_student_answers
 
-from ai_model.model.evaluator import grade_paper
-from ai_model.model.grading_system.grader import grade_student_answers
 
 evaluation_bp = Blueprint('evaluation', __name__)
 
