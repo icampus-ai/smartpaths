@@ -1,10 +1,6 @@
-from flask import Blueprint, jsonify, request, redirect, url_for, session
+from flask import Blueprint, jsonify, request
 import sys
 import os
-import re
-from io import BytesIO
-import base64
-
 from backend.app.services.evaluation_service import evaluate_student_answers
 from backend.app.utils.file_validation import append_grading_results, extract_model_data, extract_student_data
 
