@@ -34,6 +34,30 @@ def extract_keywords_with_llama(model_answer):
     else:
         return []
 
+def generate_dynamic_summary(feedback):
+    strengths = []
+    weaknesses = []
+    improvements = []
+
+    # Loop through feedback to generate the summary
+    for criterion, data in feedback.items():
+        # If the student scored well, add to strengths
+        if data['score'] >= 7:
+            strengths.append(f"The student demonstrated a solid understanding of {criterion.lower()}.")
+        # If the score is low, mention the weaknesses
+        elif data['score'] <= 4:
+            weaknesses.append(f"The student missed critical elements in {criterion.lower()}, especially in {data['justification']}.")
+        # Suggest improvements based on missing details
+        if "missing" in data['justification'].lower() or "penalty" in data['justification'].lower():
+            improvements.append(f"The student could improve by addressing the missing details in {criterion.lower()}.")
+
+    # Consolidate the overall strengths, weaknesses, and improvements
+    overall_strengths = "Strengths: " + " ".join(strengths) if strengths else "Strengths: The student demonstrated a good understanding of the core concepts."
+    overall_weaknesses = "Weaknesses: " + " ".join(weaknesses) if weaknesses else "Weaknesses: Some aspects could be improved, such as depth or detail."
+    overall_improvement = "Improvement: " + " ".join(improvements) if improvements else "Improvement: The student should elaborate more on key concepts and explanations."
+
+    return overall_strengths, overall_weaknesses, overall_improvement
+
 def evaluate_answer_with_llama(model_answer, student_answer, grading_criteria):
     """
     Evaluate the student's answer based on dynamic grading criteria using LLaMA for keyword extraction.
@@ -49,26 +73,27 @@ def evaluate_answer_with_llama(model_answer, student_answer, grading_criteria):
     for criterion, data in grading_criteria.items():
         # Generate the prompt, including explicit instructions to give a score and apply penalties if necessary
         prompt = f"""
-        Please evaluate the following student answer based on the model answer and grading criterion.
-        Provide a score from 0 to 10 based on how well the student answers the question.
-        Include a detailed justification for the score, highlighting any deductions and penalties.
-        If the student missed any key concepts or explanations, please mention them and apply penalties accordingly.
-        
-        Model Answer:
-        {model_answer}
-        
-        Student Answer:
-        {student_answer}
-        
-        Grading Criterion:
-        {data['llm_prompt']}
-        
-        Instructions:
-        - If the student missed any critical concepts or explanations, apply a penalty based on the importance of the missing information in this specific criterion.
-        - The penalty should be subjective, based on the importance of the missing concepts, as defined in the criterion.
-        - The maximum penalty should not exceed {data['penalty_for_missing']} per missing concept.
-        """ 
+Please evaluate the following student answer strictly based on the model answer provided below. The student should only include the concepts and explanations as provided in the model answer. Do not incorporate any external or outside knowledge. Provide a score from 0 to 10 based on how well the student answers the question in alignment with the model answer. Include a detailed justification for the score, highlighting any deductions and penalties.
 
+Model Answer:
+{model_answer}
+
+Student Answer:
+{student_answer}
+
+Grading Criterion:
+{data['llm_prompt']}
+
+Instructions:
+- The student should include only the concepts, explanations, and details present in the model answer.
+- If the student missed any key concept or explanation from the model answer, apply a penalty for each missing concept.
+- Do not apply penalties for any missing concepts that are not mentioned in the model answer.
+- The maximum penalty should not exceed {data['penalty_for_missing']} per missing concept.
+- Provide a concise explanation (20-30 words) for the score, including:
+  - Why the score was given.
+  - Any missing concepts or key points from the model answer.
+  - Penalties applied for missing these concepts.
+"""
         # Send the prompt to LLaMA and get the response
         evaluation = get_llama_response(prompt)
 
@@ -110,10 +135,8 @@ def evaluate_answer_with_llama(model_answer, student_answer, grading_criteria):
     # Calculate percentage
     percentage = (total_score / max_score) * 100
 
-    # Overall strengths, weaknesses, and improvements for the entire answer
-    overall_strengths = "Strengths: The student demonstrated a solid understanding of the core concepts of photosynthesis."
-    overall_weaknesses = "Weaknesses: Some explanations could have been more detailed, especially about the mechanisms behind the process."
-    overall_improvement = "Improvement: The student should provide a deeper explanation of the biological processes involved and use more specific examples."
+    # Generate dynamic overall strengths, weaknesses, and improvements based on the feedback
+    overall_strengths, overall_weaknesses, overall_improvement = generate_dynamic_summary(feedback)
 
     result = {
         "total_score": total_score,
