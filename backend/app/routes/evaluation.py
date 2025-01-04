@@ -13,6 +13,19 @@ from ai_model.model.grading_system.grader import grade_student_answers
 evaluation_bp = Blueprint('evaluation', __name__)
 
 
+def extract_model_data(file_content):
+    """
+    Extracts questions and answers from the model Q&A file content.
+    """
+    model_data = {}
+    # Regex to extract question number, question text, and answer
+    question_pattern = r"(\d+)\.\s*(.*?)\nAnswer:(.*?)(?=\n\d+\.|$)"
+    matches = re.findall(question_pattern, file_content, re.DOTALL)
+
+    for question_number, question_text, answer_text in matches:
+        model_data[question_number.strip()] = answer_text.strip()
+    return model_data
+
 def extract_student_data(text: str):
     student_data = {}
     
@@ -24,12 +37,11 @@ def extract_student_data(text: str):
 
     # Extract questions and answers
     answers = {}
-    question_pattern = r"(\d+)\.\s*(Answer:.*?)(?=\d+\.|$)"
+    question_pattern = r"(\d+)\.\s*(.*?)\nAnswer:(.*?)(?=\n\d+\.|$)"
     matches = re.findall(question_pattern, text, re.DOTALL)
 
-    for question_number, answer_text in matches:
-        answers[question_number] = answer_text.replace("Answer:", "").strip()
-
+    for question_number, question_text, answer_text in matches:
+        answers[question_number] = answer_text.strip()
     student_data['answers'] = answers
     return student_data
 
@@ -71,7 +83,7 @@ def evaluation():
     
     model_content = model_question_answer.read()
     model_answer = model_content.decode("utf-8")  # Assuming text content in the file
-
+    model_answers = extract_model_data(model_answer)
     # Extract answers from the model file
     grading_criteria = {
         "Content Relevance and Accuracy": {
@@ -96,16 +108,20 @@ def evaluation():
    # Grade each answer
         for question_number, student_answer_text in student_data['answers'].items():
             # For now, use the model_answer directly for grading
-            result = grade_student_answers(model_answer, student_answer_text, grading_criteria)
+            print("model_answer", model_answers.get(question_number))
+            print("student", student_answer_text)
+            result = grade_student_answers(model_answers.get(question_number), student_answer_text, grading_criteria)
             grading_results[question_number] = result
-
+            print("grading_results", grading_results)
         # Append the grading results to the student's answer
         updated_student_answer = append_grading_results(student_data, grading_results)
+        print("updated_student_answer successfully")
 
         # Encode the modified student answer as base64 to include it in the JSON response
         file_like_object = BytesIO(updated_student_answer.encode("utf-8"))
+        print("file_like_object successfully")
         student_answer_grading_files = base64.b64encode(file_like_object.getvalue()).decode('utf-8')
-
+        print("student_answer_grading_files successfully")
         results.append({
             "student_file": file_name,
             "file": student_answer_grading_files
