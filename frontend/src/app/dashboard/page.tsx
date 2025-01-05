@@ -14,13 +14,14 @@ import {
   FaFileAlt,
   FaFilePdf,
   FaCheckCircle,
+  FaUser,
+  FaCamera,
 } from "react-icons/fa";
 import Image from "next/image";
 import bookImage from "../../assets/abstract_17.png";
 import { Worker, Viewer } from "@react-pdf-viewer/core";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
-import { uploadFileToBackend, evaluateFiles } from "../../services/evaluateService";
 
 interface SidebarProps {
   isExpanded: boolean;
@@ -72,39 +73,39 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const handleLogout = () => {
-    router.push('/login'); // Redirect to the login page
+    router.push('/signup'); // Redirect to the signup page
   };
 
   return (
     <aside
-      className={`bg-gradient-to-b from-gray-800 to-gray-900 text-gray-400 ${
+      className={`bg-gradient-to-b from-gray-100 to-gray-600 text-gray-400 ${
         isExpanded ? "w-60" : "w-16"
       } h-screen fixed flex flex-col transition-all duration-300 shadow-xl`}
     >
       <div className="p-4 flex items-center justify-between">
         <h1
-          className={`text-2xl text-white font-bold ${
+          className={`text-2xl text-black font-bold ${
             isExpanded ? "block" : "hidden"
           }`}
         >
           <span className="text-orange-500">Smart</span>
-          <span className="text-white">Paths</span>
+          <span className="text-black">Paths</span>
         </h1>
-        <button onClick={toggleSidebar} className="text-white focus:outline-none">
+        <button onClick={toggleSidebar} className="text-black focus:outline-none">
           <FaBars />
         </button>
       </div>
       <nav className="flex-grow space-y-2">
         <button
           onClick={() => handleNavigation("/")}
-          className="text-white flex items-center px-4 py-2 hover:bg-gray-700 rounded-lg transition-all duration-200"
+          className="text-black flex items-center px-4 py-2 hover:bg-gray-100 rounded-lg transition-all duration-200"
         >
           <FaHome />
           <span className={`${isExpanded ? "block" : "hidden"} ml-3`}>Home</span>
         </button>
         <button
           onClick={() => handleNavigation("/mocks")}
-          className="text-white flex items-center px-4 py-2 hover:bg-gray-700 rounded-lg transition-all duration-200"
+          className="text-black flex items-center px-4 py-2 hover:bg-gray-100 rounded-lg transition-all duration-200"
         >
           <FaUsers />
           <span className={`${isExpanded ? "block" : "hidden"} ml-3`}>
@@ -113,7 +114,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </button>
         <button
           onClick={toggleUploadMenu}
-          className="text-white flex items-center px-4 py-2 hover:bg-gray-700 rounded-lg transition-all duration-200"
+          className="text-black flex items-center px-4 py-2 hover:bg-gray-100 rounded-lg transition-all duration-200"
         >
           <FaUpload />
           <span className={`${isExpanded ? "block" : "hidden"} ml-3`}>
@@ -124,7 +125,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           <div className="ml-4 space-y-2">
             <button
               onClick={() => handleFileUploadClick("modelQ")}
-              className="text-white flex items-center px-4 py-2 hover:bg-gray-700 rounded-lg transition-all duration-200"
+              className="text-black flex items-center px-4 py-2 hover:bg-gray-100 rounded-lg transition-all duration-200"
             >
               <FaFileAlt />
               <span className={`${isExpanded ? "block" : "hidden"} ml-3`}>
@@ -134,7 +135,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </button>
             <button
               onClick={() => handleFileUploadClick("modelQA")}
-              className="text-white flex items-center px-4 py-2 hover:bg-gray-700 rounded-lg transition-all duration-200"
+              className="text-black flex items-center px-4 py-2 hover:bg-gray-100 rounded-lg transition-all duration-200"
             >
               <FaFileAlt />
               <span className={`${isExpanded ? "block" : "hidden"} ml-3`}>
@@ -144,7 +145,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </button>
             <button
               onClick={() => handleFileUploadClick("responses")}
-              className="text-white flex items-center px-4 py-2 hover:bg-gray-700 rounded-lg transition-all duration-200"
+              className="text-black flex items-center px-4 py-2 hover:bg-gray-100 rounded-lg transition-all duration-200"
             >
               <FaFilePdf />
               <span className={`${isExpanded ? "block" : "hidden"} ml-3`}>
@@ -154,7 +155,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </button>
             <button
               onClick={() => handleFileUploadClick("additionalFile")}
-              className="text-white flex items-center px-4 py-2 hover:bg-gray-700 rounded-lg transition-all duration-200"
+              className="text-black flex items-center px-4 py-2 hover:bg-gray-100 rounded-lg transition-all duration-200"
             >
               <FaFilePdf />
               <span className={`${isExpanded ? "block" : "hidden"} ml-3`}>
@@ -166,7 +167,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
         <button
           onClick={() => handleNavigation("/analytics")}
-          className="text-white flex items-center px-4 py-2 hover:bg-gray-700 rounded-lg transition-all duration-200"
+          className="text-black flex items-center px-4 py-2 hover:bg-gray-100 rounded-lg transition-all duration-200"
         >
           <FaChartBar />
           <span className={`${isExpanded ? "block" : "hidden"} ml-3`}>
@@ -175,7 +176,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </button>
         <button
           onClick={() => handleNavigation("/reports")}
-          className="text-white flex items-center px-4 py-2 hover:bg-gray-700 rounded-lg transition-all duration-200"
+          className="text-black flex items-center px-4 py-2 hover:bg-gray-100 rounded-lg transition-all duration-200"
         >
           <FaEnvelope />
           <span className={`${isExpanded ? "block" : "hidden"} ml-3`}>
@@ -184,30 +185,47 @@ const Sidebar: React.FC<SidebarProps> = ({
         </button>
         <button
           onClick={() => handleNavigation("/help")}
-          className="text-white flex items-center px-4 py-2 hover:bg-gray-700 rounded-lg transition-all duration-200"
+          className="text-black flex items-center px-4 py-2 hover:bg-gray-100 rounded-lg transition-all duration-200"
         >
           <FaQuestionCircle />
           <span className={`${isExpanded ? "block" : "hidden"} ml-3`}>
             Help Center
           </span>
         </button>
-      </nav>
-      <div className="px-4 py-4 mt-auto">
         <button
           onClick={handleLogout}
-          className="w-full flex items-center bg-gray-800 text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700 transition-all duration-200"
+          className="text-black flex items-center px-4 py-2 hover:bg-gray-100 rounded-lg transition-all duration-200"
         >
-          <FaSignOutAlt className="mr-3" />
-          <span className={`${isExpanded ? "block" : "hidden"}`}>Logout</span>
+          <FaSignOutAlt />
+          <span className={`${isExpanded ? "block" : "hidden"} ml-3`}>
+            Logout
+          </span>
         </button>
+      </nav>
+      <div className="px-4 py-4 mt-auto flex flex-col items-center">
+        <div className="flex items-center space-x-2">
+          <FaUser className="text-black" />
+          <span className={`${isExpanded ? "block" : "hidden"} text-black`}>
+            Username
+          </span>
+        </div>
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          className="mt-2 text-black flex items-center space-x-2"
+        >
+          <FaCamera />
+          <span className={`${isExpanded ? "block" : "hidden"}`}>
+            Upload Photo
+          </span>
+        </button>
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: "none" }}
+          accept="image/*"
+          onChange={handleFileChange}
+        />
       </div>
-      <input
-        type="file"
-        ref={fileInputRef}
-        style={{ display: "none" }}
-        accept=".txt,application/pdf"
-        onChange={handleFileChange}
-      />
     </aside>
   );
 };
@@ -216,52 +234,53 @@ const BusinessOverview = ({ fileUrl, fileType, uploadedFiles, setUploadedFiles }
   const [showEvaluationOptions, setShowEvaluationOptions] = useState(false);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [evaluatedFileUrl, setEvaluatedFileUrl] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleEvaluateClick = async () => {
-    if (selectedDifficulty) {
-        try {
-            const formData = new FormData();
-
-            // Add specific files with the exact field names expected by the backend
-            if (uploadedFiles.modelQA) {
-                formData.append("modelQuestionAnswer", uploadedFiles.modelQA);
-            }
-            if (uploadedFiles.responses) {
-                formData.append("studentAnswers", uploadedFiles.responses);
-            }
-
-            // Add the difficulty level
-            formData.append("difficultyLevel", selectedDifficulty);
-
-            // Send the request to the backend
-            const response = await fetch("http://localhost:8000/api/evaluate", {
-                method: "POST",
-                body: formData,
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to evaluate files");
-            }
-            const result = await response.json();
-            console.log("Files evaluated successfully", result);
-    
-            // Handle the base64 encoded files and trigger download
-            result.files.forEach((file: { student_file: string; file: string }) => {
-              const link = document.createElement("a");
-              link.href = `data:application/octet-stream;base64,${file.file}`;
-              link.download = file.student_file;
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-            });
-            setShowSuccessMessage(true);
-            console.log("Files evaluated successfully");
-        } catch (error) {
-            console.error("Error evaluating files:", error);
-        }
+  const handleEvaluateClick = () => {
+    if (!uploadedFiles.modelQA || !uploadedFiles.responses) {
+      setErrorMessage("Upload the files Model Q&A and Student Responses to Evaluate");
+      return;
     }
-};
+    setShowEvaluationOptions(true);
+    setErrorMessage(null);
+  };
 
+  const handleDifficultyClick = async (difficulty: string) => {
+    setSelectedDifficulty(difficulty);
+    try {
+      const formData = new FormData();
+
+      // Add specific files with the exact field names expected by the backend
+      if (uploadedFiles.modelQA) {
+        formData.append("modelQuestionAnswer", uploadedFiles.modelQA);
+      }
+      if (uploadedFiles.responses) {
+        formData.append("studentAnswers", uploadedFiles.responses);
+      }
+
+      // Add the difficulty level
+      formData.append("difficultyLevel", difficulty);
+
+      // Send the request to the backend
+      const response = await fetch("http://localhost:8000/api/evaluate", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to evaluate files");
+      }
+
+      const blob = await response.blob();
+      const evaluatedFileUrl = URL.createObjectURL(blob);
+      setEvaluatedFileUrl(evaluatedFileUrl);
+
+      console.log("Files evaluated successfully");
+    } catch (error) {
+      console.error("Error evaluating files:", error);
+    }
+  };
 
   const handleFileUpload = (file: File, fileType: string) => {
     setUploadedFiles((prevState) => ({
@@ -288,18 +307,22 @@ const BusinessOverview = ({ fileUrl, fileType, uploadedFiles, setUploadedFiles }
 
           <div className="mt-6 flex justify-center">
             <button
-              onClick={() => setShowEvaluationOptions(true)}
-              className="bg-gradient-to-r from-green-400 to-blue-500 text-white py-2 px-6 rounded-full shadow-lg hover:from-green-500 hover:to-blue-600 transition-all duration-300 transform hover:scale-105 ml-24"
+              onClick={handleEvaluateClick}
+              className="bg-black text-white py-2 px-6 rounded-full shadow-lg hover:from-green-500 hover:to-blue-600 transition-all duration-300 transform hover:scale-105 ml-24"
             >
               Evaluate
             </button>
           </div>
 
+          {errorMessage && (
+            <p className="text-red-500 mt-4 text-center">{errorMessage}</p>
+          )}
+
           {showEvaluationOptions && (
             <div className="mt-6 flex gap-4 justify-center">
               <button
                 className="flex items-center border border-gray-500 text-gray-700 py-1 px-6 rounded-full relative transition-all hover:bg-gray-200"
-                onClick={() => { setSelectedDifficulty('Easy'); handleEvaluateClick(); }}
+                onClick={() => handleDifficultyClick('Easy')}
               >
                 <span className="font-bold text-lg">Easy</span>
                 {selectedDifficulty === 'Easy' && (
@@ -308,7 +331,7 @@ const BusinessOverview = ({ fileUrl, fileType, uploadedFiles, setUploadedFiles }
               </button>
               <button
                 className="flex items-center border border-gray-500 text-gray-700 py-1 px-6 rounded-full relative transition-all hover:bg-gray-200"
-                onClick={() => { setSelectedDifficulty('Medium'); handleEvaluateClick(); }}
+                onClick={() => handleDifficultyClick('Medium')}
               >
                 <span className="font-bold text-lg">Medium</span>
                 {selectedDifficulty === 'Medium' && (
@@ -317,7 +340,7 @@ const BusinessOverview = ({ fileUrl, fileType, uploadedFiles, setUploadedFiles }
               </button>
               <button
                 className="flex items-center border border-gray-500 text-gray-700 py-1 px-6 rounded-full relative transition-all hover:bg-gray-200"
-                onClick={() => { setSelectedDifficulty('Hard'); handleEvaluateClick(); }}
+                onClick={() => handleDifficultyClick('Hard')}
               >
                 <span className="font-bold text-lg">Hard</span>
                 {selectedDifficulty === 'Hard' && (
@@ -333,39 +356,44 @@ const BusinessOverview = ({ fileUrl, fileType, uploadedFiles, setUploadedFiles }
         </div>
 
         {/* Right Section */}
-        <div className="w-1/2 flex flex-col items-center">
-          <div className="mt-6 relative w-full max-w-4xl mr-20">
-            {fileUrl ? (
-              <div>
-                <h2 className="text-lg font-semibold mb-2">File Preview</h2>
-                {fileUrl.endsWith(".pdf") ? (
-                  <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
-                    <Viewer fileUrl={fileUrl} />
-                  </Worker>
-                ) : (
-                  <iframe
-                    src={fileUrl}
-                    title="File Preview"
-                    className="w-full h-96 rounded-lg"
-                  ></iframe>
-                )}
-                <p className="text-green-500 mt-4 text-center">
-                  {fileType} uploaded successfully!
-                </p>
-              </div>
-            ) : (
-              <div className="text-center">
-                <Image
-                  src={bookImage}
-                  alt="No File Uploaded"
-                  width={400}
-                  height={400}
-                  className="mx-auto"
-                />
-                <p className="text-gray-500 mt-4">No file uploaded yet.</p>
-              </div>
-            )}
-          </div>
+        <div className="w-1/2 flex flex-col items-center justify-center">
+          {evaluatedFileUrl ? (
+            <div>
+              <h2 className="text-lg font-semibold mb-2">Evaluated File Preview</h2>
+              <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
+                <Viewer fileUrl={evaluatedFileUrl} />
+              </Worker>
+            </div>
+          ) : fileUrl ? (
+            <div>
+              <h2 className="text-lg font-semibold mb-2">File Preview</h2>
+              {fileUrl.endsWith(".pdf") ? (
+                <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
+                  <Viewer fileUrl={fileUrl} />
+                </Worker>
+              ) : (
+                <iframe
+                  src={fileUrl}
+                  title="File Preview"
+                  className="w-full h-96 rounded-lg"
+                ></iframe>
+              )}
+              <p className="text-green-500 mt-4 text-center">
+                {fileType} uploaded successfully!
+              </p>
+            </div>
+          ) : (
+            <div className="text-center">
+              <Image
+                src={bookImage}
+                alt="No File Uploaded"
+                width={800}
+                height={600}
+                className="mx-auto"
+              />
+              <p className="text-gray-500 mt-4">No file uploaded yet.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

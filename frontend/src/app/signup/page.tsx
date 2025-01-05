@@ -1,153 +1,206 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Header } from "../../sections/Header";
+import Image from "next/image";
+import abstract34 from "../../assets/abstract_33.png"; // Adjust the path as needed
+import studentsImage from "../../assets/students_3.png"; // Adjust the path as needed
 
 const SignupPage: React.FC = () => {
-  return (
-    <div className="relative min-h-screen bg-gradient-to-b from-white to-gray-800 flex items-center justify-center px-4">
-      {/* Background Decorations */}
-      <div className="absolute inset-0 overflow-hidden">
-      </div>
+  const router = useRouter();
+  const [isSignup, setIsSignup] = useState(true);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-      {/* Signup Content */}
-      <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
-        {/* Social Signup Options */}
-        <div className="bg-gradient-to-b from-white to-gray-800 rounded-2xl shadow-lg p-10 w-full max-w-md transform transition hover:scale-105">
-          <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
-            Sign Up with
-          </h2>
-          <div className="space-y-4">
-            <button
-              className="w-full bg-[#4285F4] text-white py-2 px-4 rounded-lg flex items-center justify-center hover:bg-[#357AE8] focus:outline-none focus:ring-2 focus:ring-blue-400 shadow"
-              onClick={() => alert("Google Signup Clicked")}
-            >
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png"
-                alt="Google Logo"
-                className="w-5 h-5 mr-2"
-              />
-              Sign Up with Google
-            </button>
-            <button
-              className="w-full bg-[#1877F2] text-white py-2 px-4 rounded-lg flex items-center justify-center hover:bg-[#165DBA] focus:outline-none focus:ring-2 focus:ring-blue-500 shadow"
-              onClick={() => alert("Facebook Signup Clicked")}
-            >
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_(2019).png"
-                alt="Facebook Logo"
-                className="w-5 h-5 mr-2"
-              />
-              Sign Up with Facebook
-            </button>
-            <button
-              className="w-full bg-[#0077B5] text-white py-2 px-4 rounded-lg flex items-center justify-center hover:bg-[#005983] focus:outline-none focus:ring-2 focus:ring-blue-500 shadow"
-              onClick={() => alert("LinkedIn Signup Clicked")}
-            >
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png"
-                alt="LinkedIn Logo"
-                className="w-5 h-5 mr-2"
-              />
-              Sign Up with LinkedIn
-            </button>
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (username === "admin" && password === "admin") {
+      router.push("/dashboard");
+    } else {
+      setErrorMessage("Invalid credentials");
+    }
+  };
+
+  return (
+    <>
+      <Header />
+      <section className="relative bg-white py-14 min-h-screen flex flex-col justify-center items-center">
+        {/* Background Image */}
+        <div className="absolute inset-0 overflow-hidden">
+          <Image
+            src={abstract34}
+            alt="Background"
+            layout="fill"
+            objectFit="cover"
+            className="opacity-20"
+          />
+        </div>
+
+        {/* Title */}
+        <div className="relative z-10 text-center mb-10">
+          <h1 className="text-7xl font-extrabold text-gray-800">
+            <span className="text-orange-500">Your</span>
+            <span className="text-black"> Journey,</span>
+            <span className="text-orange-500"> Your</span>
+            <span className="text-black"> Path Awaits</span>
+          </h1>
+        </div>
+
+        <div className="relative z-10 flex items-center justify-center w-full max-w-6xl">
+          {/* Signup/Login Container */}
+          <div className="w-full max-w-md bg-white bg-opacity-70 backdrop-blur-lg rounded-2xl shadow-lg p-10 transform transition hover:scale-105 mr-8">
+            <div className="text-center flex justify-center gap-4 mb-4">
+              <button
+                onClick={() => setIsSignup(true)}
+                className={`text-2xl font-bold px-4 py-2 rounded-lg transition-colors ${isSignup ? "bg-black text-white" : "bg-gray-200 text-gray-800"}`}
+              >
+                Signup
+              </button>
+              <button
+                onClick={() => setIsSignup(false)}
+                className={`text-2xl font-bold px-4 py-2 rounded-lg transition-colors ${!isSignup ? "bg-black text-white" : "bg-gray-200 text-gray-800"}`}
+              >
+                Login
+              </button>
+            </div>
+
+            {isSignup ? (
+              <form className="space-y-6">
+                {/* Full Name Field */}
+                <div>
+                  <label htmlFor="fullName" className="block text-gray-700 font-medium mb-1">
+                    Full Name
+                  </label>
+                  <input
+                    id="fullName"
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Enter your full name"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-300 focus:outline-none transition"
+                  />
+                </div>
+
+                {/* Email Field */}
+                <div>
+                  <label htmlFor="email" className="block text-gray-700 font-medium mb-1">
+                    Email Address
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email address"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-300 focus:outline-none transition"
+                  />
+                </div>
+
+                {/* Password Field */}
+                <div>
+                  <label htmlFor="password" className="block text-gray-700 font-medium mb-1">
+                    Password
+                  </label>
+                  <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-300 focus:outline-none transition"
+                  />
+                </div>
+
+                <div className="flex items-center">
+                  <input type="checkbox" id="terms" className="mr-2" />
+                  <label htmlFor="terms" className="text-gray-600 text-sm">
+                    I accept all terms & conditions
+                  </label>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full bg-black text-white font-medium py-3 px-4 rounded-lg shadow-md hover:scale-105 transform transition"
+                >
+                  Signup
+                </button>
+              </form>
+            ) : (
+              <form className="space-y-6" onSubmit={handleLogin}>
+                {/* Username Field */}
+                <div>
+                  <label htmlFor="username" className="block text-gray-700 font-medium mb-1">
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    id="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    placeholder="Enter your username"
+                  />
+                </div>
+
+                {/* Password Field */}
+                <div>
+                  <label htmlFor="password" className="block text-gray-700 font-medium mb-1">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    placeholder="Enter your password"
+                  />
+                </div>
+
+                {errorMessage && (
+                  <p className="text-red-500 text-sm mb-4">{errorMessage}</p>
+                )}
+
+                <button
+                  type="submit"
+                  className="w-full bg-black text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  Login
+                </button>
+              </form>
+            )}
+
+            <div className="mt-6 text-center">
+              <p className="text-gray-600 text-sm">
+                {isSignup ? "Already have an account?" : "Don't have an account?"} {" "}
+                <button
+                  onClick={() => setIsSignup(!isSignup)}
+                  className="text-blue-500 hover:underline transition-colors"
+                >
+                  {isSignup ? "Login" : "Signup"}
+                </button>
+              </p>
+            </div>
+          </div>
+
+          {/* Image */}
+          <div className="hidden md:block">
+            <Image
+              src={studentsImage}
+              alt="Students"
+              width={500}
+              height={400}
+              className="rounded-2xl"
+            />
           </div>
         </div>
-
-        {/* Signup Form */}
-        <div className="bg-gradient-to-b from-white to-gray-800 rounded-2xl shadow-lg p-10 w-full max-w-md transform transition hover:scale-105">
-          <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
-            Create an Account
-          </h2>
-          <p className="text-gray-600 text-center mb-6">
-            Join SmartPaths and start simplifying your workflows today.
-          </p>
-          <form className="space-y-6">
-            {/* Name Field */}
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-gray-700 font-medium mb-1"
-              >
-                Name
-              </label>
-              <input
-                id="name"
-                type="text"
-                placeholder="Enter your name"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-purple-300 focus:outline-none transition"
-              />
-            </div>
-
-            {/* Email Field */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-gray-700 font-medium mb-1"
-              >
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-purple-300 focus:outline-none transition"
-              />
-            </div>
-
-            {/* Password Field */}
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-gray-700 font-medium mb-1"
-              >
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-purple-300 focus:outline-none transition"
-              />
-            </div>
-
-            {/* Confirm Password Field */}
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-gray-700 font-medium mb-1"
-              >
-                Confirm Password
-              </label>
-              <input
-                id="confirmPassword"
-                type="password"
-                placeholder="Confirm your password"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-purple-300 focus:outline-none transition"
-              />
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white font-medium py-3 px-4 rounded-lg shadow-md hover:opacity-90 transition-opacity"
-            >
-              Sign Up
-            </button>
-          </form>
-          <p className="text-gray-600 text-sm text-center mt-6">
-            Already have an account?{" "}
-            <a
-              href="/login"
-              className="text-blue-500 hover:underline transition-colors"
-            >
-              Log In
-            </a>
-          </p>
-        </div>
-      </div>
-    </div>
+      </section>
+    </>
   );
 };
 
 export default SignupPage;
-
