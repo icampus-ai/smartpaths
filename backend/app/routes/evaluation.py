@@ -1,17 +1,15 @@
-from flask import Blueprint, jsonify, request, redirect, url_for, session
+from flask import Blueprint, jsonify, request
 import sys
 import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
+from backend.app.services.evaluation_service import evaluate_student_answers
 
-from ai_model.model.evaluator import grade_paper
 
 evaluation_bp = Blueprint('evaluation', __name__)
 
 @evaluation_bp.route('/api/evaluate', methods=['POST'])
 def evaluation():
-
-    print("Inside evaluation")
 
     if not all(key in request.files for key in ('modelQuestionAnswer', 'studentAnswers')):
         return jsonify({"error": "Both files are required"}), 400
@@ -27,12 +25,10 @@ def evaluation():
     if invalid_files:
         return jsonify({"error": f"The following student answer files must be a PDF or TXT: {', '.join(invalid_files)}"}), 400
     
-    evaluated_student_files = []
-    for student_answer in student_answers:
-        evaluated_student_files.append(grade_paper(model_question_answer, student_answer, difficulty_level))
+    answer_evaluated_report = evaluate_student_answers(model_question_answer, student_answers, model_question_answer.content_type)
 
     return jsonify({
         "message": "Student answers are evaluated successfully",
         "difficulty": difficulty_level,
-        "files": evaluated_student_files
+        "files": answer_evaluated_report
     }), 200

@@ -1,4 +1,4 @@
-from grader import grade_paper
+from grader import grade_student_answers
 import json
 
 if __name__ == "__main__":
@@ -22,5 +22,5 @@ if __name__ == "__main__":
         }
     }
 
-    result = grade_paper(model_answer, student_answer, grading_criteria)
+    result = grade_student_answers(model_answer, student_answer, grading_criteria)
     print(json.dumps(result, indent=4))
