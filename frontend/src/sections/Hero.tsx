@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { motion, useScroll } from 'framer-motion';
 import Image from 'next/image';
 import ArrowIcon from '../assets/arrow-right.svg';
-import students_1 from '../assets/students_1.png';
+import student_1 from '../assets/student_1.png';
 import private_1 from '../assets/private_1.png';
 import speed from '../assets/speed.png';
 import fair from '../assets/fair.png';
@@ -133,7 +133,7 @@ export const Hero: React.FC = () => {
             </div>
             <div className="mt-20 md:mt-0 md:h-[648px] md:flex-1 relative">
               <motion.img
-                src={students_1.src}
+                src={student_1.src}
                 alt="Cog Image"
                 className="md:absolute md:h-full md:w-auto md:max-w-none md:-left-6"
                 animate={{
@@ -224,7 +224,7 @@ export const Hero: React.FC = () => {
       <section className="bg-white py-14 relative overflow-hidden">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
-            <h2 className="text-5xl md:text-7xl font-bold tracking-tighter text-gray-800">
+            <h2 className="text-5xl md:text-7xl font-bold tracking-tighter text-black">
               <span className="text-orange-500">Affordable</span>
               <span className="text-black"> Plans for Every Need</span>
             </h2>
@@ -241,7 +241,7 @@ export const Hero: React.FC = () => {
                   className={twMerge(
                     "p-8 rounded-3xl shadow-lg transform transition-transform hover:scale-105 max-w-xs w-full",
                     inverse
-                      ? "bg-gray-800 text-white border border-gray-700"
+                      ? "bg-gray-900 text-white border border-gray-700"
                       : "bg-white text-black border border-gray-200"
                   )}
                 >
@@ -267,7 +267,7 @@ export const Hero: React.FC = () => {
                           <span className="text-4xl font-bold">
                             {monthlyPrice === 0 ? "$0" : `$${monthlyPrice}`}
                           </span>
-                          <span className="ml-2 text-gray-500 text-sm">/month</span>
+                          <span className="ml-2 text-gray-500 text-sm">/evaluation</span>
                         </>
                       ) : (
                         <span className="text-4xl font-bold">Contact Us</span>
@@ -279,7 +279,7 @@ export const Hero: React.FC = () => {
                       "w-full mt-6 py-2 px-4 rounded-lg font-semibold shadow-md transition-colors duration-300",
                       inverse
                         ? "bg-white text-black hover:bg-gray-200"
-                        : "bg-blue-600 text-white hover:bg-blue-700"
+                        : "bg-black text-white hover:bg-blue-700"
                     )}
                     onClick={
                       title === "Free"
@@ -358,10 +358,9 @@ export const Hero: React.FC = () => {
             {/* Secondary Button */}
             <button
               className="w-full md:w-auto text-black font-bold py-3 px-8 hover:scale-105 transition-transform flex items-center justify-center"
-              onClick={handleLearnMoreClick}
-            >
-                <span className="text-orange-500">Learn</span>
-                <span className="text-black"> more</span>
+              onClick={handleLearnMoreClick}>
+              <span className="text-orange-500">Learn</span>
+              <span className="text-black"> more</span>
               <ArrowRight className="h-5 w-5 ml-2" />
             </button>
           </div>

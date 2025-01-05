@@ -14,6 +14,8 @@ import {
   FaFileAlt,
   FaFilePdf,
   FaCheckCircle,
+  FaUser,
+  FaCamera,
 } from "react-icons/fa";
 import Image from "next/image";
 import bookImage from "../../assets/abstract_17.png";
@@ -190,23 +192,40 @@ const Sidebar: React.FC<SidebarProps> = ({
             Help Center
           </span>
         </button>
-      </nav>
-      <div className="px-4 py-4 mt-auto">
         <button
           onClick={handleLogout}
-          className="w-full flex items-center bg-gray-800 text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-700 transition-all duration-200"
+          className="text-black flex items-center px-4 py-2 hover:bg-gray-100 rounded-lg transition-all duration-200"
         >
-          <FaSignOutAlt className="mr-3" />
-          <span className={`${isExpanded ? "block" : "hidden"}`}>Logout</span>
+          <FaSignOutAlt />
+          <span className={`${isExpanded ? "block" : "hidden"} ml-3`}>
+            Logout
+          </span>
         </button>
+      </nav>
+      <div className="px-4 py-4 mt-auto flex flex-col items-center">
+        <div className="flex items-center space-x-2">
+          <FaUser className="text-black" />
+          <span className={`${isExpanded ? "block" : "hidden"} text-black`}>
+            Username
+          </span>
+        </div>
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          className="mt-2 text-black flex items-center space-x-2"
+        >
+          <FaCamera />
+          <span className={`${isExpanded ? "block" : "hidden"}`}>
+            Upload Photo
+          </span>
+        </button>
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: "none" }}
+          accept="image/*"
+          onChange={handleFileChange}
+        />
       </div>
-      <input
-        type="file"
-        ref={fileInputRef}
-        style={{ display: "none" }}
-        accept=".txt,application/pdf"
-        onChange={handleFileChange}
-      />
     </aside>
   );
 };
@@ -337,46 +356,44 @@ const BusinessOverview = ({ fileUrl, fileType, uploadedFiles, setUploadedFiles }
         </div>
 
         {/* Right Section */}
-        <div className="w-1/2 flex flex-col items-center">
-          <div className="mt-6 relative w-full max-w-4xl mr-20">
-            {evaluatedFileUrl ? (
-              <div>
-                <h2 className="text-lg font-semibold mb-2">Evaluated File Preview</h2>
+        <div className="w-1/2 flex flex-col items-center justify-center">
+          {evaluatedFileUrl ? (
+            <div>
+              <h2 className="text-lg font-semibold mb-2">Evaluated File Preview</h2>
+              <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
+                <Viewer fileUrl={evaluatedFileUrl} />
+              </Worker>
+            </div>
+          ) : fileUrl ? (
+            <div>
+              <h2 className="text-lg font-semibold mb-2">File Preview</h2>
+              {fileUrl.endsWith(".pdf") ? (
                 <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
-                  <Viewer fileUrl={evaluatedFileUrl} />
+                  <Viewer fileUrl={fileUrl} />
                 </Worker>
-              </div>
-            ) : fileUrl ? (
-              <div>
-                <h2 className="text-lg font-semibold mb-2">File Preview</h2>
-                {fileUrl.endsWith(".pdf") ? (
-                  <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js">
-                    <Viewer fileUrl={fileUrl} />
-                  </Worker>
-                ) : (
-                  <iframe
-                    src={fileUrl}
-                    title="File Preview"
-                    className="w-full h-96 rounded-lg"
-                  ></iframe>
-                )}
-                <p className="text-green-500 mt-4 text-center">
-                  {fileType} uploaded successfully!
-                </p>
-              </div>
-            ) : (
-              <div className="text-center">
-                <Image
-                  src={bookImage}
-                  alt="No File Uploaded"
-                  width={800}
-                  height={600}
-                  className="mx-auto"
-                />
-                <p className="text-gray-500 mt-4">No file uploaded yet.</p>
-              </div>
-            )}
-          </div>
+              ) : (
+                <iframe
+                  src={fileUrl}
+                  title="File Preview"
+                  className="w-full h-96 rounded-lg"
+                ></iframe>
+              )}
+              <p className="text-green-500 mt-4 text-center">
+                {fileType} uploaded successfully!
+              </p>
+            </div>
+          ) : (
+            <div className="text-center">
+              <Image
+                src={bookImage}
+                alt="No File Uploaded"
+                width={800}
+                height={600}
+                className="mx-auto"
+              />
+              <p className="text-gray-500 mt-4">No file uploaded yet.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -12,6 +12,8 @@ const SignupPage: React.FC = () => {
   const [isSignup, setIsSignup] = useState(true);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
@@ -26,7 +28,7 @@ const SignupPage: React.FC = () => {
   return (
     <>
       <Header />
-      <section className="relative bg-white py-24 min-h-screen flex flex-col justify-center items-center">
+      <section className="relative bg-white py-14 min-h-screen flex flex-col justify-center items-center">
         {/* Background Image */}
         <div className="absolute inset-0 overflow-hidden">
           <Image
@@ -34,17 +36,17 @@ const SignupPage: React.FC = () => {
             alt="Background"
             layout="fill"
             objectFit="cover"
-            className="opacity-30"
+            className="opacity-20"
           />
         </div>
 
         {/* Title */}
         <div className="relative z-10 text-center mb-10">
-          <h1 className="text-4xl font-extrabold text-gray-800">
-          <span className="text-orange-500">Your</span>
-          <span className="text-black"> Journey</span>
-          <span className="text-orange-500"> Your</span>
-          <span className="text-black"> Path Awaits</span>
+          <h1 className="text-7xl font-extrabold text-gray-800">
+            <span className="text-orange-500">Your</span>
+            <span className="text-black"> Journey,</span>
+            <span className="text-orange-500"> Your</span>
+            <span className="text-black"> Path Awaits</span>
           </h1>
         </div>
 
@@ -76,6 +78,8 @@ const SignupPage: React.FC = () => {
                   <input
                     id="fullName"
                     type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
                     placeholder="Enter your full name"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-300 focus:outline-none transition"
                   />
@@ -89,6 +93,8 @@ const SignupPage: React.FC = () => {
                   <input
                     id="email"
                     type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email address"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-300 focus:outline-none transition"
                   />
@@ -102,6 +108,8 @@ const SignupPage: React.FC = () => {
                   <input
                     id="password"
                     type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-300 focus:outline-none transition"
                   />
@@ -184,7 +192,7 @@ const SignupPage: React.FC = () => {
             <Image
               src={studentsImage}
               alt="Students"
-              width={600}
+              width={500}
               height={400}
               className="rounded-2xl"
             />
