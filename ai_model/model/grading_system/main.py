@@ -3,10 +3,11 @@ import json
 
 if __name__ == "__main__":
     model_answer = """
-    Modulation is the process of varying a carrier signal's properties (such as amplitude, frequency, or phase) to encode information for transmission. In wireless communication, modulation allows the information signal to be transmitted over different frequencies, ensuring that it can travel longer distances without significant degradation. This process is essential for efficient use of the electromagnetic spectrum and to minimize interference between channels.
+    Photosynthesis is the process by which green plants and some other organisms use sunlight to synthesize foods with the help of chlorophyll. The main products of photosynthesis are glucose (a form of chemical energy) and oxygen. 
+    The process occurs in the chloroplasts of plant cells, where light energy is absorbed and used to convert carbon dioxide and water into glucose and oxygen. Chlorophyll plays a key role in absorbing light.
     """
     student_answer = """
-    Modulation is changing the properties of a carrier signal to carry data.
+    Photosynthesis is a process where plants make their food using sunlight. They take in carbon dioxide and water to create glucose and oxygen. The plant’s leaves have a chemical called chlorophyll that helps them capture sunlight.
     """
     grading_criteria = {
         "Content Relevance and Accuracy": {
