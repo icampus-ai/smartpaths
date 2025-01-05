@@ -25,7 +25,7 @@ def evaluation():
     if invalid_files:
         return jsonify({"error": f"The following student answer files must be a PDF or TXT: {', '.join(invalid_files)}"}), 400
     
-    answer_evaluated_report = evaluate_student_answers(model_question_answer, student_answers)
+    answer_evaluated_report = evaluate_student_answers(model_question_answer, student_answers, model_question_answer.content_type)
 
     return jsonify({
         "message": "Student answers are evaluated successfully",

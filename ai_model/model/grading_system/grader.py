@@ -1,5 +1,5 @@
-from ai_model.llama_utils import get_llama_response, extract_keywords_with_llama
-from ai_model.feedback_summary import generate_dynamic_summary
+from ai_model.model.grading_system.llama_utils import get_llama_response, extract_keywords_with_llama
+from ai_model.model.grading_system.feedback_summary import generate_dynamic_summary
 
 def evaluate_answer(model_answer, student_answer, grading_criteria):
     feedback = {}
@@ -48,6 +48,9 @@ Instructions:
     percentage = (total_score / max_score) * 100
     overall_strengths, overall_weaknesses, overall_improvement = generate_dynamic_summary(feedback)
 
+    print("total_score:", total_score)
+    print("max_score:", max_score)
+    print("percentage:", percentage)
     return {
         "total_score": total_score,
         "max_score": max_score,
