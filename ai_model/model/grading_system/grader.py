@@ -1,62 +1,65 @@
-from llama_utils import get_llama_response, extract_keywords_with_llama
-from feedback_summary import generate_dynamic_summary
+from llama_utils import get_llama_response
+import re
 
-def evaluate_answer(model_answer, student_answer, grading_criteria):
-    feedback = {}
-    total_score = 0
-    max_score = len(grading_criteria) * 10
+def evaluate_answer(model_answer, student_answer):
+    """Evaluate the student's answer based on correctness."""
+    prompt = f"""
+    Grade the following student answer based on the model answer. Focus on correctness. 
+    Provide a score (0-10) with:
+    - A score (e.g., "Score: 8/10").
+    - Justification for any deductions, prefixed by "Justification:".
+    - Suggestions to improve the answer, prefixed by "Feedback:".
 
-    model_keywords = extract_keywords_with_llama(model_answer)
+    Model Answer:
+    {model_answer}
 
-    for criterion, data in grading_criteria.items():
-        prompt = f"""
-Please evaluate the following student answer strictly based on the model answer provided below. The student should only include the concepts and explanations as provided in the model answer. Do not incorporate any external or outside knowledge. Provide a score from 0 to 10 based on how well the student answers the question in alignment with the model answer. Include a detailed justification for the score, highlighting any deductions and penalties.
+    Student Answer:
+    {student_answer}
+    """
 
-Model Answer:
-{model_answer}
+    # Get evaluation from LLaMA
+    evaluation = get_llama_response(prompt)
 
-Student Answer:
-{student_answer}
+    if not evaluation:
+        return {"error": "No response from LLaMA."}
 
-Grading Criterion:
-{data['llm_prompt']}
+    # Parse feedback and scores
+    score = 0
+    justification = "No justification provided."
+    feedback = "No feedback provided."
 
-Instructions:
-- The student should include only the concepts, explanations, and details present in the model answer.
-- If the student missed any key concept or explanation from the model answer, apply a penalty for each missing concept.
-- Do not apply penalties for any missing concepts that are not mentioned in the model answer.
-- The maximum penalty should not exceed {data['penalty_for_missing']} per missing concept.
-- Provide a concise explanation (20-30 words) for the score, including:
-  - Why the score was given.
-  - Any missing concepts or key points from the model answer.
-  - Penalties applied for missing these concepts.
-"""
-        evaluation = get_llama_response(prompt)
-        if evaluation and "score:" in evaluation.lower():
-            try:
-                score_str = evaluation.lower().split("score:")[1].split("/")[0].strip()
-                score = int(score_str)
-            except ValueError:
-                score = 0
-        else:
-            score = 0
+    # Extract score, justification, and feedback using regex
+    score_match = re.search(r"Score:\s*(\d{1,2})/10", evaluation, re.IGNORECASE)
+    if score_match:
+        score = int(score_match.group(1))
 
-        justification = evaluation.strip() if evaluation else "No evaluation provided."
-        feedback[criterion] = {"score": score, "justification": justification, "feedback": data['llm_prompt']}
-        total_score += score
+    justification_match = re.search(r"Justification:(.*?)(Feedback:|$)", evaluation, re.DOTALL | re.IGNORECASE)
+    if justification_match:
+        justification = justification_match.group(1).strip()
 
+    feedback_match = re.search(r"Feedback:(.*)", evaluation, re.DOTALL | re.IGNORECASE)
+    if feedback_match:
+        feedback = feedback_match.group(1).strip()
+
+    return {
+        "score": score,
+        "justification": justification,
+        "feedback": feedback,
+    }
+
+def grade_answer(model_answer, student_answer, difficulty_level="medium"):
+    """Grades the answer based on model answer and student answer."""
+    
+    result = evaluate_answer(model_answer, student_answer)
+
+    total_score = result["score"]
+    max_score = 10
     percentage = (total_score / max_score) * 100
-    overall_strengths, overall_weaknesses, overall_improvement = generate_dynamic_summary(feedback)
-
+    
     return {
         "total_score": total_score,
         "max_score": max_score,
         "percentage": percentage,
-        "feedback": feedback,
-        "overall_strengths": overall_strengths,
-        "overall_weaknesses": overall_weaknesses,
-        "overall_improvement": overall_improvement
+        "justification": result["justification"],
+        "feedback": result["feedback"],
     }
-
-def grade_paper(model_answer, student_answer, grading_criteria):
-    return evaluate_answer(model_answer, student_answer, grading_criteria)

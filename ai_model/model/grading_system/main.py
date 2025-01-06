@@ -1,26 +1,79 @@
-from grader import grade_paper
+from llama_utils import get_llama_response
+import re
 import json
 
-if __name__ == "__main__":
-    model_answer = """
-    Photosynthesis is the process by which green plants and some other organisms use sunlight to synthesize foods with the help of chlorophyll. The main products of photosynthesis are glucose (a form of chemical energy) and oxygen. 
-    The process occurs in the chloroplasts of plant cells, where light energy is absorbed and used to convert carbon dioxide and water into glucose and oxygen. Chlorophyll plays a key role in absorbing light.
+def evaluate_answer(model_answer, student_answer):
+    """Evaluate the student's answer based on correctness."""
+    prompt = f"""
+    Grade the following student answer based on the model answer. Focus on correctness. 
+    Provide a score (0-10) with:
+    - A score (e.g., "Score: 8/10").
+    - Justification for any deductions, prefixed by "Justification:".
+    - Suggestions to improve the answer, prefixed by "Feedback:".
+
+    Model Answer:
+    {model_answer}
+
+    Student Answer:
+    {student_answer}
     """
-    student_answer = """
-    Photosynthesis is a process where plants make their food using sunlight. They take in carbon dioxide and water to create glucose and oxygen. The plant’s leaves have a chemical called chlorophyll that helps them capture sunlight.
-    """
-    grading_criteria = {
-        "Content Relevance and Accuracy": {
-            "max_score": 10,
-            "llm_prompt": "Evaluate the content for relevance and accuracy, ensuring all key concepts from the model answer are included. Penalty applies for missing essential elements.",
-            "penalty_for_missing": 2
-        },
-        "Depth of Understanding": {
-            "max_score": 10,
-            "llm_prompt": "Assess the depth of understanding in the student's response. Does the answer show a comprehensive understanding of the topic? Apply penalty for missing critical explanations.",
-            "penalty_for_missing": 3
-        }
+
+    # Get evaluation from LLaMA
+    evaluation = get_llama_response(prompt)
+
+    if not evaluation:
+        return {"error": "No response from LLaMA."}
+
+    # Parse feedback and scores
+    score = 0
+    justification = "No justification provided."
+    feedback = "No feedback provided."
+
+    # Extract score, justification, and feedback using regex
+    score_match = re.search(r"Score:\s*(\d{1,2})/10", evaluation, re.IGNORECASE)
+    if score_match:
+        score = int(score_match.group(1))
+
+    justification_match = re.search(r"Justification:(.*?)(Feedback:|$)", evaluation, re.DOTALL | re.IGNORECASE)
+    if justification_match:
+        justification = justification_match.group(1).strip()
+
+    feedback_match = re.search(r"Feedback:(.*)", evaluation, re.DOTALL | re.IGNORECASE)
+    if feedback_match:
+        feedback = feedback_match.group(1).strip()
+
+    return {
+        "score": score,
+        "justification": justification,
+        "feedback": feedback,
     }
 
-    result = grade_paper(model_answer, student_answer, grading_criteria)
+def grade_answer(model_answer, student_answer, difficulty_level="medium"):
+    """Grades the answer based on model answer and student answer."""
+    
+    result = evaluate_answer(model_answer, student_answer)
+
+    total_score = result["score"]
+    max_score = 10
+    percentage = (total_score / max_score) * 100
+    
+    return {
+        "total_score": total_score,
+        "max_score": max_score,
+        "percentage": percentage,
+        "justification": result["justification"],
+        "feedback": result["feedback"],
+    }
+
+# Example usage
+if __name__ == "__main__":
+    model_answer = """
+    Photosynthesis is the process by which green plants use sunlight to synthesize food with chlorophyll. Main products are glucose and oxygen. It occurs in chloroplasts.
+    """
+    student_answer = """
+    Photosynthesis is a process where plants use sunlight to make food. They produce glucose and oxygen. Chlorophyll helps in capturing sunlight in leaves.
+    """
+    
+    difficulty_level = "medium" 
+    result = grade_answer(model_answer, student_answer, difficulty_level)
     print(json.dumps(result, indent=4))
