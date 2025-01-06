@@ -53,16 +53,23 @@ Student Answer:
     }
 
 def get_bucketed_score(total_score):
-    if total_score <= 1:
+    """Map a score out of 10 into a bucketed score out of 4 with 0.5 intervals."""
+    if total_score <= 1.25:
         return 0
-    elif total_score <= 3:
-        return 1
-    elif total_score <= 5:
-        return 2
+    elif total_score <= 2.5:
+        return 0.5
+    elif total_score <= 3.75:
+        return 1.0
+    elif total_score <= 5.0:
+        return 1.5
+    elif total_score <= 6.25:
+        return 2.0
     elif total_score <= 7.5:
-        return 3
+        return 2.5
+    elif total_score <= 8.75:
+        return 3.0
     else:
-        return 4
+        return 4.0  # For scores between 8.75 and 10.0
 
 def grade_answer(model_answer, student_answer, difficulty_level="medium"):
     result = evaluate_answer(model_answer, student_answer)
@@ -83,12 +90,12 @@ def grade_answer(model_answer, student_answer, difficulty_level="medium"):
 # Example usage
 if __name__ == "__main__":
     model_answer = """
-    Exercise is important for maintaining good health. It strengthens the heart, muscles, and bones. Regular physical activity also helps improve mental health by reducing stress and anxiety. It can help prevent chronic diseases like diabetes and heart disease.
+    Mon passe-temps préféré est la lecture. J’aime lire des romans, des biographies et parfois des livres d’histoire. La lecture me permet de m’évader et d’apprendre de nouvelles choses. Je lis souvent le soir avant de dormir.
     """
     student_answer = """
-   Exercise helps keep your body strong. It is good for your heart and bones. It also makes you feel happy and healthy. It can help you avoid sickness.
-   """
-    
+   J’aime lire. Les livres sont bien.
+    """ 
+
     difficulty_level = "medium" 
     result = grade_answer(model_answer, student_answer, difficulty_level)
     print(json.dumps(result, indent=4))
