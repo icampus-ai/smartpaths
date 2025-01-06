@@ -1,30 +1,42 @@
 from llama_utils import get_llama_response
 import re
 import json
+import time
 
 def evaluate_answer(model_answer, student_answer):
-    """Evaluate the student's answer based on correctness."""
+    """Evaluate the student's answer based only on the key concepts present in the model answer."""
+    start_time = time.time()  # Start time for performance tracking
+
+    # Revised prompt for LLaMA to focus only on key concepts in the model answer
     prompt = f"""
-    Grade the following student answer based on the model answer. Focus on correctness. 
-    Provide a score (0-10) with:
-    - A score (e.g., "Score: 8/10").
-    - Justification for any deductions, prefixed by "Justification:".
-    - Suggestions to improve the answer, prefixed by "Feedback:".
+You are an empathetic Teaching Assistant grading for a 3rd-grade class. Your grading focuses exclusively on the key concepts mentioned in the model answer, without worrying about specific word choice, phrasing, or grammar. You should grade based strictly on the essential ideas presented in the model answer.
 
-    Model Answer:
-    {model_answer}
+Task 1: Identify the very key concepts from the model answer. These are the fundamental concepts that must appear in the student's answer.
+Task 2: Review the student's answer and check if it mentions the exact key concepts found in the model answer.
+Task 3: Grade the student's answer only based on the inclusion or exclusion of these key concepts. Do not consider any extra details, phrasing, or advanced vocabulary.
+Task 4: Provide output in the following format:
+    Score: x/10
+    Justification: Explain the deductions in simple terms, listing what was missing or incorrect and why.
+    Feedback: Offer a friendly suggestion for improvement in the student's answer.
 
-    Student Answer:
-    {student_answer}
-    """
+Model Answer:
+{model_answer}
+
+Student Answer:
+{student_answer}
+"""
 
     # Get evaluation from LLaMA
     evaluation = get_llama_response(prompt)
 
-    if not evaluation:
-        return {"error": "No response from LLaMA."}
+    # End time for performance tracking
+    end_time = time.time()
+    elapsed_time = end_time - start_time  # Time elapsed for the grading process
 
-    # Parse feedback and scores
+    if not evaluation:
+        return {"error": "No response from LLaMA.", "elapsed_time": elapsed_time}
+
+    # Parse score, justification, and feedback from LLaMA's response
     score = 0
     justification = "No justification provided."
     feedback = "No feedback provided."
@@ -46,6 +58,7 @@ def evaluate_answer(model_answer, student_answer):
         "score": score,
         "justification": justification,
         "feedback": feedback,
+        "elapsed_time": elapsed_time  # Include the time taken for grading
     }
 
 def grade_answer(model_answer, student_answer, difficulty_level="medium"):
@@ -63,16 +76,17 @@ def grade_answer(model_answer, student_answer, difficulty_level="medium"):
         "percentage": percentage,
         "justification": result["justification"],
         "feedback": result["feedback"],
+        "elapsed_time": result["elapsed_time"]  # Include elapsed time in final result
     }
 
 # Example usage
 if __name__ == "__main__":
     model_answer = """
-    Photosynthesis is the process by which green plants use sunlight to synthesize food with chlorophyll. Main products are glucose and oxygen. It occurs in chloroplasts.
+    Exercise is important for maintaining good health. It strengthens the heart, muscles, and bones. Regular physical activity also helps improve mental health by reducing stress and anxiety. It can help prevent chronic diseases like diabetes and heart disease.
     """
     student_answer = """
-    Photosynthesis is a process where plants use sunlight to make food. They produce glucose and oxygen. Chlorophyll helps in capturing sunlight in leaves.
-    """
+   Exercise helps keep your body strong. It is good for your heart and bones. It also makes you feel happy and healthy. It can help you avoid sickness.
+   """
     
     difficulty_level = "medium" 
     result = grade_answer(model_answer, student_answer, difficulty_level)
