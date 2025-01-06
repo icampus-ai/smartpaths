@@ -4,10 +4,7 @@ import json
 import time
 
 def evaluate_answer(model_answer, student_answer):
-    """Evaluate the student's answer based only on the key concepts present in the model answer."""
-    start_time = time.time()  # Start time for performance tracking
-
-    # Revised prompt for LLaMA to focus only on key concepts in the model answer
+    start_time = time.time()
     prompt = f"""
 You are an empathetic Teaching Assistant grading for a 3rd-grade class. Your grading focuses exclusively on the key concepts mentioned in the model answer, without worrying about specific word choice, phrasing, or grammar. You should grade based strictly on the essential ideas presented in the model answer.
 
@@ -25,23 +22,17 @@ Model Answer:
 Student Answer:
 {student_answer}
 """
-
-    # Get evaluation from LLaMA
     evaluation = get_llama_response(prompt)
-
-    # End time for performance tracking
     end_time = time.time()
-    elapsed_time = end_time - start_time  # Time elapsed for the grading process
+    elapsed_time = end_time - start_time
 
     if not evaluation:
         return {"error": "No response from LLaMA.", "elapsed_time": elapsed_time}
 
-    # Parse score, justification, and feedback from LLaMA's response
     score = 0
     justification = "No justification provided."
     feedback = "No feedback provided."
 
-    # Extract score, justification, and feedback using regex
     score_match = re.search(r"Score:\s*(\d{1,2})/10", evaluation, re.IGNORECASE)
     if score_match:
         score = int(score_match.group(1))
@@ -58,23 +49,31 @@ Student Answer:
         "score": score,
         "justification": justification,
         "feedback": feedback,
-        "elapsed_time": elapsed_time  # Include the time taken for grading
+        "elapsed_time": elapsed_time
     }
 
-def grade_answer(model_answer, student_answer, difficulty_level="medium"):
-    """Grades the answer based on model answer and student answer."""
-    
-    result = evaluate_answer(model_answer, student_answer)
+def get_bucketed_score(total_score):
+    if total_score <= 2.5:
+        return 0
+    elif total_score <= 5:
+        return 2
+    elif total_score <= 7.5:
+        return 3
+    else:
+        return 4
 
+def grade_answer(model_answer, student_answer, difficulty_level="medium"):
+    result = evaluate_answer(model_answer, student_answer)
     total_score = result["score"]
-    max_score = 10
-    percentage = (total_score / max_score) * 100
-    
+    final_score = get_bucketed_score(total_score)
+    max_score = 4
+    percentage = (final_score / max_score) * 100
+
     return {
-        "total_score": total_score,
+        "final_score": final_score,
         "max_score": max_score,
         "percentage": percentage,
         "justification": result["justification"],
         "feedback": result["feedback"],
-        "elapsed_time": result["elapsed_time"]  # Include elapsed time in final result
+        "elapsed_time": result["elapsed_time"]
     }
