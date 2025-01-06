@@ -53,8 +53,10 @@ Student Answer:
     }
 
 def get_bucketed_score(total_score):
-    if total_score <= 2.5:
+    if total_score <= 1:
         return 0
+    elif total_score <= 3:
+        return 1
     elif total_score <= 5:
         return 2
     elif total_score <= 7.5:
