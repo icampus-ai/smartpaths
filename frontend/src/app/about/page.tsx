@@ -36,22 +36,26 @@ const About = () => {
               <h1 className="text-5xl md:text-4xl font-extrabold tracking-tighter bg-gradient-to-b from-gray-900 to-gray-600 text-transparent bg-clip-text">
                 <span className="text-orange-500">About</span> Us
               </h1>
-              <p className="text-2xl text-gray-600 tracking-tight mt-6 max-w-3xl mx-auto">
-                Discover SmartPaths and how we are shaping the future of education with innovative academic workflows.
-              </p>
+              <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
+                <p className="text-2xl text-gray-600 tracking-tight max-w-3xl mx-auto">
+                  Discover SmartPaths and how we are shaping the future of education with innovative academic workflows.
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="container mx-auto px-4 relative z-10 mt-16">
+        <div className="container mx-auto px-4 relative z-10 mt-2">
           <div className="relative flex items-center flex-col-reverse md:flex-row">
             <div className="w-full md:w-2/3">
               <h2 className="text-5xl md:text-4xl font-extrabold tracking-tighter bg-gradient-to-b from-gray-900 to-gray-600 text-transparent bg-clip-text">
                 <span className="text-orange-500">Our</span> Story
               </h2>
-              <p className="text-lg text-gray-700 leading-relaxed max-w-4xl mx-auto mt-8 text-center md:text-left">
-                SmartPaths began with a mission to revolutionize academic workflows. What started as a small idea to simplify evaluations has now grown into a platform empowering educators and institutions globally.
-              </p>
+              <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
+                <p className="text-2xl text-gray-600 tracking-tight max-w-3xl mx-auto">
+                SmartPaths began by simplifying evaluations. Now, it's a global platform empowering educators and institutions.
+                </p>
+              </div>
             </div>
             <div className="w-1/3 hidden md:block">
               <Image
@@ -65,7 +69,7 @@ const About = () => {
           </div>
         </div>
 
-        <div className="container mx-auto px-4 relative z-10 mt-16">
+        <div className="container mx-auto px-4 relative z-10 mt-2">
           <div className="relative flex items-center">
             <div className="w-1/3 hidden md:block">
               <Image
@@ -80,14 +84,16 @@ const About = () => {
               <h2 className="text-5xl md:text-4xl font-extrabold tracking-tighter bg-gradient-to-b from-gray-900 to-gray-600 text-transparent bg-clip-text">
                 <span className="text-orange-500">Our</span> Vision
               </h2>
-              <p className="text-lg text-gray-700 leading-relaxed max-w-4xl mx-auto mt-8 text-center md:text-left">
-                At SmartPaths, we envision a world where academic workflows are seamless, efficient, and unbiased, enabling educators and institutions to focus on fostering growth and learning.
-              </p>
+              <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
+                <p className="text-2xl text-gray-600 tracking-tight max-w-3xl mx-auto">
+                At SmartPaths, we envision seamless, efficient, and unbiased workflows that let educators focus on growth and learning.
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="container mx-auto px-4 relative z-10 mt-16">
+        <div className="container mx-auto px-4 relative z-10 mt-14">
           <h2 className="text-5xl md:text-4xl font-extrabold tracking-tighter bg-gradient-to-b from-gray-900 to-gray-600 text-transparent bg-clip-text text-center">
             <span className="text-orange-500">Meet the</span> Founders
           </h2>
