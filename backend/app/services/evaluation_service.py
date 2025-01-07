@@ -5,7 +5,6 @@ from PyPDF2 import PdfReader
 from fpdf import FPDF
 from ai_model.model.grading_system.grader import grade_student_answers
 
-
 def evaluate_student_answers(model_question_answer_file, student_answer_files, file_type='text/plain', output_format='text'):
     """
     Evaluates student answers against a model answer file and saves results in the specified format.
@@ -54,15 +53,16 @@ def evaluate_student_answers(model_question_answer_file, student_answer_files, f
 
         # Grade each answer
         for question_number, qa in student_extracted_answers['questionAndAnswers'].items():
-            print   (f"Grading answer for question {question_number}...")
-            print   (f"Model answer: {model_answers.get(question_number)}")
-            print   (f"Student answer: {qa['answer']}")
+            print(f"Grading answer for question {question_number}...")
+            print(f"Model answer: {model_answers.get(question_number)}")
+            print(f"Student answer: {qa['answer']}")
             result = grade_student_answers(model_answers.get(question_number), qa['answer'], grading_criteria)
             grading_results[question_number] = result
 
         # Append grading results to the student's original content
         updated_student_content = append_grading_results(student_content, grading_results)
-        print   ("Updated student content with grading results:", updated_student_content)
+        print("Updated student content with grading results:", updated_student_content)
+        
         # Save in the specified format
         if output_format == 'text':
             save_as_text(updated_student_content, f"{file_name}_graded.txt")
