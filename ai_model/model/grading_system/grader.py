@@ -44,10 +44,7 @@ Student Answer:
     feedback_match = re.search(r"Feedback:(.*)", evaluation, re.DOTALL | re.IGNORECASE)
     if feedback_match:
         feedback = feedback_match.group(1).strip()
-
-    print("total_score:", total_score)
-    print("max_score:", max_score)
-    print("percentage:", percentage)
+        
     return {
         "score": score,
         "justification": justification,
@@ -74,6 +71,9 @@ def grade_student_answers(model_answer, student_answer, difficulty_level="medium
     max_score = 4
     percentage = (final_score / max_score) * 100
 
+    print(f"Final Score: {final_score}/{max_score}")
+    print(f"Percentage: {percentage}%")
+    print(f"Justification: {result['justification']}")
     return {
         "final_score": final_score,
         "max_score": max_score,
