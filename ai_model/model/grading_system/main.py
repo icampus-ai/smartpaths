@@ -90,10 +90,10 @@ def grade_answer(model_answer, student_answer, difficulty_level="medium"):
 # Example usage
 if __name__ == "__main__":
     model_answer = """
-    Mon passe-temps préféré est la lecture. J’aime lire des romans, des biographies et parfois des livres d’histoire. La lecture me permet de m’évader et d’apprendre de nouvelles choses. Je lis souvent le soir avant de dormir.
+    Renaissance art is characterized by its emphasis on realism, perspective, and human emotion. Artists used techniques like linear perspective to create depth and dimension, making their work appear more lifelike. Humanism influenced the subject matter, often focusing on classical themes, human figures, and the natural world. Key elements include the use of light and shadow (chiaroscuro), balanced composition, and attention to anatomy and proportion. Renowned artists such as Leonardo da Vinci and Michelangelo exemplified these features in their work.
     """
     student_answer = """
-   J’aime lire. Les livres sont bien.
+   Renaissance art focused a lot on making things look real. They used perspective to show depth and worked on human expressions and anatomy. Many paintings had classical themes, and artists like da Vinci made things very detailed. Light and shadow were also used to make things more dramatic.
     """ 
 
     difficulty_level = "medium" 
