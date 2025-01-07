@@ -1,12 +1,7 @@
-<<<<<<< HEAD
-from ai_model.model.grading_system.llama_utils import get_llama_response, extract_keywords_with_llama
-from ai_model.model.grading_system.feedback_summary import generate_dynamic_summary
-=======
 from llama_utils import get_llama_response
 import re
 import json
 import time
->>>>>>> evaluation_dev
 
 def evaluate_answer(model_answer, student_answer):
     start_time = time.time()
@@ -60,10 +55,6 @@ Student Answer:
         "elapsed_time": elapsed_time
     }
 
-<<<<<<< HEAD
-def grade_student_answers(model_answer, student_answer, grading_criteria):
-    return evaluate_answer(model_answer, student_answer, grading_criteria)
-=======
 def get_bucketed_score(total_score):
     if total_score <= 1:
         return 0
@@ -91,4 +82,3 @@ def grade_answer(model_answer, student_answer, difficulty_level="medium"):
         "feedback": result["feedback"],
         "elapsed_time": result["elapsed_time"]
     }
->>>>>>> evaluation_dev
