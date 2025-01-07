@@ -1,0 +1,32 @@
+Exam ID - Wirelss Communication
+Student Name: ghi
+Email: ghi@gmail.com
+Student ID: 789
+1. Define modulation and explain its purpose in wireless communication.
+Answer:  Modulation is changing the properties of a carrier signal to carry data.
+Total Score: 0/20
+Feedback: {'Content Relevance and Accuracy': {'score': 0, 'justification': 'Error: Something went wrong.', 'feedback': 'Evaluate the content for relevance and accuracy...'}, 'Depth of Understanding': {'score': 0, 'justification': 'Error: Something went wrong.', 'feedback': "Assess the depth of understanding in the student's response..."}}
+Percentage: 0.0%
+Overall Strengths: Strengths: The student demonstrated a good understanding of the core concepts.
+Overall Weaknesses: Weaknesses: The student missed critical elements in content relevance and accuracy, especially in Error: Something went wrong.. The student missed critical elements in depth of understanding, especially in Error: Something went wrong..
+Overall Improvement: Improvement: The student should elaborate more on key concepts and explanations.
+
+2. Calculate the path loss at a distance of 500 meters for a signal frequency of 2 GHz in free space.
+Answer:  Path loss for 500 meters at 2 GHz is around 92.45 dB.
+Total Score: 0/20
+Feedback: {'Content Relevance and Accuracy': {'score': 0, 'justification': 'Error: Something went wrong.', 'feedback': 'Evaluate the content for relevance and accuracy...'}, 'Depth of Understanding': {'score': 0, 'justification': 'Error: Something went wrong.', 'feedback': "Assess the depth of understanding in the student's response..."}}
+Percentage: 0.0%
+Overall Strengths: Strengths: The student demonstrated a good understanding of the core concepts.
+Overall Weaknesses: Weaknesses: The student missed critical elements in content relevance and accuracy, especially in Error: Something went wrong.. The student missed critical elements in depth of understanding, especially in Error: Something went wrong..
+Overall Improvement: Improvement: The student should elaborate more on key concepts and explanations.
+
+3. Explain the concept of bandwidth in wireless communication and differentiate between narrowband and wideband signals.
+Answer:  Bandwidth is the frequency range used by a signal.
+
+Total Score: 0/20
+Feedback: {'Content Relevance and Accuracy': {'score': 0, 'justification': 'Error: Something went wrong.', 'feedback': 'Evaluate the content for relevance and accuracy...'}, 'Depth of Understanding': {'score': 0, 'justification': 'Error: Something went wrong.', 'feedback': "Assess the depth of understanding in the student's response..."}}
+Percentage: 0.0%
+Overall Strengths: Strengths: The student demonstrated a good understanding of the core concepts.
+Overall Weaknesses: Weaknesses: The student missed critical elements in content relevance and accuracy, especially in Error: Something went wrong.. The student missed critical elements in depth of understanding, especially in Error: Something went wrong..
+Overall Improvement: Improvement: The student should elaborate more on key concepts and explanations.
+
