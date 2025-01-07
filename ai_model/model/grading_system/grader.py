@@ -1,65 +1,84 @@
-from ai_model.model.grading_system.llama_utils import get_llama_response, extract_keywords_with_llama
-from ai_model.model.grading_system.feedback_summary import generate_dynamic_summary
+from llama_utils import get_llama_response
+import re
+import json
+import time
 
-def evaluate_answer(model_answer, student_answer, grading_criteria):
-    feedback = {}
-    total_score = 0
-    max_score = len(grading_criteria) * 10
+def evaluate_answer(model_answer, student_answer):
+    start_time = time.time()
+    prompt = f"""
+You are an empathetic Teaching Assistant grading for a 3rd-grade class. Your grading focuses exclusively on the key concepts mentioned in the model answer, without worrying about specific word choice, phrasing, or grammar. You should grade based strictly on the essential ideas presented in the model answer.
 
-    model_keywords = extract_keywords_with_llama(model_answer)
-
-    for criterion, data in grading_criteria.items():
-        prompt = f"""
-Please evaluate the following student answer strictly based on the model answer provided below. The student should only include the concepts and explanations as provided in the model answer. Do not incorporate any external or outside knowledge. Provide a score from 0 to 10 based on how well the student answers the question in alignment with the model answer. Include a detailed justification for the score, highlighting any deductions and penalties.
+Task 1: Identify the very key concepts from the model answer. These are the fundamental concepts that must appear in the student's answer.
+Task 2: Review the student's answer and check if it mentions the exact key concepts found in the model answer.
+Task 3: Grade the student's answer only based on the inclusion or exclusion of these key concepts. Do not consider any extra details, phrasing, or advanced vocabulary.
+Task 4: Provide output in the following format:
+    Score: x/10
+    Justification: Explain the deductions in simple terms, listing what was missing or incorrect and why.
+    Feedback: Offer a friendly suggestion for improvement in the student's answer.
 
 Model Answer:
 {model_answer}
 
 Student Answer:
 {student_answer}
-
-Grading Criterion:
-{data['llm_prompt']}
-
-Instructions:
-- The student should include only the concepts, explanations, and details present in the model answer.
-- If the student missed any key concept or explanation from the model answer, apply a penalty for each missing concept.
-- Do not apply penalties for any missing concepts that are not mentioned in the model answer.
-- The maximum penalty should not exceed {data['penalty_for_missing']} per missing concept.
-- Provide a concise explanation (20-30 words) for the score, including:
-  - Why the score was given.
-  - Any missing concepts or key points from the model answer.
-  - Penalties applied for missing these concepts.
 """
-        evaluation = get_llama_response(prompt)
-        if evaluation and "score:" in evaluation.lower():
-            try:
-                score_str = evaluation.lower().split("score:")[1].split("/")[0].strip()
-                score = int(score_str)
-            except ValueError:
-                score = 0
-        else:
-            score = 0
+    evaluation = get_llama_response(prompt)
+    end_time = time.time()
+    elapsed_time = end_time - start_time
 
-        justification = evaluation.strip() if evaluation else "No evaluation provided."
-        feedback[criterion] = {"score": score, "justification": justification, "feedback": data['llm_prompt']}
-        total_score += score
+    if not evaluation:
+        return {"error": "No response from LLaMA.", "elapsed_time": elapsed_time}
 
-    percentage = (total_score / max_score) * 100
-    overall_strengths, overall_weaknesses, overall_improvement = generate_dynamic_summary(feedback)
+    score = 0
+    justification = "No justification provided."
+    feedback = "No feedback provided."
+
+    score_match = re.search(r"Score:\s*(\d{1,2})/10", evaluation, re.IGNORECASE)
+    if score_match:
+        score = int(score_match.group(1))
+
+    justification_match = re.search(r"Justification:(.*?)(Feedback:|$)", evaluation, re.DOTALL | re.IGNORECASE)
+    if justification_match:
+        justification = justification_match.group(1).strip()
+
+    feedback_match = re.search(r"Feedback:(.*)", evaluation, re.DOTALL | re.IGNORECASE)
+    if feedback_match:
+        feedback = feedback_match.group(1).strip()
 
     print("total_score:", total_score)
     print("max_score:", max_score)
     print("percentage:", percentage)
     return {
-        "total_score": total_score,
-        "max_score": max_score,
-        "percentage": percentage,
+        "score": score,
+        "justification": justification,
         "feedback": feedback,
-        "overall_strengths": overall_strengths,
-        "overall_weaknesses": overall_weaknesses,
-        "overall_improvement": overall_improvement
+        "elapsed_time": elapsed_time
     }
 
-def grade_student_answers(model_answer, student_answer, grading_criteria):
-    return evaluate_answer(model_answer, student_answer, grading_criteria)
+def get_bucketed_score(total_score):
+    if total_score <= 1:
+        return 0
+    elif total_score <= 3:
+        return 1
+    elif total_score <= 5:
+        return 2
+    elif total_score <= 7.5:
+        return 3
+    else:
+        return 4
+
+def grade_answer(model_answer, student_answer, difficulty_level="medium"):
+    result = evaluate_answer(model_answer, student_answer)
+    total_score = result["score"]
+    final_score = get_bucketed_score(total_score)
+    max_score = 4
+    percentage = (final_score / max_score) * 100
+
+    return {
+        "final_score": final_score,
+        "max_score": max_score,
+        "percentage": percentage,
+        "justification": result["justification"],
+        "feedback": result["feedback"],
+        "elapsed_time": result["elapsed_time"]
+    }

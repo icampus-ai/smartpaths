@@ -1,4 +1,5 @@
 from flask import json
+import json
 import requests
 
 def get_llama_response(prompt, model_name="llama3.2"):
@@ -15,7 +16,7 @@ def get_llama_response(prompt, model_name="llama3.2"):
         "options": {
             "num_keep": 5,
             "seed": 42,
-            "num_predict": 1000,
+            "num_predict": 250,
             "top_k": 10000,
             "top_p": 1.0,
             "temperature": 0.0,
@@ -29,7 +30,7 @@ def get_llama_response(prompt, model_name="llama3.2"):
             "stop": [],
             "numa": False,
             "num_ctx": 1024,
-            "num_batch": 2,
+            "num_batch": 1,
             "num_gpu": 1,
             "main_gpu": 0,
             "low_vram": False,
