@@ -130,7 +130,7 @@ def append_grading_results(student_content, grading_results):
         # Grading Results for the current question
         grading_result = grading_results.get(question_number, {})
         updated_text += f"Final Score: {grading_result.get('final_score', 0)}/4\n"
-        updated_text += f"Max Score: {grading_result.get('max_score', 0)}/4\n"
+        updated_text += f"Max Score: {grading_result.get('max_score', 0)}\n"
         updated_text += f"Feedback: {grading_result.get('feedback', 'No feedback provided')}\n"
         updated_text += f"Percentage: {grading_result.get('percentage', 0)}%\n"
         updated_text += f"Justification: {grading_result.get('justification', 'N/A')}\n"
