@@ -1,4 +1,4 @@
-from llama_utils import get_llama_response
+from ai_model.model.grading_system.llama_utils import get_llama_response
 import re
 import json
 import time
@@ -67,7 +67,7 @@ def get_bucketed_score(total_score):
     else:
         return 4
 
-def grade_answer(model_answer, student_answer, difficulty_level="medium"):
+def grade_student_answers(model_answer, student_answer, difficulty_level="medium"):
     result = evaluate_answer(model_answer, student_answer)
     total_score = result["score"]
     final_score = get_bucketed_score(total_score)
