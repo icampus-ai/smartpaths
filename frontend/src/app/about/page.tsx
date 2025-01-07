@@ -3,8 +3,10 @@
 import React from 'react';
 import { Header } from '../../sections/Header';
 import Image from 'next/image';
-import abstractImage1 from '../../assets/abstract_3.png'; // Import the first image
+import abstractImage1 from '../../assets/abstract_81.png'; // Import the first image
 import abstractImage2 from '../../assets/abstract_15.png'; // Import the second image
+import aboutImage from '../../assets/about.png'; // Import the about image
+import missionImage from '../../assets/mission.png'; // Import the mission image
 
 const About = () => {
   return (
@@ -22,13 +24,17 @@ const About = () => {
           />
         </div>
         <div className="container mx-auto px-4 relative z-10">
-          <div className="relative flex items-center">
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-center mt-8">
+            <span className="text-orange-500">Empowering</span> Educators Worldwide: The
+            <span className="text-orange-500"> Smart</span>Paths Journey
+          </h1>
+          <div className="relative flex items-center mt-12">
             <div className="w-1/3 hidden md:block">
               <Image
-                src={abstractImage2}
-                alt="Abstract Image"
-                width={300}
-                height={300}
+                src={aboutImage}
+                alt="About Image"
+                width={600}
+                height={600}
                 className="opacity-80"
               />
             </div>
@@ -53,7 +59,7 @@ const About = () => {
               </h2>
               <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
                 <p className="text-2xl text-gray-600 tracking-tight max-w-3xl mx-auto">
-                SmartPaths began by simplifying evaluations. Now, it's a global platform empowering educators and institutions.
+                  SmartPaths began by simplifying evaluations. Now, it's a global platform empowering educators and institutions.
                 </p>
               </div>
             </div>
@@ -61,8 +67,8 @@ const About = () => {
               <Image
                 src={abstractImage2}
                 alt="Abstract Image"
-                width={300}
-                height={300}
+                width={600}
+                height={600}
                 className="opacity-80"
               />
             </div>
@@ -73,8 +79,8 @@ const About = () => {
           <div className="relative flex items-center">
             <div className="w-1/3 hidden md:block">
               <Image
-                src={abstractImage2}
-                alt="Abstract Image"
+                src={missionImage}
+                alt="Mission Image"
                 width={300}
                 height={300}
                 className="opacity-80"
@@ -86,7 +92,7 @@ const About = () => {
               </h2>
               <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
                 <p className="text-2xl text-gray-600 tracking-tight max-w-3xl mx-auto">
-                At SmartPaths, we envision seamless, efficient, and unbiased workflows that let educators focus on growth and learning.
+                  At SmartPaths, we envision seamless, efficient, and unbiased workflows that let educators focus on growth and learning.
                 </p>
               </div>
             </div>

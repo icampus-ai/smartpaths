@@ -48,12 +48,10 @@ const Features = () => {
 
         <div className="container mx-auto px-6 md:px-12 lg:px-24 relative z-10">
           {/* Section Heading */}
-          <h1 className="text-4xl md:text-4xl font-extrabold bg-gradient-to-b from-black to-gray-700 text-transparent bg-clip-text text-center">
-            <span className="text-orange-500">Our</span> Features
+          <h1 className="text-4xl md:text-7xl font-extrabold bg-gradient-to-b from-black to-gray-700 text-transparent bg-clip-text text-center">
+            <span className="text-orange-500">Enhancing </span> Education:  
+            <span className="text-orange-500"> Smart</span>Paths Feature Suite
           </h1>
-          <p className="text-lg text-black text-center mt-4">
-            Discover the features that make <span className="text-orange-500">Smart</span>Paths the best choice for evaluators.
-          </p>
 
           {/* Seamless Grading Section */}
           <div className="mt-16">
