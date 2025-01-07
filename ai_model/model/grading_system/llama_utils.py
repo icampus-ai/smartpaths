@@ -1,4 +1,5 @@
 from flask import json
+import json
 import requests
 
 def get_llama_response(prompt, model_name="llama3.2"):
