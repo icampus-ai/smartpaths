@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-from grader import grade_student_answers
-=======
 from llama_utils import get_llama_response
 import re
->>>>>>> evaluation_dev
 import json
 import time
 
@@ -56,9 +52,6 @@ Student Answer:
         "elapsed_time": elapsed_time
     }
 
-<<<<<<< HEAD
-    result = grade_student_answers(model_answer, student_answer, grading_criteria)
-=======
 def get_bucketed_score(total_score):
     """Map a score out of 10 into a bucketed score out of 4 with 0.5 intervals."""
     if total_score <= 1.25:
@@ -105,5 +98,4 @@ if __name__ == "__main__":
 
     difficulty_level = "medium" 
     result = grade_answer(model_answer, student_answer, difficulty_level)
->>>>>>> evaluation_dev
     print(json.dumps(result, indent=4))
