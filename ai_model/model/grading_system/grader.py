@@ -52,28 +52,42 @@ Student Answer:
         "elapsed_time": elapsed_time
     }
 
-def get_bucketed_score(total_score):
-    if total_score <= 1:
-        return 0
-    elif total_score <= 3:
-        return 1
-    elif total_score <= 5:
-        return 2
-    elif total_score <= 7.5:
-        return 3
-    else:
-        return 4
+def get_bucketed_score(total_score, difficulty_level):
+    """
+    Map a score out of 10 into a bucketed score out of 4 with adjustments for difficulty level.
+    """
+    if difficulty_level == "easy":
+        thresholds = [1, 2, 3, 4, 5, 6, 7]  # Easier: Students need lower scores to reach higher buckets
+    elif difficulty_level == "medium":
+        thresholds = [1.25, 2.5, 3.75, 5, 6.25, 7.5, 8]  # Default medium thresholds
+    elif difficulty_level == "hard":
+        thresholds = [1, 3, 5, 6, 7, 8, 9]  # Harder: Students need higher scores to reach equivalent buckets
 
-def grade_student_answers(model_answer, student_answer, difficulty_level="medium"):
+    if total_score < thresholds[0]:
+        return 0
+    elif total_score < thresholds[1]:
+        return 0.5
+    elif total_score < thresholds[2]:
+        return 1.0
+    elif total_score < thresholds[3]:
+        return 1.5
+    elif total_score < thresholds[4]:
+        return 2.0
+    elif total_score < thresholds[5]:
+        return 2.5
+    elif total_score < thresholds[6]:
+        return 3.0
+    else:
+        return 4.0  # For scores greater than the highest threshold
+
+
+def grade_answer(model_answer, student_answer, difficulty_level="medium"):
     result = evaluate_answer(model_answer, student_answer)
     total_score = result["score"]
-    final_score = get_bucketed_score(total_score)
+    final_score = get_bucketed_score(total_score, difficulty_level=difficulty_level)
     max_score = 4
     percentage = (final_score / max_score) * 100
 
-    print(f"Final Score: {final_score}/{max_score}")
-    print(f"Percentage: {percentage}%")
-    print(f"Justification: {result['justification']}")
     return {
         "final_score": final_score,
         "max_score": max_score,
