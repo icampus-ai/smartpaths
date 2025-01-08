@@ -354,15 +354,6 @@ export const Hero: React.FC = () => {
             >
               Sign Up
             </button>
-
-            {/* Secondary Button */}
-            <button
-              className="w-full md:w-auto text-black font-bold py-3 px-8 hover:scale-105 transition-transform flex items-center justify-center"
-              onClick={handleLearnMoreClick}>
-              <span className="text-orange-500">Learn</span>
-              <span className="text-black"> more</span>
-              <ArrowRight className="h-5 w-5 ml-2" />
-            </button>
           </div>
         </div>
 

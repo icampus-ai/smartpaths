@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { FaChevronDown, FaChevronUp, FaCodeBranch } from "react-icons/fa";
 import Header from "../../sections/Header"; // Adjust the import path as necessary
 import Image from 'next/image';
-import abstractImage from '../../assets/abstract_10.png'; // Adjust the import path as necessary
+import abstractImage from '../../assets/abstract_33.png'; // Adjust the import path as necessary
 
 const updates = [
   {
@@ -75,12 +75,12 @@ const UpdatesPage: React.FC = () => {
           </p>
           <div className="mt-12 space-y-6 relative">
             {/* Vertical Line */}
-            <div className="absolute left-6 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 to-purple-600 rounded-full"></div>
+            <div className="absolute left-6 top-0 bottom-0 w-1 bg-gradient-to-b from-orange-500 to-black-900 rounded-full"></div>
 
             {updates.map((update, index) => (
               <div key={update.version} className="relative pl-16">
                 {/* Icon */}
-                <div className="absolute left-4 top-4 w-8 h-8 flex items-center justify-center bg-blue-500 text-white rounded-full shadow">
+                <div className="absolute left-4 top-4 w-8 h-8 flex items-center justify-center bg-black text-white rounded-full shadow">
                   <FaCodeBranch size={16} />
                 </div>
                 {/* Header */}

@@ -1,148 +1,92 @@
 "use client";
- 
+
 import React, { useState } from "react";
-
 import { Document, Page, pdfjs } from "react-pdf";
- 
+
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
- 
+
 interface FilePreviewsProps {
-
   modelQFileUrl: string | null;
-
   studentResponsesFileUrl: string | null;
-
-  evaluationData: string | null; // Add evaluationData prop
-
+  evaluationData: string | null; // JSON string containing base64 file data
 }
- 
+
 const PDFPreview: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
-
   const [numPages, setNumPages] = useState<number>(0);
- 
+
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-
     setNumPages(numPages);
-
   };
- 
-  return (
-<div className="w-full h-full overflow-auto bg-white">
-<Document file={fileUrl} onLoadSuccess={onDocumentLoadSuccess}>
 
+  return (
+    <div className="w-full bg-white rounded-lg shadow-lg p-4 flex flex-col items-center">
+      <Document file={fileUrl} onLoadSuccess={onDocumentLoadSuccess}>
         {Array.from({ length: numPages }, (_, index) => (
-<Page
-
+          <Page
             key={index + 1}
-
             pageNumber={index + 1}
-
-            scale={1.0}
-
-            className="m-auto my-2"
-
+            scale={1.5} // Increase the scale for a larger preview
+            className="my-4 border border-gray-200 rounded-md shadow-sm"
           />
-
         ))}
-</Document>
-</div>
-
+      </Document>
+    </div>
   );
-
 };
- 
+
 const EvaluationResults: React.FC<{ evaluationData: string }> = ({ evaluationData }) => {
-
   const decodedData = JSON.parse(evaluationData);
-
   const decodedFileContent = atob(decodedData.files[0].file);
- 
+
   return (
-<div className="bg-white rounded-lg shadow-lg p-6 mt-6">
-<h2 className="text-lg font-bold text-center mb-4">Evaluation Results</h2>
-<p className="text-gray-700 whitespace-pre-wrap">{decodedFileContent}</p>
-</div>
-
+    <div className="min-h-[800px] min-w-[800px] max-h-[80vh] bg-gray-50 rounded-lg shadow-md p-4 overflow-auto flex-grow">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-full h-full flex flex-col">
+        <h2 className="text-xl font-bold text-center mb-4 text-orange-600"></h2>
+        <p className="text-gray-700 whitespace-pre-wrap flex-grow overflow-auto">
+          {decodedFileContent}
+        </p>
+      </div>
+    </div>
   );
-
 };
- 
+
 const FilePreviews: React.FC<FilePreviewsProps> = ({
-
   modelQFileUrl,
-
   studentResponsesFileUrl,
-
   evaluationData,
-
 }) => {
+  // If neither the model Q&A nor evaluation data is provided, show nothing
+  if (!modelQFileUrl && !evaluationData) return null;
 
-  if (!modelQFileUrl && !studentResponsesFileUrl) return null;
- 
   return (
-<div className="flex flex-col md:flex-row mt-8 w-full md:space-x-4">
-
-      {/* Model Q&A Preview */}
-
+    <div className="mt-8 w-full flex flex-col space-y-8 lg:space-y-0 lg:space-x-8 lg:flex-row">
+      {/* ---------- MODEL Q&A PREVIEW ---------- */}
       {modelQFileUrl && (
-<div className="flex flex-col items-center flex-1 mb-8 md:mb-0">
-<h2 className="text-lg font-bold text-center mb-4">Model Q&A</h2>
-<div className="w-full h-96">
-
+        <div className="flex-1 flex flex-col">
+          <h2 className="text-xl font-bold text-center mb-4 text-orange-600">Model Q&A</h2>
+          <div className="min-h-[800px] min-w-[800px] max-h-[80vh] bg-gray-50 rounded-lg shadow-md p-4 overflow-auto flex-grow">
             {modelQFileUrl.endsWith(".pdf") ? (
-<PDFPreview fileUrl={modelQFileUrl} />
-
+              <PDFPreview fileUrl={modelQFileUrl} />
             ) : (
-<iframe
-
+              <iframe
                 src={modelQFileUrl}
-
                 title="Model Q&A Preview"
-
                 className="w-full h-full rounded-lg"
-
               />
-
             )}
-</div>
-</div>
-
+          </div>
+        </div>
       )}
- 
-      {/* Student Responses Preview */}
 
-      {studentResponsesFileUrl && (
-<div className="flex flex-col items-center flex-1">
-<h2 className="text-lg font-bold text-center mb-4">Student Responses</h2>
-<div className="w-full h-96">
-
-            {studentResponsesFileUrl.endsWith(".pdf") ? (
-<PDFPreview fileUrl={studentResponsesFileUrl} />
-
-            ) : (
-<iframe
-
-                src={studentResponsesFileUrl}
-
-                title="Student Responses Preview"
-
-                className="w-full h-full rounded-lg"
-
-              />
-
-            )}
-</div>
-</div>
-
+      {/* ---------- EVALUATION RESULTS ---------- */}
+      {evaluationData && (
+        <div className="flex-1 flex flex-col">
+          <h2 className="text-xl font-bold text-center mb-4 text-orange-600">Evaluation Results</h2>
+          <EvaluationResults evaluationData={evaluationData} />
+        </div>
       )}
- 
-      {/* Evaluation Results */}
-
-      {evaluationData && <EvaluationResults evaluationData={evaluationData} />}
-</div>
-
+    </div>
   );
-
 };
- 
+
 export default FilePreviews;

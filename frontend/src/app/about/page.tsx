@@ -3,7 +3,7 @@
 import React from 'react';
 import { Header } from '../../sections/Header';
 import Image from 'next/image';
-import abstractImage1 from '../../assets/abstract_81.png'; // Import the first image
+import abstractImage1 from '../../assets/abstract_33.png'; // Import the first image
 import abstractImage2 from '../../assets/abstract_15.png'; // Import the second image
 import aboutImage from '../../assets/about.png'; // Import the about image
 import missionImage from '../../assets/mission.png'; // Import the mission image

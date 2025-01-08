@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Header } from "../../sections/Header";
 import Image from "next/image";
 import evaluationImage from "../../assets/product-image.png"; // Ensure the image exists
-import backgroundImage from "../../assets/abstract_8.png"; // Background image
+import backgroundImage from "../../assets/abstract_33.png"; // Background image
 import { StaticImageData } from "next/image";
 
 const Features = () => {

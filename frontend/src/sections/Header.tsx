@@ -90,15 +90,6 @@ export const Header = () => {
     <>
       <style>{keyframes}</style>
       <header className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-transparent text-white shadow-lg' : 'bg-white text-black'} ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
-        <div className="flex justify-center items-center py-3 bg-black text-white text-sm gap-3">
-          <p className="text-white/60 hidden md:block">
-            Transforming academic workflows for a smarter future
-          </p>
-          <div className="inline-flex gap-1 items-center cursor-pointer" onClick={handleTryForFreeClick}>
-            <p>Get started for free</p>
-            <ArrowRight className="h-4 w-4 inline-flex justify-center items-center"/>
-          </div>
-        </div>
         <div className="py-5">
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between">
