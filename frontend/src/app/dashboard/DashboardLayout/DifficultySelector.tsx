@@ -8,6 +8,7 @@ interface DifficultySelectorProps {
   isDifficultySelected: boolean;
   handleDifficultyClick: (difficulty: string) => void;
   handleEvaluateButtonClicked: () => void;
+  handleBackToUpload: () => void;
 }
 
 const DifficultySelector: React.FC<DifficultySelectorProps> = ({
@@ -16,6 +17,7 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
   isDifficultySelected,
   handleDifficultyClick,
   handleEvaluateButtonClicked,
+  handleBackToUpload,
 }) => {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
   const [showEvaluate, setShowEvaluate] = useState(isDifficultySelected);
@@ -72,6 +74,14 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
               >
                 {selectedDifficulty === "Hard" && <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>}
                 Hard
+              </button>
+            </div>
+            <div className="flex justify-center mt-4">
+              <button
+                onClick={handleBackToUpload}
+                className="py-2 px-6 rounded-lg text-sm text-center text-black shadow-md"
+              >
+                Back
               </button>
             </div>
           </div>
