@@ -3,6 +3,7 @@ from io import BytesIO
 import re
 from PyPDF2 import PdfReader
 from fpdf import FPDF
+from docx import Document
 from ai_model.model.grading_system.grader import grade_student_answers
 
 def evaluate_student_answers(model_question_answer_file, student_answer_files, file_type='text/plain', output_format='text'):
@@ -12,8 +13,8 @@ def evaluate_student_answers(model_question_answer_file, student_answer_files, f
     Args:
         model_question_answer_file: A file-like object containing model answers.
         student_answer_files: A list of file-like objects containing student answers.
-        file_type: The type of the input files ('text/plain' or 'application/pdf').
-        output_format: The format of the output ('text' or 'pdf').
+        file_type: The type of the input files ('text/plain', 'application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document').
+        output_format: The format of the output ('text', 'pdf', 'docx').
 
     Returns:
         A list of dictionaries containing evaluated student files in base64 format.
@@ -21,22 +22,11 @@ def evaluate_student_answers(model_question_answer_file, student_answer_files, f
     # Extract model answers
     if file_type == 'application/pdf':
         model_content = extract_pdf_text(model_question_answer_file.read())
+    elif file_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+        model_content = extract_docx_text(model_question_answer_file.read())
     else:
         model_content = model_question_answer_file.read().decode("utf-8")
     model_answers = extract_model_data(model_content)
-
-    grading_criteria = {
-        "Content Relevance and Accuracy": {
-            "max_score": 10,
-            "llm_prompt": "Evaluate the content for relevance and accuracy...",
-            "penalty_for_missing": 2
-        },
-        "Depth of Understanding": {
-            "max_score": 10,
-            "llm_prompt": "Assess the depth of understanding in the student's response...",
-            "penalty_for_missing": 3
-        }
-    }
 
     answer_evaluated_report = []
 
@@ -44,6 +34,8 @@ def evaluate_student_answers(model_question_answer_file, student_answer_files, f
         file_name = student_answer_file.filename
         if file_type == 'application/pdf':
             student_content = extract_pdf_text(student_answer_file.read())
+        elif file_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+            student_content = extract_docx_text(student_answer_file.read())
         else:
             student_content = student_answer_file.read().decode("utf-8")
 
@@ -56,7 +48,7 @@ def evaluate_student_answers(model_question_answer_file, student_answer_files, f
             print(f"Grading answer for question {question_number}...")
             print(f"Model answer: {model_answers.get(question_number)}")
             print(f"Student answer: {qa['answer']}")
-            result = grade_student_answers(model_answers.get(question_number), qa['answer'], grading_criteria)
+            result = grade_student_answers(model_answers.get(question_number), qa['answer'], difficulty_level="medium")
             grading_results[question_number] = result
 
         # Append grading results to the student's original content
@@ -68,15 +60,34 @@ def evaluate_student_answers(model_question_answer_file, student_answer_files, f
             save_as_text(updated_student_content, f"{file_name}_graded.txt")
         elif output_format == 'pdf':
             save_as_pdf(updated_student_content, f"{file_name}_graded.pdf")
+        elif output_format == 'docx':
+            save_as_docx(updated_student_content, f"{file_name}_graded.docx")
 
-        # Encode the modified student answer for return
+        print(f"Grading results for {file_name}:" )
         encoded_content = base64.b64encode(updated_student_content.encode("utf-8")).decode('utf-8')
+        
         answer_evaluated_report.append({
             "student_file": file_name,
             "file": encoded_content
         })
 
     return answer_evaluated_report
+
+
+def save_as_docx(content, file_name):
+    """
+    Saves content as a DOCX file with grading results.
+    """
+    doc = Document()
+
+    # Split the content into lines for adding to the doc
+    lines = content.split("\n")
+    
+    for line in lines:
+        doc.add_paragraph(line)
+
+    # Save the document
+    doc.save(file_name)
 
 
 def extract_model_data(file_content):
@@ -141,6 +152,7 @@ def append_grading_results(student_content, grading_results):
     print("Updated student content with grading results:", updated_text)
     return updated_text
 
+
 def extract_pdf_text(pdf_content):
     """
     Extracts text from a PDF file.
@@ -150,6 +162,20 @@ def extract_pdf_text(pdf_content):
     for page in reader.pages:
         text += page.extract_text()
     return text
+
+
+def extract_docx_text(docx_content):
+    """
+    Extracts text from a DOCX file provided as binary content.
+    """
+    try:
+        # Wrap binary content in a BytesIO object to mimic a file-like object
+        doc = Document(BytesIO(docx_content))
+        text = "\n".join(para.text for para in doc.paragraphs)
+        return text.strip()  # Clean up any trailing whitespace
+    except Exception as e:
+        print(f"Error reading DOCX content: {e}")
+        return ""
 
 
 def save_as_text(content, file_name):
@@ -162,10 +188,23 @@ def save_as_text(content, file_name):
 
 def save_as_pdf(content, file_name):
     """
-    Saves content as a PDF file.
+    Saves content as a PDF file with retained font and color.
     """
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("Arial", size=12)
-    pdf.multi_cell(0, 10, content)
+
+    # Set font (change to your desired font and size)
+    pdf.set_font("Arial", size=12)  # You can adjust this
+
+    # Set text color (e.g., RGB for red, blue, etc.)
+    pdf.set_text_color(0, 0, 0)  # Black color
+
+    # Split the content into lines for multi-cell format
+    lines = content.split("\n")
+    
+    # Add each line to the PDF, retaining formatting
+    for line in lines:
+        pdf.multi_cell(0, 10, line)
+    
+    # Output PDF to file
     pdf.output(file_name)
