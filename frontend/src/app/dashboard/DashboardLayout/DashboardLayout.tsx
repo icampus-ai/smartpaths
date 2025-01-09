@@ -7,6 +7,7 @@ import StepComponent from "../StepComponent";
 import UploadModal from "./UploadModal";
 import FilePreviews from "./FilePreviews";
 import DifficultySelector from "./DifficultySelector";
+import EvaluationSystem from "./status";
 
 const DashboardLayout: React.FC = () => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
@@ -22,6 +23,7 @@ const DashboardLayout: React.FC = () => {
   const [isDifficultySelected, setIsDifficultySelected] = useState(false);
   const [evaluationData, setEvaluationData] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isEvaluationCompleted, setIsEvaluationCompleted] = useState(false);
 
   const router = useRouter();
 
@@ -101,18 +103,17 @@ const DashboardLayout: React.FC = () => {
   };
 
   const handleEvaluateButtonClicked = async () => {
+    if (!modelQFile || !studentResponsesFile || !selectedDifficulty) {
+      setError("Please make sure all files are uploaded and difficulty is selected.");
+      return;
+    }
+
     setIsLoading(true);
     try {
       const formData = new FormData();
-      if (modelQFile) {
-        formData.append("modelQuestionAnswer", modelQFile);
-      }
-      if (studentResponsesFile) {
-        formData.append("studentAnswers", studentResponsesFile);
-      }
-      if (selectedDifficulty) {
-        formData.append("difficultyLevel", selectedDifficulty);
-      }
+      formData.append("modelQuestionAnswer", modelQFile);
+      formData.append("studentAnswers", studentResponsesFile);
+      formData.append("difficultyLevel", selectedDifficulty);
 
       const response = await fetch("http://localhost:8000/api/evaluate", {
         method: "POST",
@@ -125,10 +126,12 @@ const DashboardLayout: React.FC = () => {
 
       const data = await response.json();
       setEvaluationData(JSON.stringify(data));
+      setIsEvaluationCompleted(true);
 
       console.log("Files evaluated successfully");
     } catch (error) {
       console.error("Error evaluating files:", error);
+      setError("Error evaluating files. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -139,6 +142,7 @@ const DashboardLayout: React.FC = () => {
     setIsStudentResponsesUploaded(false);
     setSelectedDifficulty(null);
     setIsDifficultySelected(false);
+    setIsEvaluationCompleted(false);
   };
 
   const handleBackToHome = () => {
@@ -148,44 +152,53 @@ const DashboardLayout: React.FC = () => {
   return (
     <div className="flex h-screen">
       <Sidebar isExpanded={isSidebarExpanded} toggleSidebar={toggleSidebar} />
-      <main className={`flex-grow ${isSidebarExpanded ? "ml-60" : "ml-16"} flex flex-col min-h-screen bg-white p-4`}>
+      <main className={`flex-grow ${isSidebarExpanded ? "ml-60" : "ml-16"} flex flex-col min-h-screen bg-white p-4 overflow-auto`}>
+        <div className="flex flex-col items-center justify-center">
+          <h1 className="text-7xl text-black font-bold">
+            <span className="text-orange-500">Smart</span>
+            <span className="text-black">Paths</span>
+          </h1>
+          <p className="text-2xl text-black mt-4">Simplify. Systemize. Succeed.</p>
+          <hr className="w-full border-1 border-black mt-4 mb-4" />
+          <hr className="w-full border-1 border-black mt-4 mb-8" />
+        </div>
         {modelQFileUrl || studentResponsesFileUrl ? (
-          <div className="flex flex-row flex-grow">
-            <div className="flex flex-col items-center justify-center w-1/4">
-              <DifficultySelector 
-                isModelQUploaded={isModelQUploaded}
-                isStudentResponsesUploaded={isStudentResponsesUploaded}
-                isDifficultySelected={isDifficultySelected}
-                handleDifficultyClick={handleDifficultyClick}
-                onClick={handleDifficultyClick}
-                handleEvaluateButtonClicked={handleEvaluateButtonClicked}
-                handleBackToUpload={handleBackToUpload}
-              />
-            </div>
-            <div className="flex flex-col items-center justify-center w-3/4">
-              {isLoading ? (
-                <div className="flex flex-col items-center justify-center">
-                  <p className="text-7xl text-black mt-4">Evaluating...</p>
-                  <div className="loader mt-4 animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
-                </div>
-              ) : (
-                <FilePreviews
-                  modelQFileUrl={modelQFileUrl}
-                  studentResponsesFileUrl={studentResponsesFileUrl}
-                  evaluationData={evaluationData} // Pass evaluationData to FilePreviews
+          <div className="flex flex-col flex-grow bg-white">
+            {isEvaluationCompleted && (
+              <div className="flex flex-col items-center justify-center mt-8 bg-white">
+                <EvaluationSystem />
+              </div>
+            )}
+            <div className="flex flex-row flex-grow">
+              <div className="flex flex-col items-center justify-center w-1/4">
+                <DifficultySelector 
+                  isModelQUploaded={isModelQUploaded}
+                  isStudentResponsesUploaded={isStudentResponsesUploaded}
+                  isDifficultySelected={isDifficultySelected}
+                  handleDifficultyClick={handleDifficultyClick}
+                  handleEvaluateButtonClicked={handleEvaluateButtonClicked}
+                  handleBackToUpload={handleBackToUpload}
+                  onClick={() => {}}
                 />
-              )}
+              </div>
+              <div className="flex flex-col items-center justify-center w-3/4 bg-white overflow-auto">
+                {isLoading ? (
+                  <div className="flex flex-col items-center justify-center h-full">
+                    <p className="text-7xl text-black mt-4">Evaluating...</p>
+                    <div className="loader mt-4 animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-orange-500"></div>
+                  </div>
+                ) : (
+                  <FilePreviews
+                    modelQFileUrl={modelQFileUrl}
+                    studentResponsesFileUrl={studentResponsesFileUrl}
+                    evaluationData={evaluationData} // Pass evaluationData to FilePreviews
+                  />
+                )}
+              </div>
             </div>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center flex-grow">
-            <h1 className="text-7xl text-black font-bold">
-              <span className="text-orange-500">Smart</span>
-              <span className="text-black">Paths</span>
-            </h1>
-            <p className="text-2xl text-black mt-4">Simplify. Systemize. Succeed.</p>
-            <hr className="w-full border-1 border-black mt-4 mb-4" />
-            <hr className="w-full border-1 border-black mt-4 mb-8" />
+          <div className="flex flex-col items-center justify-center flex-grow bg-white">
             <div>
               <p className="text-3xl text-black text-center mb-2">
                 <span className="text-orange-500">Evaluate</span>

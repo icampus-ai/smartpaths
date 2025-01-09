@@ -23,7 +23,7 @@ const StepComponent: React.FC = () => {
         {[1, 2, 3].map((step) => (
           <div key={step} className="flex flex-col items-center">
             <div
-              className={`text-2xl md:text-2xl lg:text-8xl font-extrabold cursor-pointer ${
+              className={`text-4xl md:text-4xl lg:text-8xl font-extrabold cursor-pointer ${
                 activeStep === step ? "text-orange-500 animate-pulse" : "text-black"
               }`}
               onClick={() => handleNumberClick(step)}
