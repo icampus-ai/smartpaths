@@ -9,6 +9,7 @@ interface DifficultySelectorProps {
   handleDifficultyClick: (difficulty: string) => void;
   handleEvaluateButtonClicked: () => void;
   handleBackToUpload: () => void;
+  onClick: (difficulty: string) => void;
 }
 
 const DifficultySelector: React.FC<DifficultySelectorProps> = ({
@@ -18,6 +19,7 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
   handleDifficultyClick,
   handleEvaluateButtonClicked,
   handleBackToUpload,
+  onClick,
 }) => {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
   const [showEvaluate, setShowEvaluate] = useState(isDifficultySelected);
@@ -29,6 +31,7 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
     setSelectedDifficulty(difficulty);
     handleDifficultyClick(difficulty);
     setShowEvaluate(true);
+    onClick(difficulty);
   };
 
   return (

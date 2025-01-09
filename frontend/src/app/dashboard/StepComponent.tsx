@@ -1,52 +1,20 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import UploadModal from "./DashboardLayout/UploadModal";
 
 const StepComponent: React.FC = () => {
   const [activeStep, setActiveStep] = useState(1);
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [isModelQUploaded, setIsModelQUploaded] = useState(false);
-  const [isStudentResponsesUploaded, setIsStudentResponsesUploaded] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      if (!isPopupOpen) {
-        setActiveStep((prevStep) => (prevStep === 3 ? 1 : prevStep + 1));
-      }
+      setActiveStep((prevStep) => (prevStep === 3 ? 1 : prevStep + 1));
     }, 2000);
 
     return () => clearInterval(intervalId);
-  }, [isPopupOpen]);
+  }, []);
 
   const handleNumberClick = (step: number) => {
-    if (step === 1) {
-      setIsPopupOpen(true);
-    }
-  };
-
-  const handleModelQFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setIsModelQUploaded(true);
-      checkUploadStatus(true, isStudentResponsesUploaded);
-    }
-  };
-
-  const handleStudentResponsesFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setIsStudentResponsesUploaded(true);
-      checkUploadStatus(isModelQUploaded, true);
-    }
-  };
-
-  const checkUploadStatus = (modelUploaded: boolean, studentUploaded: boolean) => {
-    if (modelUploaded && studentUploaded) {
-      setIsPopupOpen(false);
-      setActiveStep(2);
-    } else {
-      setError("Please upload both files");
-    }
+    setActiveStep(step);
   };
 
   return (
@@ -70,25 +38,6 @@ const StepComponent: React.FC = () => {
           </div>
         ))}
       </div>
-      {isPopupOpen && (
-        <div className="absolute top-0 left-20 mt-8 w-full flex justify-start">
-          <div className="bg-white border border-gray-300 shadow-lg p-4 w-full max-w-lg">
-            <UploadModal
-              isUploadMenuOpen={isPopupOpen}
-              handleCloseUploadMenu={() => setIsPopupOpen(false)}
-              handleModelQFileChange={handleModelQFileChange}
-              handleStudentResponsesFileChange={handleStudentResponsesFileChange}
-              handleDragOver={() => {}}
-              handleDrop={() => {}}
-              handleMouseDown={() => {}}
-              handleMouseMove={() => {}}
-              isModelQUploaded={isModelQUploaded}
-              isStudentResponsesUploaded={isStudentResponsesUploaded}
-              error={error}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 };
