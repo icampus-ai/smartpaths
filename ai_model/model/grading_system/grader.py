@@ -81,7 +81,7 @@ def get_bucketed_score(total_score, difficulty_level):
         return 4.0  # For scores greater than the highest threshold
 
 
-def grade_answer(model_answer, student_answer, difficulty_level="medium"):
+def grade_student_answers(model_answer, student_answer, difficulty_level="medium"):
     result = evaluate_answer(model_answer, student_answer)
     total_score = result["score"]
     final_score = get_bucketed_score(total_score, difficulty_level=difficulty_level)
