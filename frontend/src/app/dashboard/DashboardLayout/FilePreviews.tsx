@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import UploadModal from "./UploadModal";
+import jsPDF from "jspdf";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -139,6 +140,17 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
     }
   };
 
+  const handleDownloadReport = () => {
+    if (evaluationData) {
+      const decodedData = JSON.parse(evaluationData);
+      const decodedFileContent = atob(decodedData.files[0].file);
+
+      const doc = new jsPDF();
+      doc.text(decodedFileContent, 10, 10);
+      doc.save("evaluation_report.pdf");
+    }
+  };
+
   // If neither the model Q&A nor evaluation data is provided, show nothing
   if (!modelQFileUrl && !evaluationData) return null;
 
@@ -163,13 +175,19 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
         </select>
         <select
           value={dropdown3}
-          onChange={(e) => setDropdown3(e.target.value)}
+          onChange={(e) => {
+            setDropdown3(e.target.value);
+            if (e.target.value === "option3") {
+              handleDownloadReport();
+            }
+          }}
           className="w-1/6 p-1 border rounded-lg bg-white shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
         >
           <option value="">Status</option>
           <option value="option1">Pending</option>
           <option value="option2">Completed</option>
           <option value="option3">Hold</option>
+          <option value="option3">Download Report</option>
         </select>
       </div>
 
