@@ -6,8 +6,8 @@ import Sidebar from "../Sidebar";
 import StepComponent from "../StepComponent";
 import UploadModal from "./UploadModal";
 import FilePreviews from "./FilePreviews";
-import DifficultySelector from "./DifficultySelector";
 import EvaluationSystem from "./status";
+import ProfileModal from "../ProfileModal"; // Import ProfileModal
 
 const DashboardLayout: React.FC = () => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
@@ -24,6 +24,7 @@ const DashboardLayout: React.FC = () => {
   const [evaluationData, setEvaluationData] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isEvaluationCompleted, setIsEvaluationCompleted] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false); // State for Profile Modal
 
   const router = useRouter();
 
@@ -97,7 +98,7 @@ const DashboardLayout: React.FC = () => {
     setIsUploadMenuOpen(false);
   };
 
-  const handleDifficultyClick = async (difficulty: string) => {
+  const handleDifficultyClick = (difficulty: string) => {
     setSelectedDifficulty(difficulty);
     setIsDifficultySelected(true);
   };
@@ -149,9 +150,17 @@ const DashboardLayout: React.FC = () => {
     router.push('/dashboard');
   };
 
+  const handleProfileClick = () => {
+    setIsProfileModalOpen(true);
+  };
+
+  const handleCloseProfileModal = () => {
+    setIsProfileModalOpen(false);
+  };
+
   return (
     <div className="flex h-screen">
-      <Sidebar isExpanded={isSidebarExpanded} toggleSidebar={toggleSidebar} />
+      <Sidebar isExpanded={isSidebarExpanded} toggleSidebar={toggleSidebar} onProfileClick={handleProfileClick} />
       <main className={`flex-grow ${isSidebarExpanded ? "ml-60" : "ml-16"} flex flex-col min-h-screen bg-white p-4 overflow-auto`}>
         <div className="flex flex-col items-center justify-center">
           <h1 className="text-7xl text-black font-bold">
@@ -159,10 +168,8 @@ const DashboardLayout: React.FC = () => {
             <span className="text-black">Paths</span>
           </h1>
           <p className="text-2xl text-black mt-4">Simplify. Systemize. Succeed.</p>
-          <hr className="w-full border-1 border-black mt-4 mb-4" />
-          <hr className="w-full border-1 border-black mt-4 mb-8" />
         </div>
-        {modelQFileUrl || studentResponsesFileUrl ? (
+        {modelQFileUrl && studentResponsesFileUrl ? (
           <div className="flex flex-col flex-grow bg-white">
             {isEvaluationCompleted && (
               <div className="flex flex-col items-center justify-center mt-8 bg-white">
@@ -170,21 +177,13 @@ const DashboardLayout: React.FC = () => {
               </div>
             )}
             <div className="flex flex-row flex-grow">
-              <div className="flex flex-col items-center justify-center w-1/4">
-                <DifficultySelector 
-                  isModelQUploaded={isModelQUploaded}
-                  isStudentResponsesUploaded={isStudentResponsesUploaded}
-                  isDifficultySelected={isDifficultySelected}
-                  handleDifficultyClick={handleDifficultyClick}
-                  handleEvaluateButtonClicked={handleEvaluateButtonClicked}
-                  handleBackToUpload={handleBackToUpload}
-                  onClick={() => {}}
-                />
-              </div>
-              <div className="flex flex-col items-center justify-center w-3/4 bg-white overflow-auto">
+              <div className="flex flex-col items-center justify-center w-full bg-white overflow-auto">
                 {isLoading ? (
                   <div className="flex flex-col items-center justify-center h-full">
-                    <p className="text-7xl text-black mt-4">Evaluating...</p>
+                    <p className="text-7xl text-black mt-4">
+                      <span className="text-orange-500">Hang on,</span>
+                      <span className="text-black"> I am Evaluating...</span>
+                    </p>
                     <div className="loader mt-4 animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-orange-500"></div>
                   </div>
                 ) : (
@@ -192,6 +191,9 @@ const DashboardLayout: React.FC = () => {
                     modelQFileUrl={modelQFileUrl}
                     studentResponsesFileUrl={studentResponsesFileUrl}
                     evaluationData={evaluationData} // Pass evaluationData to FilePreviews
+                    selectedDifficulty={selectedDifficulty}
+                    handleDifficultySelection={handleDifficultyClick}
+                    handleEvaluateButtonClicked={handleEvaluateButtonClicked}
                   />
                 )}
               </div>
@@ -199,45 +201,47 @@ const DashboardLayout: React.FC = () => {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center flex-grow bg-white">
-            <div>
-              <p className="text-3xl text-black text-center mb-2">
-                <span className="text-orange-500">Evaluate</span>
-                <span className="text-black"> in 3 Simple Steps </span>
-              </p>
-              <StepComponent />
-            </div>
-            <div className="w-full flex items-center justify-center mt-8">
-              <button
-                onClick={() => setIsUploadMenuOpen(true)}
-                className="text-lg py-2 px-6 rounded-lg text-black hover:text-white hover:bg-[#2B2B2B]"
-              >
-                Start Uploading Files &nbsp; &#8594;
-              </button>
-            </div>
-          </div>
-        )}
-        {isUploadMenuOpen && (
-          <div
-            className={`absolute top-1/2 transform -translate-y-1/2 ${
-              isSidebarExpanded ? "left-64" : "left-20"
-            }`}
-          >
-            <UploadModal
-              isUploadMenuOpen={isUploadMenuOpen}
-              handleCloseUploadMenu={handleCloseUploadMenu}
-              handleModelQFileChange={handleModelQFileChange}
-              handleStudentResponsesFileChange={handleStudentResponsesFileChange}
-              handleDragOver={handleDragOver}
-              handleDrop={handleDrop}
-              isModelQUploaded={isModelQUploaded}
-              isStudentResponsesUploaded={isStudentResponsesUploaded}
-              error={error}
-              handleMouseDown={() => {}}
-              handleMouseMove={() => {}}
-            />
+            {!isUploadMenuOpen ? (
+              <>
+                <div>
+                  <p className="text-3xl text-black text-center mb-2">
+                    <span className="text-orange-500">Evaluate</span>
+                    <span className="text-black"> in 3 Simple Steps </span>
+                  </p>
+                  <StepComponent />
+                </div>
+                <div className="w-full flex items-center justify-center mt-8">
+                  <button
+                    onClick={() => setIsUploadMenuOpen(true)}
+                    className="text-lg py-2 px-6 rounded-lg text-black hover:text-white hover:bg-[#2B2B2B]"
+                  >
+                    Start Uploading Files &nbsp; &#8594;
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center justify-center w-full h-full mt-64">
+                <UploadModal
+                  isUploadMenuOpen={isUploadMenuOpen}
+                  handleCloseUploadMenu={handleCloseUploadMenu}
+                  handleModelQFileChange={handleModelQFileChange}
+                  handleStudentResponsesFileChange={handleStudentResponsesFileChange}
+                  handleDragOver={handleDragOver}
+                  handleDrop={handleDrop}
+                  isModelQUploaded={isModelQUploaded}
+                  isStudentResponsesUploaded={isStudentResponsesUploaded}
+                  error={error}
+                  handleMouseDown={() => {}}
+                  handleMouseMove={() => {}}
+                />
+              </div>
+            )}
           </div>
         )}
       </main>
+      {isProfileModalOpen && (
+        <ProfileModal onClose={handleCloseProfileModal} />
+      )}
     </div>
   );
 };
