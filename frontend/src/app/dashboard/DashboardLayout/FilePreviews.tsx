@@ -233,8 +233,9 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
         {/* -------- EVALUATION RESULTS -------- */}
         {evaluationData && (
           <div className="flex-1 flex flex-col">
-            <h2 className="text-xl font-bold text-center mb-4 text-orange-600">
-              Evaluation Results
+            <h2 className="text-4xl font-bold text-center mb-4 text-orange-600">
+              <span className="text-orange-500">Evaluation</span>
+              <span className="text-black"> Results</span>
             </h2>
             <EvaluationResults evaluationData={evaluationData} />
           </div>

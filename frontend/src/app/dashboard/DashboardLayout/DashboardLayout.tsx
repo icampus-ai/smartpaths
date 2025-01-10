@@ -6,7 +6,6 @@ import Sidebar from "../Sidebar";
 import StepComponent from "../StepComponent";
 import UploadModal from "./UploadModal";
 import FilePreviews from "./FilePreviews";
-import EvaluationSystem from "./status";
 import ProfileModal from "../ProfileModal"; // Import ProfileModal
 
 const DashboardLayout: React.FC = () => {
@@ -171,11 +170,6 @@ const DashboardLayout: React.FC = () => {
         </div>
         {modelQFileUrl && studentResponsesFileUrl ? (
           <div className="flex flex-col flex-grow bg-white">
-            {isEvaluationCompleted && (
-              <div className="flex flex-col items-center justify-center mt-8 bg-white">
-                <EvaluationSystem />
-              </div>
-            )}
             <div className="flex flex-row flex-grow">
               <div className="flex flex-col items-center justify-center w-full bg-white overflow-auto">
                 {isLoading ? (
