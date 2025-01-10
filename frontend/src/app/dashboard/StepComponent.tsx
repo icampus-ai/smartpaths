@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { Upload, Star, Check } from "lucide-react";
 
 const StepComponent: React.FC = () => {
   const [activeStep, setActiveStep] = useState(1);
@@ -23,15 +24,19 @@ const StepComponent: React.FC = () => {
         {[1, 2, 3].map((step) => (
           <div key={step} className="flex flex-col items-center">
             <div
-              className={`text-4xl md:text-4xl lg:text-8xl font-extrabold cursor-pointer ${
-                activeStep === step ? "text-orange-500 animate-pulse" : "text-black"
+              className={`w-16 h-16 flex items-center justify-center text-4xl md:text-4xl lg:text-8xl font-extrabold cursor-pointer rounded-full border-4 ${
+                activeStep === step
+                  ? "bg-orange-500 text-white border-orange-500 animate-pulse"
+                  : "bg-white text-black border-gray-300 hover:bg-gray-100"
               }`}
               onClick={() => handleNumberClick(step)}
             >
-              {step}
+              {step === 1 && <Upload className="w-10 h-10" />}
+              {step === 2 && <Star className="w-10 h-10" />}
+              {step === 3 && <Check className="w-10 h-10" />}
             </div>
             {activeStep === step && (
-              <div className="text-base md:text-lg lg:text-xl font-medium text-black mt-2">
+              <div className="text-base md:text-lg lg:text-xl font-medium text-gray-600 mt-2">
                 {getStepText(step)}
               </div>
             )}
