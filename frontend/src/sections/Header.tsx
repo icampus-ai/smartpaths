@@ -95,11 +95,7 @@ export const Header = () => {
             <div className="flex items-center justify-between">
               <Link href="/" legacyBehavior>
                 <a className="flex items-center gap-2">
-                  <Image src={Logo} alt="SmartPaths Logo" height={40} width={40}/>
-                  <span className="text-xl font-bold" style={bounceAnimation}>
-                    <span className="text-orange-500" style={pulseAnimation}>Smart</span>
-                    <span className="text-black" style={fadeInAnimation}>Paths</span>
-                  </span>
+                  <Image src={Logo} alt="SmartPaths Logo" height={80} width={80}/>
                 </a>
               </Link>
               <MenuIcon className="h-5 w-5 md:hidden"/>
