@@ -24,6 +24,7 @@ def evaluate_student_answers(model_question_answer_file, student_answer_files, f
         model_content = extract_pdf_text(model_question_answer_file.read())
     elif file_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
         model_content = extract_docx_text(model_question_answer_file.read())
+        print("Model content:", model_content)
     else:
         model_content = model_question_answer_file.read().decode("utf-8")
     model_answers = extract_model_data(model_content)
@@ -79,13 +80,10 @@ def save_as_docx(content, file_name):
     Saves content as a DOCX file with grading results.
     """
     doc = Document()
-
     # Split the content into lines for adding to the doc
     lines = content.split("\n")
-    
     for line in lines:
         doc.add_paragraph(line)
-
     # Save the document
     doc.save(file_name)
 
@@ -164,18 +162,84 @@ def extract_pdf_text(pdf_content):
     return text
 
 
+from docx import Document
+from io import BytesIO
+
+from docx.oxml.ns import qn
+
+from docx import Document
+from io import BytesIO
+from xml.etree import ElementTree as ET
+
+
+from docx import Document
+from io import BytesIO
+from xml.etree import ElementTree as ET
+
 def extract_docx_text(docx_content):
     """
-    Extracts text from a DOCX file provided as binary content.
+    Extracts text from a DOCX file, including generic numbers from numbered lists and excluding bullet points.
     """
     try:
         # Wrap binary content in a BytesIO object to mimic a file-like object
         doc = Document(BytesIO(docx_content))
-        text = "\n".join(para.text for para in doc.paragraphs)
-        return text.strip()  # Clean up any trailing whitespace
+        text = []
+        numbering_dict = {}
+
+        # Iterate through each paragraph in the document
+        for para in doc.paragraphs:
+            # Extract the numbering (if present) using the XML
+            p_xml = para._element
+            numbering = get_generic_numbering_from_xml(p_xml)
+            
+            # Check if the paragraph has numbering (e.g., in a numbered list)
+            if numbering:
+                # Check if the paragraph has numbering, and add the number
+                if numbering not in numbering_dict:
+                    numbering_dict[numbering] = 1
+                else:
+                    numbering_dict[numbering] += 1
+                
+                # Add the numbering and the paragraph text
+                text.append(f"{numbering_dict[numbering]}. {para.text}")
+            else:
+                # If no numbering, just add the plain text
+                text.append(para.text)
+
+        # Return the cleaned-up text, joining all paragraphs with newlines
+        return "\n".join(text).strip()
+    
     except Exception as e:
         print(f"Error reading DOCX content: {e}")
         return ""
+
+
+def get_generic_numbering_from_xml(paragraph_xml):
+    """
+    Extracts generic numbering information from a paragraph's XML element if available.
+    """
+    try:
+        # Define namespaces for XML parsing
+        namespaces = {
+            'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
+        }
+        
+        # Get the numbering properties from the paragraph XML element
+        num_pr = paragraph_xml.find('.//w:numPr', namespaces)
+        
+        if num_pr is not None:
+            num_id = num_pr.find('.//w:numId', namespaces)
+            if num_id is not None:
+                num_val = num_id.attrib.get('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val')
+                return num_val  # This returns the number ID used in the document (this is the reference ID)
+        return None
+    except Exception as e:
+        print(f"Error extracting numbering: {e}")
+        return None
+
+
+
+
 
 
 def save_as_text(content, file_name):
