@@ -1,9 +1,9 @@
 import base64
 from io import BytesIO
-import re
 from PyPDF2 import PdfReader
 from fpdf import FPDF
 from docx import Document
+import re
 from ai_model.model.grading_system.grader import grade_student_answers
 
 def evaluate_student_answers(model_question_answer_file, student_answer_files, file_type='text/plain', output_format='text'):
@@ -162,20 +162,6 @@ def extract_pdf_text(pdf_content):
     return text
 
 
-from docx import Document
-from io import BytesIO
-
-from docx.oxml.ns import qn
-
-from docx import Document
-from io import BytesIO
-from xml.etree import ElementTree as ET
-
-
-from docx import Document
-from io import BytesIO
-from xml.etree import ElementTree as ET
-
 def extract_docx_text(docx_content):
     """
     Extracts text from a DOCX file, including generic numbers from numbered lists and excluding bullet points.
@@ -236,11 +222,6 @@ def get_generic_numbering_from_xml(paragraph_xml):
     except Exception as e:
         print(f"Error extracting numbering: {e}")
         return None
-
-
-
-
-
 
 def save_as_text(content, file_name):
     """
