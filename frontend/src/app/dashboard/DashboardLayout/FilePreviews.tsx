@@ -44,7 +44,7 @@ const EvaluationResults: React.FC<{ evaluationData: string }> = ({ evaluationDat
   const decodedFileContent = atob(decodedData.files[0].file);
 
   return (
-    <div className="min-h-[800px] min-w-[800px] max-h-[80vh] bg-gray-50 rounded-lg shadow-md p-4 overflow-auto flex-grow">
+    <div className="w-full bg-white rounded-lg shadow-lg p-4 flex flex-col items-center">
       <div className="bg-white rounded-lg shadow-lg p-6 w-full h-full flex flex-col">
         <h2 className="text-xl font-bold text-center mb-4 text-orange-600"></h2>
         <p className="text-gray-700 whitespace-pre-wrap flex-grow overflow-auto">
@@ -216,7 +216,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
               <span className="text-orange-500">Model</span>
               <span className="text-black"> Q&A</span>
             </h2>
-            <div className="min-h-[600px] min-w-[200px] max-h-[80vh] bg-gray-50 rounded-lg shadow-md p-4 overflow-auto flex-grow">
+            <div className="min-h-[600px] min-w-[800px] max-h-[80vh] bg-gray-50 rounded-lg shadow-md p-4 overflow-auto flex-grow">
               {modelQFileUrl.endsWith(".pdf") ? (
                 <PDFPreview fileUrl={modelQFileUrl} />
               ) : (
@@ -237,7 +237,9 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
               <span className="text-orange-500">Evaluation</span>
               <span className="text-black"> Results</span>
             </h2>
-            <EvaluationResults evaluationData={evaluationData} />
+            <div className="min-h-[600px] min-w-[800px] max-h-[80vh] bg-gray-50 rounded-lg shadow-md p-4 overflow-auto flex-grow">
+              <EvaluationResults evaluationData={evaluationData} />
+            </div>
           </div>
         )}
       </div>
