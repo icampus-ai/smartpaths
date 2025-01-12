@@ -1,25 +1,26 @@
-Student Name: jkl  
+Student Name: jkl 
 Email: jkl@gmail.com  
-Student ID: 321  
- 
-1. Define modulation and explain its purpose in wireless communication.  
-Answer:  Modulation is changing a signal to send data.  
- 
+Student ID: 321 
+Define modulation and explain its purpose in wireless communication.  
+Answer: Modulation is changing a signal to send data.  
+Calculate the path loss at a distance of 500 meters for a signal frequency of 2 
+GHz in free space.  
+Answer: Path loss at 500 m for 2 GHz is approximately 92. 45 dB.  
+Explain the concept of bandwidth in wireless communication and differentiate 
+between narrowband and wideband signals.  
+Answer:  Bandwidth is the range of frequencies.  
+What is Doppler Shift, and how does it impact mobile wireless communication?  
+Answer: Doppler Shift is a change in frequency.  
+Explain MIMO technology and calculate the capacity of a 2x2 MIMO system 
+with a signal -to-noise ratio of 20 dB.  
+Answer: MIMO uses multiple antennas.  
 Final Score: 2/4
 Max Score: 4
-Feedback: Please try adding more details in your explanation of how modulation works! For example, you could mention that this involves changing things like amplitude or frequency to send data over different channels without interference.
+Feedback: Please make sure to include all relevant information about wireless communication topics like Bandwidth when answering questions related to mobile devices or technologies such as MIMO systems
 Percentage: 50.0%
-Justification: * The student's answer mentions "modulation" which matches one key concept from the model answer. However, it lacks specificity about what modulation entails (varying carrier signals' properties).
+Justification: The student's answer mentions two key concepts from the model:
 
-2. Calculate the path loss at a distance of 500  meters for a signal frequency of 2 GHz in 
-free space.  
-Answer:  Path loss at 500 m for 2 GHz is approximately 92.45 dB.  
- 
- 
-Final Score: 3/4
-Max Score: 4
-Feedback: Please include more details in your calculation. Explain that you are plugging in given distances of 500 meters and frequencies at 2 GHz into an equation, which is:  
-FSPL (dB) = 20 * log10(d) + 20 * log10(f).
-Percentage: 75.0%
-Justification: - The student's answer correctly states the path loss value (approximately correct).
-- However, it lacks key concepts from the model answer such as explaining how to calculate FSPL using a formula and providing specific values for distance 'd' and frequency 'f'.
+1. Doppler Shift (correctly identified as "a change in frequency")
+2. Multiple Input, Multiple Output technology and its capacity calculation.
+
+However, they missed mentioning bandwidth range of frequencies.

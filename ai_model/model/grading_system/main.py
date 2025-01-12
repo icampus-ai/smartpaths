@@ -1,27 +1,30 @@
-from llama_utils import get_llama_response
 import re
-import json
 import time
+import json
+from llama_utils import get_llama_response
 
-def evaluate_answer(model_answer, student_answer):
+def evaluate_answer(model_answer: str, student_answer: str, max_score: float) -> dict:
+    """
+    Evaluates a student's answer against a model answer with a specific maximum score.
+    """
     start_time = time.time()
     prompt = f"""
-You are an empathetic Teaching Assistant grading for a 3rd-grade class. Your grading focuses exclusively on the key concepts mentioned in the model answer, without worrying about specific word choice, phrasing, or grammar. You should grade based strictly on the essential ideas presented in the model answer.
+    You are an empathetic Teaching Assistant grading for a 3rd-grade class. Your grading focuses exclusively on the key concepts mentioned in the model answer, without worrying about specific word choice, phrasing, or grammar. You should grade based strictly on the essential ideas presented in the model answer.
 
-Task 1: Identify the very key concepts from the model answer. These are the fundamental concepts that must appear in the student's answer.
-Task 2: Review the student's answer and check if it mentions the exact key concepts found in the model answer.
-Task 3: Grade the student's answer only based on the inclusion or exclusion of these key concepts. Do not consider any extra details, phrasing, or advanced vocabulary.
-Task 4: Provide output in the following format:
-    Score: x/10
-    Justification: Explain the deductions in simple terms, listing what was missing or incorrect and why.
-    Feedback: Offer a friendly suggestion for improvement in the student's answer.
+    Task 1: Identify the very key concepts from the model answer. These are the fundamental concepts that must appear in the student's answer.
+    Task 2: Review the student's answer and check if it mentions the exact key concepts found in the model answer.
+    Task 3: Grade the student's answer only based on the inclusion or exclusion of these key concepts. Do not consider any extra details, phrasing, or advanced vocabulary.
+    Task 4: Provide output in the following format:
+        Score: x/10
+        Justification: Explain the deductions in simple terms, listing what was missing or incorrect and why.
+        Feedback: Offer a friendly suggestion for improvement in the student's answer.
 
-Model Answer:
-{model_answer}
+    Model Answer:
+    {model_answer}
 
-Student Answer:
-{student_answer}
-"""
+    Student Answer:
+    {student_answer}
+    """
     evaluation = get_llama_response(prompt)
     end_time = time.time()
     elapsed_time = end_time - start_time
@@ -45,57 +48,76 @@ Student Answer:
     if feedback_match:
         feedback = feedback_match.group(1).strip()
 
+    # Scale the score to the max_score and round to nearest 0.5
+    scaled_score = round((score / 10.0 * max_score) * 2) / 2
+
     return {
-        "score": score,
+        "raw_score": score,
+        "scaled_score": scaled_score,
+        "max_score": max_score,
         "justification": justification,
         "feedback": feedback,
         "elapsed_time": elapsed_time
     }
 
-def get_bucketed_score(total_score):
-    """Map a score out of 10 into a bucketed score out of 4 with 0.5 intervals."""
-    if total_score <= 1.25:
-        return 0
-    elif total_score <= 2.5:
-        return 0.5
-    elif total_score <= 3.75:
-        return 1.0
-    elif total_score <= 5.0:
-        return 1.5
-    elif total_score <= 6.25:
-        return 2.0
-    elif total_score <= 7.5:
-        return 2.5
-    elif total_score <= 8.75:
-        return 3.0
+def get_bucketed_score(total_score: float, max_score: float, difficulty_level: str = "medium") -> float:
+    score_percentage = (total_score / max_score) * 100
+    
+    if difficulty_level == "easy":
+        thresholds = [10, 20, 30, 40, 50, 60, 70]
+    elif difficulty_level == "medium":
+        thresholds = [12.5, 25, 37.5, 50, 62.5, 75, 80]
     else:
-        return 4.0  # For scores between 8.75 and 10.0
+        thresholds = [10, 30, 50, 60, 70, 80, 90]
 
-def grade_answer(model_answer, student_answer, difficulty_level="medium"):
-    result = evaluate_answer(model_answer, student_answer)
-    total_score = result["score"]
-    final_score = get_bucketed_score(total_score)
-    max_score = 4
-    percentage = (final_score / max_score) * 100
+    if score_percentage >= thresholds[-1]:
+        return round(max_score * 2) / 2
 
+    for i, threshold in enumerate(thresholds):
+        if score_percentage <= threshold:
+            score = (i + 1) * (max_score / len(thresholds))
+            return round(score * 2) / 2
+
+    return 0
+
+
+
+
+
+def grade_student_answers(model_answer: str, student_answer: str, difficulty_level: str = "medium", maximum_score: float = 10) -> dict:
+    """
+    Grades a student's answer with scaling and difficulty adjustment.
+    
+    Args:
+        model_answer (str): The correct model answer.
+        student_answer (str): The student's answer.
+        difficulty_level (str): The difficulty level for grading ("easy", "medium", "hard").
+        maximum_score (float): The maximum score for the question.
+    
+    Returns:
+        dict: Grading results with score achieved, max score, justification, and feedback.
+    """
+    # Get initial evaluation
+    result = evaluate_answer(model_answer, student_answer, maximum_score)
+    print(f"result : {result}")
+    
+    # Get bucketed score
+    final_score = get_bucketed_score(result["scaled_score"], maximum_score, difficulty_level)
+    
     return {
-        "final_score": final_score,
-        "max_score": max_score,
-        "percentage": percentage,
+        "score_achieved": final_score,
+        "maximum_score": maximum_score,
         "justification": result["justification"],
-        "feedback": result["feedback"],
-        "elapsed_time": result["elapsed_time"]
+        "feedback": result["feedback"]
     }
 
-# Example usage
-if __name__ == "__main__":
-    model_answer = """
-    Renaissance art is characterized by its emphasis on realism, perspective, and human emotion. Artists used techniques like linear perspective to create depth and dimension, making their work appear more lifelike. Humanism influenced the subject matter, often focusing on classical themes, human figures, and the natural world. Key elements include the use of light and shadow (chiaroscuro), balanced composition, and attention to anatomy and proportion. Renowned artists such as Leonardo da Vinci and Michelangelo exemplified these features in their work.
-    """
-    student_answer = """
-   Renaissance art focused a lot on making things look real. They used perspective to show depth and worked on human expressions and anatomy. Many paintings had classical themes, and artists like da Vinci made things very detailed. Light and shadow were also used to make things more dramatic.
-    """ 
 
-    difficulty_level = "medium" 
-    result = grade_answer(model_answer, student_answer, difficulty_level)
-    print(json.dumps(result, indent=4))
+if __name__ == "__main__":
+    model_answer = "Machine learning is a method of data analysis that automates analytical model building."
+    student_answer = "Machine learning is when computers learn from data to make decisions."
+    max_score = 10
+    difficulty_level = "easy"
+    
+    student_evaluation_outcome = grade_student_answers(model_answer, student_answer, difficulty_level, max_score)
+    
+    print(json.dumps(student_evaluation_outcome, indent=2, ensure_ascii=False))

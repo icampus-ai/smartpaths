@@ -11,7 +11,7 @@ Answer:  Bandwidth is the frequency range used by a signal.
 
 Final Score: 1/4
 Max Score: 4
-Feedback: Try adding more details about what you mean by 'bandwidth' and how different signals use this range!
+Feedback: Try adding more details about what you mean by 'bandwidth' and how different signals use various parts within this range!
 Percentage: 25.0%
 Justification: * The key concept of "frequency" from the model answer was missing. While it mentions bandwidth, which includes frequency as part of its definition (the difference between two frequencies), only mentioning one aspect without connecting to another essential idea is insufficient.
 
