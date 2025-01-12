@@ -85,7 +85,7 @@ def evaluate_student_answers(model_question_paper, model_question_answer_file, s
         file_name, updated_student_content = process_student_answers(
             student_answer_file, file_type, model_answers, generated_rubrics, difficulty_level
         )
-        
+        print("file name", file_name)
         # Save graded file
         save_graded_file(updated_student_content, file_name, file_type)
 
