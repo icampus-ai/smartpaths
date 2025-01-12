@@ -1,4 +1,4 @@
-from ai_model.model.grading_system.llama_utils import get_llama_response
+from ai_model.model.grading_system.llama_utils import get_llama_response_1, get_llama_response
 import re
 import json
 import time
@@ -81,10 +81,7 @@ def get_bucketed_score(total_score: float, max_score: float, difficulty_level: s
     return 0
 
 
-
-
-
-def grade_student_answers(model_answer: str, student_answer: str, difficulty_level: str = "medium", maximum_score: float = 10) -> dict:
+def grade_student_answers_v2(model_answer: str, student_answer: str, difficulty_level: str = "medium", maximum_score: float = 10) -> dict:
     """
     Grades a student's answer with scaling and difficulty adjustment.
     

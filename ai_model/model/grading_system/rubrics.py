@@ -1,30 +1,17 @@
 import re
-from ai_model.model.grading_system.llama_utils import get_llama_response
+from ai_model.model.grading_system.llama_utils import get_llama_response_1
 
 def extract_rubrics_raw(model_question_paper: str) -> str:
-    """
-    Extracts the raw response (questions and scores) from the model question paper using LLaMA.
-    """
+
     prompt = f"""
-    Extract ALL questions and their marks from the following question paper.
-    
-    Rules:
-    1. Include EVERY question that has text and marks.
-    2. Keep the EXACT original question text.
-    3. Keep the EXACT original marks.
-    4. Format each question EXACTLY like this (one per line):
-    '
-    Question <question number> : <question text> (<x marks>)
-    '
-    
-    Do not add any other text or explanations.
-    Do not modify or interpret the questions.
-    Do not skip any questions.
-    
-    Question Paper:
-    {model_question_paper}
+     You are an expert in educational assessment tasked with read the the paper and marks allocated to each question.
+   Your goal is to create rubrics for each question in the provided question paper. 
+   For each question in the paper, extract marks against each question with:
+    1. **Question**: Copy the question text exactly as it appears in the paper.
+    2. **Marks**: Strictly Total marks allocated to the question only.
+    And here is the model Question Paper: {model_question_paper}
     """
-    raw_response = get_llama_response(prompt)
+    raw_response = get_llama_response_1(prompt)
     
     # Print raw response from LLaMA
     print("Raw LLaMA Response:")
@@ -43,44 +30,38 @@ def generate_rubrics(question_paper: str) -> dict:
         dict: Grading information including individual questions and total max score
     """
     raw_response = extract_rubrics_raw(question_paper)
-    
-    question_results = []
+    print("Raw Response:", raw_response)
+    return extract_questions_and_scores(raw_response)
+
+def extract_questions_and_scores(raw_response):
+# Define regex pattern to capture question number, question text, and marks
+    pattern = r"(\d+)\.\s*\*\*Question\*\*:\s*(.*?)(?:\s*\n\s*\*\*Marks\*\*:\s*(\d+))"
+    matches = re.findall(pattern, raw_response, re.IGNORECASE)
+
+    print("Matches:", matches)
+   # Initialize result dictionary and total score
+    question_results = {}
     total_max_score = 0
+    # Find all matches
     
-    # Adjusted pattern for LLaMA's response format
-    # Marks are not followed by the word "marks" and no space between marks and question text
-    pattern = r'(\d+)\s*:\s*(.*?)\s*\((\d+)\s*marks?\)'
-    
-    # Try matching the response, even if there's extra whitespace or line breaks
-    matches = re.finditer(pattern, raw_response, re.IGNORECASE | re.MULTILINE | re.DOTALL)
-
     for match in matches:
-        question_number = match.group(1)
-        question_text = match.group(2).strip()
-        max_score = float(match.group(3))
-        
-        question_results.append({
-            "question_number": question_number,
+        question_number, question_text, max_score = match
+        print(f"Question {question_number}: {question_text} - Max Score: {max_score}")
+    
+        # Ensure dictionary is correctly updated with closing brace
+        question_results[question_number] = {
             "question_text": question_text,
-            "max_score": max_score
-        })
-        
-        total_max_score += max_score
-
+            "max_score": int(max_score)
+        }
+        # Adding max_score to the total score
+        total_max_score += int(max_score)
+    
+    print("Total Max Score:", total_max_score)
+    print("Question Results:", question_results)
+    # Return the result dictionary and total score
     return {
         "question_results": question_results,
         "model_total_score": total_max_score
     }
-
-# # Example test case for generating rubrics from a question paper
-# if __name__ == "__main__":
-#     example_question_paper = """
-# 1: What is artificial intelligence? (5 marks)
-# 2: Define the term "neural network" and provide an example. (10 marks)
-# 3: Describe the key differences between supervised and unsupervised learning. (15 marks)
-# """
-
-#     rubrics = generate_rubrics(example_question_paper.strip())
-
-#     print("Generated Rubrics:")
-#     print(rubrics
+    
+    
