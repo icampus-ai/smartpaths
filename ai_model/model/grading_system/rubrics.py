@@ -1,5 +1,5 @@
 import re
-from llama_utils import get_llama_response
+from ai_model.model.grading_system.llama_utils import get_llama_response
 
 def extract_rubrics_raw(model_question_paper: str) -> str:
     """
@@ -83,4 +83,4 @@ def generate_rubrics(question_paper: str) -> dict:
 #     rubrics = generate_rubrics(example_question_paper.strip())
 
 #     print("Generated Rubrics:")
-#     print(rubrics)
+#     print(rubrics
