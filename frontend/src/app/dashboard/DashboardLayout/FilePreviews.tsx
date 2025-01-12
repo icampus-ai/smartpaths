@@ -41,12 +41,32 @@ const PDFPreview: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
 
 const EvaluationResults: React.FC<{ evaluationData: string }> = ({ evaluationData }) => {
   const decodedData = JSON.parse(evaluationData);
-  const decodedFileContent = atob(decodedData.files[0].file);
+  const [currentFileIndex, setCurrentFileIndex] = useState(0);
+  const totalFiles = decodedData.files.length;
+  const decodedFileContent = atob(decodedData.files[currentFileIndex].file);
+
+  const handlePrevious = () => {
+    setCurrentFileIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : totalFiles - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentFileIndex((prevIndex) => (prevIndex < totalFiles - 1 ? prevIndex + 1 : 0));
+  };
 
   return (
     <div className="w-full bg-white rounded-lg shadow-lg p-4 flex flex-col items-center">
       <div className="bg-white rounded-lg shadow-lg p-6 w-full h-full flex flex-col">
-        <h2 className="text-xl font-bold text-center mb-4 text-orange-600"></h2>
+        <div className="flex justify-between items-center mb-4">
+          <button onClick={handlePrevious} className="text-black hover:text-gray-700">
+            &lt; Previous
+          </button>
+          <h2 className="text-xl font-bold text-center text-orange-600">
+            File {currentFileIndex + 1} of {totalFiles}
+          </h2>
+          <button onClick={handleNext} className="text-black hover:text-gray-700">
+            Next &gt;
+          </button>
+        </div>
         <p className="text-gray-700 whitespace-pre-wrap flex-grow overflow-auto">
           {decodedFileContent}
         </p>
@@ -258,6 +278,8 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
             error={error}
             handleMouseDown={() => {}}
             handleMouseMove={() => {}}
+            handleModelQandAFileChange={handleModelQFileChange}
+            isModelQandAUploaded={isModelQUploaded}
           />
         </div>
       )}
