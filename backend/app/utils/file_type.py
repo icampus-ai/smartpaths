@@ -69,8 +69,9 @@ def append_grading_results(student_content, grading_results):
         grading_result = grading_results.get(question_number, {})
         total_score  += grading_result.get('score_achieved', 0)
         updated_text += f"Score: {grading_result.get('score_achieved', 0)}/{grading_result.get('maximum_score', 0)}\n"
-        updated_text += f"Feedback: {grading_result.get('feedback', 'No feedback provided')}\n"
         updated_text += f"Justification: {grading_result.get('justification', 'N/A')}\n"
+        updated_text += f"Feedback: {grading_result.get('feedback', 'No feedback provided')}\n"
+
 
     # Add any remaining content after the last question
     updated_text += student_content[last_pos:]
