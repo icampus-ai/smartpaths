@@ -1,5 +1,5 @@
 import re
-from llama_utils import get_llama_response
+from ai_model.model.grading_system.llama_utils import get_llama_response
 
 def get_overall_feedback(feedback_list: list) -> str:
     """
@@ -51,16 +51,16 @@ def extract_feedback(raw_text: str) -> str:
         return re.sub(r'\s+', ' ', feedback).strip()
     return "Feedback not found."
 
-# Example usage
-if __name__ == "__main__":
-    feedback_list = [
-        "Good effort on addressing the question.",
-        "Your grammar needs improvement for better clarity.",
-        "Add more examples to enhance the depth of your response.",
-        "Well-structured but some sections could be expanded.",
-        "You should have spoken in depth about photosynthesis for q2."
-    ]
+# # Example usage
+# if __name__ == "__main__":
+#     feedback_list = [
+#         "Good effort on addressing the question.",
+#         "Your grammar needs improvement for better clarity.",
+#         "Add more examples to enhance the depth of your response.",
+#         "Well-structured but some sections could be expanded.",
+#         "You should have spoken in depth about photosynthesis for q2."
+#     ]
     
-    overall_feedback = get_overall_feedback(feedback_list)
-    print("\nExtracted Overall Feedback:")
-    print(overall_feedback)
+#     overall_feedback = get_overall_feedback(feedback_list)
+#     print("\nExtracted Overall Feedback:")
+#     print(overall_feedback)
