@@ -1,52 +1,21 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import UploadModal from "./DashboardLayout/UploadModal";
+import { Upload, Star, Check } from "lucide-react";
 
 const StepComponent: React.FC = () => {
   const [activeStep, setActiveStep] = useState(1);
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [isModelQUploaded, setIsModelQUploaded] = useState(false);
-  const [isStudentResponsesUploaded, setIsStudentResponsesUploaded] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      if (!isPopupOpen) {
-        setActiveStep((prevStep) => (prevStep === 3 ? 1 : prevStep + 1));
-      }
+      setActiveStep((prevStep) => (prevStep === 3 ? 1 : prevStep + 1));
     }, 2000);
 
     return () => clearInterval(intervalId);
-  }, [isPopupOpen]);
+  }, []);
 
   const handleNumberClick = (step: number) => {
-    if (step === 1) {
-      setIsPopupOpen(true);
-    }
-  };
-
-  const handleModelQFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setIsModelQUploaded(true);
-      checkUploadStatus(true, isStudentResponsesUploaded);
-    }
-  };
-
-  const handleStudentResponsesFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setIsStudentResponsesUploaded(true);
-      checkUploadStatus(isModelQUploaded, true);
-    }
-  };
-
-  const checkUploadStatus = (modelUploaded: boolean, studentUploaded: boolean) => {
-    if (modelUploaded && studentUploaded) {
-      setIsPopupOpen(false);
-      setActiveStep(2);
-    } else {
-      setError("Please upload both files");
-    }
+    setActiveStep(step);
   };
 
   return (
@@ -55,40 +24,25 @@ const StepComponent: React.FC = () => {
         {[1, 2, 3].map((step) => (
           <div key={step} className="flex flex-col items-center">
             <div
-              className={`text-2xl md:text-2xl lg:text-8xl font-extrabold cursor-pointer ${
-                activeStep === step ? "text-orange-500 animate-pulse" : "text-black"
+              className={`w-16 h-16 flex items-center justify-center text-4xl md:text-4xl lg:text-8xl font-extrabold cursor-pointer rounded-full border-4 ${
+                activeStep === step
+                  ? "bg-orange-500 text-white border-orange-500 animate-pulse"
+                  : "bg-white text-black border-gray-300 hover:bg-gray-100"
               }`}
               onClick={() => handleNumberClick(step)}
             >
-              {step}
+              {step === 1 && <Upload className="w-10 h-10" />}
+              {step === 2 && <Star className="w-10 h-10" />}
+              {step === 3 && <Check className="w-10 h-10" />}
             </div>
             {activeStep === step && (
-              <div className="text-base md:text-lg lg:text-xl font-medium text-black mt-2">
+              <div className="text-base md:text-lg lg:text-xl font-medium text-gray-600 mt-2">
                 {getStepText(step)}
               </div>
             )}
           </div>
         ))}
       </div>
-      {isPopupOpen && (
-        <div className="absolute top-0 left-20 mt-8 w-full flex justify-start">
-          <div className="bg-white border border-gray-300 shadow-lg p-4 w-full max-w-lg">
-            <UploadModal
-              isUploadMenuOpen={isPopupOpen}
-              handleCloseUploadMenu={() => setIsPopupOpen(false)}
-              handleModelQFileChange={handleModelQFileChange}
-              handleStudentResponsesFileChange={handleStudentResponsesFileChange}
-              handleDragOver={() => {}}
-              handleDrop={() => {}}
-              handleMouseDown={() => {}}
-              handleMouseMove={() => {}}
-              isModelQUploaded={isModelQUploaded}
-              isStudentResponsesUploaded={isStudentResponsesUploaded}
-              error={error}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -9,6 +9,8 @@ interface DifficultySelectorProps {
   handleDifficultyClick: (difficulty: string) => void;
   handleEvaluateButtonClicked: () => void;
   handleBackToUpload: () => void;
+  selectedDifficulty: string;
+  setSelectedDifficulty: (difficulty: string) => void;
 }
 
 const DifficultySelector: React.FC<DifficultySelectorProps> = ({
@@ -18,8 +20,9 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
   handleDifficultyClick,
   handleEvaluateButtonClicked,
   handleBackToUpload,
+  selectedDifficulty,
+  setSelectedDifficulty,
 }) => {
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
   const [showEvaluate, setShowEvaluate] = useState(isDifficultySelected);
 
   // Only show if both files are uploaded
@@ -54,27 +57,16 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({
           <hr className="w-full border-1 border-black mt-2 mb-2" />
           <div className="w-full py-4">
             <div className="flex items-center justify-center space-x-4 mt-4">
-              <button
-                onClick={() => handleDifficultySelection("Easy")}
-                className="py-2 px-6 rounded-lg bg-black text-white shadow-md flex items-center"
+              <select
+                value={selectedDifficulty}
+                onChange={(e) => handleDifficultySelection(e.target.value)}
+                className="p-2 border rounded-lg"
               >
-                {selectedDifficulty === "Easy" && <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>}
-                Easy
-              </button>
-              <button
-                onClick={() => handleDifficultySelection("Medium")}
-                className="py-2 px-6 rounded-lg bg-black text-white shadow-md flex items-center"
-              >
-                {selectedDifficulty === "Medium" && <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>}
-                Medium
-              </button>
-              <button
-                onClick={() => handleDifficultySelection("Hard")}
-                className="py-2 px-6 rounded-lg bg-black text-white shadow-md flex items-center"
-              >
-                {selectedDifficulty === "Hard" && <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>}
-                Hard
-              </button>
+                <option value="">Select Difficulty</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
             </div>
             <div className="flex justify-center mt-4">
               <button

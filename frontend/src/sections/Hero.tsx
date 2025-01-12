@@ -79,6 +79,10 @@ export const Hero: React.FC = () => {
     router.push('/features');
   };
 
+  const handleEvaluateNeedsClick = () => {
+    router.push('/evaluationneeds');
+  };
+
   const features = [
     {
       title: "Private & Secure",
@@ -102,10 +106,6 @@ export const Hero: React.FC = () => {
       borderColor: "border-gray-300",
     },
   ];
-
-  const handleEvaluateNeedsClick = () => {
-    router.push('/contact');
-  };
 
   return (
     <div>

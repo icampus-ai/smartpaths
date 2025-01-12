@@ -78,21 +78,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, toggleSidebar, onProfileC
           onClick={onProfileClick}
         >
           <UserCheck className="text-xl text-[#FF6600]" />
-          {isExpanded && <span className="font-medium text-lg">Profile</span>}
-        </li>
-        <li
-          className={`flex items-center gap-4 cursor-pointer hover:text-[#E0E0E0] transition-all ${activeMenu === "/analytics" ? "scale-110" : ""}`}
-          onClick={() => handleNavigation("/analytics/evaluators")}
-        >
-          <BarChart2 className="text-xl text-[#FF6600]" />
-          {isExpanded && <span className="font-medium text-lg">Analytics</span>}
-        </li>
-        <li
-          className={`flex items-center gap-4 cursor-pointer hover:text-[#E0E0E0] transition-all ${activeMenu === "/settings" ? "scale-110" : ""}`}
-          onClick={() => handleNavigation("/settings")}
-        >
-          <Settings className="text-xl text-[#FF6600]" />
-          {isExpanded && <span className="font-medium text-lg">Usage</span>}
+          {isExpanded && <span className="font-medium text-lg">Overview</span>}
         </li>
         <li
           className={`flex items-center gap-4 cursor-pointer hover:text-[#E0E0E0] transition-all ${activeMenu === "/signup" ? "scale-110" : ""}`}

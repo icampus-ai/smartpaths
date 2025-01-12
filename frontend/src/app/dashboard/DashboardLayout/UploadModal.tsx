@@ -7,12 +7,14 @@ interface UploadModalProps {
   isUploadMenuOpen: boolean;
   handleCloseUploadMenu: () => void;
   handleModelQFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleModelQandAFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleStudentResponsesFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleDragOver: (event: React.DragEvent<HTMLDivElement>) => void;
   handleDrop: (event: React.DragEvent<HTMLDivElement>) => void;
   handleMouseDown: MouseEventHandler<HTMLDivElement>;
   handleMouseMove: MouseEventHandler<HTMLDivElement>;
   isModelQUploaded: boolean;
+  isModelQandAUploaded: boolean;
   isStudentResponsesUploaded: boolean;
   error: string | null;
 }
@@ -21,12 +23,14 @@ const UploadModal: React.FC<UploadModalProps> = ({
   isUploadMenuOpen,
   handleCloseUploadMenu,
   handleModelQFileChange,
+  handleModelQandAFileChange,
   handleStudentResponsesFileChange,
   handleDragOver,
   handleDrop,
   handleMouseDown,
   handleMouseMove,
   isModelQUploaded,
+  isModelQandAUploaded,
   isStudentResponsesUploaded,
   error,
 }) => {
@@ -34,23 +38,18 @@ const UploadModal: React.FC<UploadModalProps> = ({
 
   return (
     <div
-      className="fixed top-0 left-0 w-full h-full"
-      style={{
-        position: "absolute",
-        left: "var(--x)",
-        top: "var(--y)",
-      }}
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
     >
       <div
         onDragOver={handleDragOver}
         onDrop={handleDrop}
-        className="bg-white h-96 w-80 border border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer relative z-10 mx-auto p-4 shadow-lg"
+        className="bg-white h-auto w-80 border border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer relative z-10 mx-auto p-4 shadow-lg overflow-y-auto"
       >
         <div className="flex justify-center w-full p-2 bg-orange-500 text-white border-b border-orange-500">
-          <button onClick={handleCloseUploadMenu} className="text-white hover:text-gray-200">
-            <X className="text-lg text-white" />
+          <button onClick={handleCloseUploadMenu} className="text-black hover:text-gray-200">
+            <X className="text-lg text-black" />
           </button>
         </div>
 
@@ -61,12 +60,21 @@ const UploadModal: React.FC<UploadModalProps> = ({
           </div>
 
           <div className="flex flex-col items-center">
-            {/* Model Q&A Upload */}
+            {/* Model Q Upload */}
             <label>
               <input type="file" onChange={handleModelQFileChange} className="w-full h-full opacity-0" />
-              <div className="bg-black border-2 border-solid rounded-lg w-full h-12 flex items-center justify-center cursor-pointer text-white">
-                Model Q&A
+              <div className="bg-[#2B2B2B] border-2 border-solid rounded-lg w-full h-12 flex items-center justify-center cursor-pointer text-white">
+                Model Q
                 {isModelQUploaded && <Check className="text-lg text-green-500 ml-2" />}
+              </div>
+            </label>
+
+            {/* Model Q&A Upload */}
+            <label className="mt-2">
+              <input type="file" onChange={handleModelQandAFileChange} className="w-full h-full opacity-0" />
+              <div className="bg-[#2B2B2B] border-2 border-solid rounded-lg w-full h-12 flex items-center justify-center cursor-pointer text-white">
+                Model Q&A
+                {isModelQandAUploaded && <Check className="text-lg text-green-500 ml-2" />}
               </div>
             </label>
 
@@ -76,8 +84,9 @@ const UploadModal: React.FC<UploadModalProps> = ({
                 type="file"
                 onChange={handleStudentResponsesFileChange}
                 className="w-full h-full opacity-0"
+                multiple // Allow multiple file uploads
               />
-              <div className="bg-black border-2 border-solid rounded-lg w-full h-12 flex items-center justify-center cursor-pointer text-white">
+              <div className="bg-[#2B2B2B] border-2 border-solid rounded-lg w-full h-12 flex items-center justify-center cursor-pointer text-white">
                 Student Responses
                 {isStudentResponsesUploaded && <Check className="text-lg text-green-500 ml-2" />}
               </div>
@@ -85,9 +94,9 @@ const UploadModal: React.FC<UploadModalProps> = ({
           </div>
         </div>
 
-        {/* Show error only if not both files are uploaded */}
-        {error && (!isModelQUploaded || !isStudentResponsesUploaded) && (
-          <p className="text-red-500 text-sm mt-2">{error}</p>
+        {/* Show error only if not all files are uploaded */}
+        {error && (!isModelQUploaded || !isModelQandAUploaded || !isStudentResponsesUploaded) && (
+          <p className="text-red-500 text-sm mt-2 px-4 text-center">{error}</p>
         )}
       </div>
     </div>
