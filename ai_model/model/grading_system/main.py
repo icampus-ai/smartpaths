@@ -116,7 +116,7 @@ if __name__ == "__main__":
     model_answer = "Machine learning is a method of data analysis that automates analytical model building."
     student_answer = "Machine learning is when computers learn from data to make decisions."
     max_score = 10
-    difficulty_level = "easy"
+    difficulty_level = "hard"
     
     student_evaluation_outcome = grade_student_answers(model_answer, student_answer, difficulty_level, max_score)
     
