@@ -1,5 +1,6 @@
 import re
 from ai_model.model.grading_system.llama_utils import get_llama_response
+# from llama_utils import get_llama_response
 
 def get_overall_feedback(feedback_list: list) -> str:
     """
@@ -15,7 +16,7 @@ def get_overall_feedback(feedback_list: list) -> str:
     # Step 1: Prepare the prompt
     prompt = f"""
     Combine the following feedback statements for individual answers into a single cohesive overall feedback like a Teaching Assistant would.
-    Ensure the feedback reads naturally and flows well:
+    Ensure the feedback reads naturally and flows well in STRICTLY around 70 words:
     
     Feedback statements:
     {', '.join(feedback_list)}
@@ -51,16 +52,46 @@ def extract_feedback(raw_text: str) -> str:
         return re.sub(r'\s+', ' ', feedback).strip()
     return "Feedback not found."
 
-# # Example usage
 # if __name__ == "__main__":
 #     feedback_list = [
-#         "Good effort on addressing the question.",
-#         "Your grammar needs improvement for better clarity.",
-#         "Add more examples to enhance the depth of your response.",
-#         "Well-structured but some sections could be expanded.",
-#         "You should have spoken in depth about photosynthesis for q2."
+#         (
+#             "In Question 1, you provided a thorough explanation of the key concepts, "
+#             "demonstrating a solid understanding of the subject matter. However, your argument lacked balance as it did not consider alternative perspectives. "
+#             "Additionally, some of your examples were generic and could have been more directly tied to the question's specific context. "
+#             "While your answer was well-structured, the conclusion felt rushed and did not fully summarize the insights presented. "
+#             "For future responses, consider dedicating more time to crafting a robust conclusion and integrating diverse viewpoints."
+#         ),
+#         (
+#             "Your response to Question 2 showed promise in its use of technical terms and the inclusion of relevant data points. "
+#             "That said, there were issues with organization, as some paragraphs repeated similar ideas without advancing the argument. "
+#             "The case study you referenced was a good choice but lacked sufficient analysis to connect it to the question effectively. "
+#             "Grammar errors, such as misplaced modifiers and run-on sentences, also detracted from the clarity of your writing. "
+#             "Revisiting basic grammatical principles and using a clear framework to organize your ideas would significantly enhance your future answers."
+#         ),
+#         (
+#             "Question 3 required a critical analysis of the provided graph, which you partially achieved. "
+#             "Your description of the graph's trends was accurate, but you missed interpreting the anomalies that were clearly marked. "
+#             "Moreover, your calculations were mostly correct, but you failed to show the step-by-step process, making it hard to follow your methodology. "
+#             "The conclusion drawn from your analysis was weak, as it did not sufficiently address the implications of the data. "
+#             "For improvement, practice providing a more detailed breakdown of your reasoning and linking data points to the overall question."
+#         ),
+#         (
+#             "Your answer to Question 4 was creative and demonstrated an ability to think outside the box, which is commendable. "
+#             "However, the response lacked depth in addressing the question's core requirements. "
+#             "For instance, while your use of hypothetical scenarios was engaging, they did not align well with the theoretical framework outlined in the question. "
+#             "Additionally, your response would have benefited from citing specific examples from course materials or external sources. "
+#             "To improve, focus on directly tying your creative ideas to the question’s theoretical basis and supporting them with concrete evidence."
+#         ),
+#         (
+#             "The response to Question 5 was well-researched, and your ability to synthesize information from multiple sources stood out. "
+#             "However, the essay was overly verbose in some sections, making it challenging to identify your main arguments. "
+#             "The middle section, in particular, digressed into tangential topics that were not directly relevant to the question. "
+#             "While your conclusion successfully summarized the key points, it lacked actionable recommendations or a forward-looking perspective. "
+#             "For future essays, strive for more concise writing and ensure every section contributes directly to your central thesis."
+#         )
 #     ]
-    
+
 #     overall_feedback = get_overall_feedback(feedback_list)
 #     print("\nExtracted Overall Feedback:")
 #     print(overall_feedback)
+
