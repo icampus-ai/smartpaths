@@ -49,14 +49,13 @@ def process_student_answers(student_answer_file, file_type, model_answers, gener
         )
         grading_results[question_number] = student_evaluated_outcome
 
-    updated_student_content, total_score = append_grading_results(student_content, grading_results)
+    updated_student_content, total_score, feedbacks = append_grading_results(student_content, grading_results)
     
       # Generate overall summary
     summary = generate_summary(total_score, generated_rubrics['model_total_score'])
     
     # Combine the grading results with the summary
     updated_student_content += "\n" + summary
-    print("Updated student content with grading results:", updated_student_content)
 
     return file_name, updated_student_content
 
@@ -85,7 +84,6 @@ def evaluate_student_answers(model_question_paper, model_question_answer_file, s
         file_name, updated_student_content = process_student_answers(
             student_answer_file, file_type, model_answers, generated_rubrics, difficulty_level
         )
-        print("file name", file_name)
         # Save graded file
         save_graded_file(updated_student_content, file_name, file_type)
 

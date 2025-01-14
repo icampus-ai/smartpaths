@@ -53,6 +53,7 @@ def append_grading_results(student_content, grading_results):
     question_pattern = r"(\d+)\.\s*(.*?)\nAnswer:(.*?)(?=\n\d+\.|$)"
     last_pos = 0
     total_score = 0
+    feedbacks = []
     for match in re.finditer(question_pattern, student_content, re.DOTALL):
         question_number, question_text, answer_text = match.groups()
         start, end = match.span()
@@ -71,12 +72,13 @@ def append_grading_results(student_content, grading_results):
         updated_text += f"Score: {grading_result.get('score_achieved', 0)}/{grading_result.get('maximum_score', 0)}\n"
         updated_text += f"Justification: {grading_result.get('justification', 'N/A')}\n"
         updated_text += f"Feedback: {grading_result.get('feedback', 'No feedback provided')}\n"
+        feedbacks.append(grading_result.get('feedback', ''))
 
 
     # Add any remaining content after the last question
     updated_text += student_content[last_pos:]
     
-    return updated_text, total_score
+    return updated_text, total_score, feedbacks
 
 def extract_pdf_text(pdf_content):
     """
