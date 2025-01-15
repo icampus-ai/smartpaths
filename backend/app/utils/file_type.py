@@ -182,19 +182,40 @@ def save_as_pdf(content, file_name):
     # Output PDF to file
     pdf.output(file_name)
     
-def generate_summary(total_score, max_possible_score):
+def generate_summary(total_score, max_possible_score, overall_feedback):
     percentage = (total_score / max_possible_score) * 100
     grade = assign_grade(percentage)
-    return f"Summary:\nTotal Score: {total_score}\nPercentage: {percentage:.2f}%\nGrade: {grade}"
+    return (
+        f"Summary:\n"
+        f"Total Score: {total_score}\n"
+        f"Percentage: {percentage:.2f}%\n"
+        f"Grade: {grade}\n"
+        f"Overall Feedback: {overall_feedback}"
+    )
+
 
 def assign_grade(percentage):
-    if percentage >= 90:
+    if percentage >= 93:
         return 'A'
-    elif percentage >= 80:
+    elif percentage >= 90:
+        return 'A-'
+    elif percentage >= 87:
+        return 'B+'
+    elif percentage >= 83:
         return 'B'
-    elif percentage >= 70:
+    elif percentage >= 80:
+        return 'B-'
+    elif percentage >= 77:
+        return 'C+'
+    elif percentage >= 73:
         return 'C'
-    elif percentage >= 60:
+    elif percentage >= 70:
+        return 'C-'
+    elif percentage >= 67:
+        return 'D+'
+    elif percentage >= 63:
         return 'D'
+    elif percentage >= 60:
+        return 'D-'
     else:
         return 'F'

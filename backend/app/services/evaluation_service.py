@@ -1,6 +1,7 @@
 import base64
 from ai_model.model.grading_system.grader import grade_student_answers_v2
 from ai_model.model.grading_system.rubrics import generate_rubrics
+from ai_model.model.grading_system.get_overall_feedback import get_overall_feedback
 from backend.app.utils.file_type import (
     extract_pdf_text, 
     extract_docx_text, 
@@ -36,11 +37,6 @@ def process_student_answers(student_answer_file, file_type, model_answers, gener
 
     grading_results = {}
     for question_number, qa in student_extracted_answers['questionAndAnswers'].items():
-        print(f"Grading answer for question {question_number}...")
-        print(f"Model answer: {model_answers.get(question_number)}")
-        print(f"Student answer: {qa['answer']}")
-        print(f"Rubrics.. period: {generated_rubrics.get(question_number, {})}")
-        print(f"Max Score: {generated_rubrics['question_results'][question_number]['max_score']}")
         student_evaluated_outcome = grade_student_answers_v2(
             model_answers.get(question_number),
             qa['answer'],
@@ -50,9 +46,10 @@ def process_student_answers(student_answer_file, file_type, model_answers, gener
         grading_results[question_number] = student_evaluated_outcome
 
     updated_student_content, total_score, feedbacks = append_grading_results(student_content, grading_results)
+
     
       # Generate overall summary
-    summary = generate_summary(total_score, generated_rubrics['model_total_score'])
+    summary = generate_summary(total_score, generated_rubrics['model_total_score'], get_overall_feedback(feedbacks))
     
     # Combine the grading results with the summary
     updated_student_content += "\n" + summary
