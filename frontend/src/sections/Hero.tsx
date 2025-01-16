@@ -120,7 +120,7 @@ export const Hero: React.FC = () => {
                 <span className="text-black"> to the Future of Education</span> 
               </h1>
               <p className="text-xl text-[#010D3E] tracking-tight mt-6">
-                Discover a smarter way to grade! Our AI-powered grading system delivers faster, fairer, and more insightful evaluations, empowering educators to focus on what truly matters—STUDENTS.
+                DISCOVER a smarter way to grade! Our AI-powered grading system delivers faster, fairer, and more insightful evaluations, empowering educators to focus on what truly matters—STUDENTS.
               </p>
               <div className="flex gap-4 items-center mt-8">
                 <button className="btn btn-primary" onClick={handleSignUpClick}>Try for Free</button>
