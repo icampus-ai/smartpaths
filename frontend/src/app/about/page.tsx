@@ -59,7 +59,7 @@ const About = () => {
               </h2>
               <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
                 <p className="text-2xl text-gray-600 tracking-tight max-w-3xl mx-auto">
-                  SmartPaths began by simplifying evaluations. Now, it's a global platform empowering educators and institutions.
+                  SmartPaths began by simplifying evaluations. Now, it&apos;s a global platform empowering educators and institutions.
                 </p>
               </div>
             </div>
@@ -117,7 +117,7 @@ const About = () => {
                 <h3 className="text-xl font-semibold text-gray-800 uppercase">Dr. Prateek Shantharama</h3>
                 <p className="text-gray-500 italic mb-4">Founder, President & CTO</p>
                 <p className="text-gray-700 leading-relaxed">
-                  A seasoned educator with over 20 years of experience. Dr. Prateek's passion for innovation drives SmartPaths.
+                  A seasoned educator with over 20 years of experience. Dr. Prateek&apos;s passion for innovation drives SmartPaths.
                 </p>
               </div>
             </div>
@@ -134,7 +134,7 @@ const About = () => {
                 <h3 className="text-xl font-semibold text-gray-800 uppercase">Vivek Srinivas</h3>
                 <p className="text-gray-500 italic mb-4">Founder & CEO</p>
                 <p className="text-gray-700 leading-relaxed">
-                  A visionary leader with expertise in educational technology, shaping SmartPaths' innovative direction.
+                  A visionary leader with expertise in educational technology, shaping SmartPaths&apos; innovative direction.
                 </p>
               </div>
             </div>
