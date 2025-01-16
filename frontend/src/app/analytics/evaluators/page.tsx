@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import EvaluationChart from "@/app/analytics/evaluators/evaluationchart";
 import GradeChart from "@/app/analytics/evaluators/gradechart";
 import CustomChart from "@/app/analytics/evaluators/overview_2";
-import Sidebar from "@/app/analytics/evaluators/Sidebar";
+import Sidebar from "./Sidebar";
 
 const EvaluatorsPage: React.FC = () => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
