@@ -33,9 +33,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, toggleSidebar }) => {
     router.push("/login");
   };
 
-    const handleBack = () => {
-        router.back();
-    };
+  const handleBack = () => {
+    router.back();
+  };
 
   return (
     <aside className={`bg-gray-900 text-gray-400 ${isExpanded ? "w-48" : "w-16"} h-screen fixed flex flex-col transition-width duration-300`}>
@@ -73,7 +73,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, toggleSidebar }) => {
 };
 
 // Mocks Page Component
-const studentsPage = () => {
+const StudentsPage = () => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
 
   const toggleSidebar = () => {
@@ -92,4 +92,4 @@ const studentsPage = () => {
   );
 };
 
-export default studentsPage;
+export default StudentsPage;
