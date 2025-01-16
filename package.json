@@ -19,7 +19,9 @@
     "react": "^18",
     "react-datepicker": "^7.6.0",
     "react-dom": "^18",
-    "react-icons": "^5.4.0"
+    "react-icons": "^5.4.0",
+    "recharts": "^2.15.0",
+    "vercel": "^39.3.0"
   },
   "devDependencies": {
     "@svgr/webpack": "^8.1.0",

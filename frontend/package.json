@@ -36,7 +36,8 @@
     "react-slick": "^0.30.2",
     "recharts": "^2.15.0",
     "slick-carousel": "^1.8.1",
-    "swiper": "^11.1.15"
+    "swiper": "^11.1.15",
+    "vercel": "^39.3.0"
   },
   "devDependencies": {
     "@svgr/webpack": "^8.1.0",
