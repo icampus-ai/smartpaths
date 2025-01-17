@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import EvaluationChart from "@/app/analytics/evaluators/evaluationchart";
 import GradeChart from "@/app/analytics/evaluators/gradechart";
 import CustomChart from "@/app/analytics/evaluators/overview_2";
-import Sidebar from "@/app/analytics/evaluators/Sidebar";
+import Sidebar from "./Sidebar";
 
 const EvaluatorsPage: React.FC = () => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
@@ -49,7 +49,7 @@ const EvaluatorsPage: React.FC = () => {
 
           {/* Center Section */}
           <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center">
-            <h2 className="text-lg p-8 font-bold mb-4">It's all yours</h2>
+            <h2 className="text-lg p-8 font-bold mb-4">It&apos;s all yours</h2>
             <div className="flex justify-around w-full">
               <span>Course</span>
               <span>Small Card 1</span>

@@ -49,7 +49,34 @@ def get_llama_response(prompt, model_name="llama3.2"):
             return result['response']
         else:
             return "Error: Unable to generate response."
+    except Exception as e:
+        return "Error: Something went wrong."
     
+    
+def get_llama_response_1(prompt, model_name="llama3.2"):
+    url = "http://localhost:11434/api/generate"
+
+    headers = {
+        "Content-Type": "application/json",
+    }
+
+    data = {
+        "model": model_name,
+        "prompt": prompt,
+        "stream": False,
+        "options": {
+            "temperature": 0.7,
+        }
+    }
+
+    try:
+        response = requests.post(url, headers=headers, data=json.dumps(data))
+        
+        if response.status_code == 200:
+            result = response.json()
+            return result['response']
+        else:
+            return "Error: Unable to generate response."
     except Exception as e:
         return "Error: Something went wrong."
 

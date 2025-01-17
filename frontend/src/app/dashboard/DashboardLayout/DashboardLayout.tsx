@@ -14,8 +14,11 @@ const DashboardLayout: React.FC = () => {
   const [modelQFile, setModelQFile] = useState<File | null>(null);
   const [modelQFileUrl, setModelQFileUrl] = useState<string | null>(null);
   const [isModelQUploaded, setIsModelQUploaded] = useState(false);
-  const [studentResponsesFile, setStudentResponsesFile] = useState<File | null>(null);
-  const [studentResponsesFileUrl, setStudentResponsesFileUrl] = useState<string | null>(null);
+  const [modelQandAFile, setModelQandAFile] = useState<File | null>(null);
+  const [modelQandAFileUrl, setModelQandAFileUrl] = useState<string | null>(null);
+  const [isModelQandAUploaded, setIsModelQandAUploaded] = useState(false);
+  const [studentResponsesFiles, setStudentResponsesFiles] = useState<File[]>([]);
+  const [studentResponsesFileUrls, setStudentResponsesFileUrls] = useState<string[]>([]);
   const [isStudentResponsesUploaded, setIsStudentResponsesUploaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
@@ -38,18 +41,29 @@ const DashboardLayout: React.FC = () => {
       setModelQFile(file);
       setModelQFileUrl(fileUrl);
       setIsModelQUploaded(true);
-      checkUploadStatus(true, isStudentResponsesUploaded);
+      checkUploadStatus(true, isModelQandAUploaded, isStudentResponsesUploaded);
+    }
+  };
+
+  const handleModelQandAFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    if (event.target.files) {
+      const file = event.target.files[0];
+      const fileUrl = URL.createObjectURL(file);
+      setModelQandAFile(file);
+      setModelQandAFileUrl(fileUrl);
+      setIsModelQandAUploaded(true);
+      checkUploadStatus(isModelQUploaded, true, isStudentResponsesUploaded);
     }
   };
 
   const handleStudentResponsesFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     if (event.target.files) {
-      const file = event.target.files[0];
-      const fileUrl = URL.createObjectURL(file);
-      setStudentResponsesFile(file);
-      setStudentResponsesFileUrl(fileUrl);
+      const files = Array.from(event.target.files);
+      const fileUrls = files.map(file => URL.createObjectURL(file));
+      setStudentResponsesFiles(files);
+      setStudentResponsesFileUrls(fileUrls);
       setIsStudentResponsesUploaded(true);
-      checkUploadStatus(isModelQUploaded, true);
+      checkUploadStatus(isModelQUploaded, isModelQandAUploaded, true);
     }
   };
 
@@ -60,36 +74,33 @@ const DashboardLayout: React.FC = () => {
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     if (event.dataTransfer.items) {
-      const files = event.dataTransfer.items;
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i].getAsFile();
-        if (file) {
-          const fileUrl = URL.createObjectURL(file);
-          if (i === 0) {
-            setModelQFile(file);
-            setModelQFileUrl(fileUrl);
-            setIsModelQUploaded(true);
-          } else if (i === 1) {
-            setStudentResponsesFile(file);
-            setStudentResponsesFileUrl(fileUrl);
-            setIsStudentResponsesUploaded(true);
-          }
-        }
-      }
-      checkUploadStatus(true, true);
+      const files = Array.from(event.dataTransfer.items).map(item => item.getAsFile()).filter(file => file !== null) as File[];
+      const fileUrls = files.map(file => URL.createObjectURL(file));
+      setStudentResponsesFiles(files);
+      setStudentResponsesFileUrls(fileUrls);
+      setIsStudentResponsesUploaded(true);
+      checkUploadStatus(isModelQUploaded, isModelQandAUploaded, true);
     }
   };
 
-  const checkUploadStatus = (modelUploaded: boolean, studentUploaded: boolean) => {
-    if (modelUploaded && studentUploaded) {
+  const checkUploadStatus = (modelUploaded: boolean, modelQandAUploaded: boolean, studentUploaded: boolean) => {
+    if (modelUploaded && modelQandAUploaded && studentUploaded) {
       setIsUploadMenuOpen(false);
       setError(null);
-    } else if (modelUploaded && !studentUploaded) {
+    } else if (modelUploaded && modelQandAUploaded && !studentUploaded) {
       setError("Please upload Student Responses file");
-    } else if (!modelUploaded && studentUploaded) {
+    } else if (modelUploaded && !modelQandAUploaded && studentUploaded) {
       setError("Please upload Model Q&A file");
-    } else if (!modelUploaded && !studentUploaded) {
-      setError("Please upload both Model Q&A and Student Responses files");
+    } else if (!modelUploaded && modelQandAUploaded && studentUploaded) {
+      setError("Please upload Model Q file");
+    } else if (!modelUploaded && !modelQandAUploaded && studentUploaded) {
+      setError("Please upload Model Q and Model Q&A files");
+    } else if (!modelUploaded && modelQandAUploaded && !studentUploaded) {
+      setError("Please upload Model Q and Student Responses files");
+    } else if (modelUploaded && !modelQandAUploaded && !studentUploaded) {
+      setError("Please upload Model Q&A and Student Responses files");
+    } else if (!modelUploaded && !modelQandAUploaded && !studentUploaded) {
+      setError("Please upload Model Q, Model Q&A, and Student Responses files");
     }
   };
 
@@ -103,7 +114,7 @@ const DashboardLayout: React.FC = () => {
   };
 
   const handleEvaluateButtonClicked = async () => {
-    if (!modelQFile || !studentResponsesFile || !selectedDifficulty) {
+    if (!modelQFile || !modelQandAFile || studentResponsesFiles.length === 0 || !selectedDifficulty) {
       setError("Please make sure all files are uploaded and difficulty is selected.");
       return;
     }
@@ -111,8 +122,9 @@ const DashboardLayout: React.FC = () => {
     setIsLoading(true);
     try {
       const formData = new FormData();
-      formData.append("modelQuestionAnswer", modelQFile);
-      formData.append("studentAnswers", studentResponsesFile);
+      formData.append("modelQuestion", modelQFile);
+      formData.append("modelQuestionAnswer", modelQandAFile);
+      studentResponsesFiles.forEach(file => formData.append("studentAnswers", file));
       formData.append("difficultyLevel", selectedDifficulty);
 
       const response = await fetch("http://localhost:8000/api/evaluate", {
@@ -139,6 +151,7 @@ const DashboardLayout: React.FC = () => {
 
   const handleBackToUpload = () => {
     setIsModelQUploaded(false);
+    setIsModelQandAUploaded(false);
     setIsStudentResponsesUploaded(false);
     setSelectedDifficulty(null);
     setIsDifficultySelected(false);
@@ -168,7 +181,7 @@ const DashboardLayout: React.FC = () => {
           </h1>
           <p className="text-2xl text-black mt-4">Simplify. Systemize. Succeed.</p>
         </div>
-        {modelQFileUrl && studentResponsesFileUrl ? (
+        {modelQFileUrl && modelQandAFileUrl && studentResponsesFileUrls.length > 0 ? (
           <div className="flex flex-col flex-grow bg-white">
             <div className="flex flex-row flex-grow">
               <div className="flex flex-col items-center justify-center w-full bg-white overflow-auto">
@@ -183,7 +196,7 @@ const DashboardLayout: React.FC = () => {
                 ) : (
                   <FilePreviews
                     modelQFileUrl={modelQFileUrl}
-                    studentResponsesFileUrl={studentResponsesFileUrl}
+                    studentResponsesFileUrl={studentResponsesFileUrls[0]} // Pass the first file URL for preview
                     evaluationData={evaluationData} // Pass evaluationData to FilePreviews
                     selectedDifficulty={selectedDifficulty}
                     handleDifficultySelection={handleDifficultyClick}
@@ -219,10 +232,12 @@ const DashboardLayout: React.FC = () => {
                   isUploadMenuOpen={isUploadMenuOpen}
                   handleCloseUploadMenu={handleCloseUploadMenu}
                   handleModelQFileChange={handleModelQFileChange}
+                  handleModelQandAFileChange={handleModelQandAFileChange}
                   handleStudentResponsesFileChange={handleStudentResponsesFileChange}
                   handleDragOver={handleDragOver}
                   handleDrop={handleDrop}
                   isModelQUploaded={isModelQUploaded}
+                  isModelQandAUploaded={isModelQandAUploaded}
                   isStudentResponsesUploaded={isStudentResponsesUploaded}
                   error={error}
                   handleMouseDown={() => {}}

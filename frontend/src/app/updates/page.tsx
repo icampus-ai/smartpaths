@@ -8,38 +8,35 @@ import abstractImage from '../../assets/abstract_33.png'; // Adjust the import p
 const updates = [
   {
     version: "1.0",
-    date: "2023-01-15",
+    date: "15-12-2024",
     features: [
-      "Initial release with core functionality.",
-      "User authentication and basic dashboards.",
-      "Support for evaluation templates.",
+      "Initial release with core evaluation functionality.",
+      "Support for .txt file uploads.",
     ],
   },
   {
     version: "1.1",
-    date: "2023-03-10",
+    date: "25-12-2024",
     features: [
-      "Added advanced analytics for evaluators.",
-      "Enhanced security features.",
+      "Introduction of AI-powered evaluation assistance.",
       "Improved UI for better user experience.",
     ],
   },
   {
     version: "1.2",
-    date: "2023-06-05",
+    date: "30-12-2024",
     features: [
-      "Introduced integrations with third-party tools.",
       "Support for exporting evaluation reports.",
       "Bug fixes and performance improvements.",
     ],
   },
   {
     version: "2.0",
-    date: "2023-09-20",
+    date: "12-1-2025",
     features: [
       "Major UI/UX overhaul for modern design.",
-      "Introduction of AI-powered evaluation assistance.",
-      "Customizable evaluation workflows.",
+      "Support for .docx and .pdf file uploads.",
+      "Automatic rubrics generation.",
     ],
   },
 ];
@@ -60,8 +57,8 @@ const UpdatesPage: React.FC = () => {
           <Image
             src={abstractImage}
             alt="Abstract Background"
-            layout="fill"
-            objectFit="cover"
+            fill
+            style={{ objectFit: 'cover' }}
             className="opacity-20"
           />
         </div>

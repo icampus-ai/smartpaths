@@ -54,20 +54,25 @@ export const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleTryForFreeClick = () => {
     router.push('/signup'); 
+  };
+
+  const handleMenuToggle = () => {
+    setIsMenuOpen(!isMenuOpen);
   };
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
-      if (currentScrollY > lastScrollY) {
-        // Scrolling down
+      if (currentScrollY > lastScrollY && currentScrollY > 50) {
+        // Scrolling down and not at the top
         setIsVisible(false);
-      } else {
-        // Scrolling up
+      } else if (currentScrollY < lastScrollY || currentScrollY <= 50) {
+        // Scrolling up or at the top
         setIsVisible(true);
       }
 
@@ -98,8 +103,10 @@ export const Header = () => {
                   <Image src={Logo} alt="SmartPaths Logo" height={80} width={80}/>
                 </a>
               </Link>
-              <MenuIcon className="h-5 w-5 md:hidden"/>
-              <nav className="hidden md:flex gap-6 items-center">
+              <button onClick={handleMenuToggle} className="md:hidden">
+                <Image src={MenuIcon} alt="Menu Icon" height={24} width={24} />
+              </button>
+              <nav className={`md:flex gap-6 items-center ${isMenuOpen ? 'block' : 'hidden'}`}>
                 <Link href="/about" legacyBehavior>
                   <a className="hover:text-blue-500 transition-colors duration-200">About</a>
                 </Link>

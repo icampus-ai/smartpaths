@@ -73,7 +73,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, toggleSidebar }) => {
 };
 
 // Mocks Page Component
-const studentsPage = () => {
+const StudentsPage = () => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
 
   const toggleSidebar = () => {
@@ -92,4 +92,4 @@ const studentsPage = () => {
   );
 };
 
-export default studentsPage;
+export default StudentsPage;
