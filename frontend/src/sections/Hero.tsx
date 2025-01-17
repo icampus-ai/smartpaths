@@ -47,7 +47,7 @@ const pricingTiers = [
   },
   {
     title: "Business",
-    buttonText: "Let’s Evaluate Your Needs",
+    buttonText: "Let's Evaluate Your Needs",
     popular: false,
     inverse: false,
     features: [

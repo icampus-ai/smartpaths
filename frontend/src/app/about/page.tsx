@@ -99,81 +99,85 @@ const About = () => {
           </div>
         </div>
 
+        {/* Updated "Meet the Founders" Section */}
         <div className="container mx-auto px-4 relative z-10 mt-14">
-          <h2 className="text-5xl md:text-4xl font-extrabold tracking-tighter bg-gradient-to-b from-gray-900 to-gray-600 text-transparent bg-clip-text text-center">
-            <span className="text-orange-500">Meet the</span> Founders
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-12">
-            <div className="flex flex-col md:flex-row items-center bg-gray-50 shadow-lg rounded-lg p-8 transition-transform hover:scale-105">
-              <Image
-                src="/prateek.jpg"
-                alt="Dr. Prateek Shantharama"
-                className="w-40 h-40 rounded-full mb-6 md:mb-0 md:mr-8 border-4 border-gray-200"
-                width={160}
-                height={160}
-                style={{ width: 'auto', height: 'auto' }}
-              />
-              <div className="text-center md:text-left">
-                <h3 className="text-xl font-semibold text-gray-800 uppercase">Dr. Prateek Shantharama</h3>
-                <p className="text-gray-500 italic mb-4">Founder, President & CTO</p>
-                <p className="text-gray-700 leading-relaxed">
-                  A seasoned educator with over 20 years of experience. Dr. Prateek&apos;s passion for innovation drives SmartPaths.
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-col md:flex-row items-center bg-gray-50 shadow-lg rounded-lg p-8 transition-transform hover:scale-105">
-              <Image
-                src="/vivek.jpg"
-                alt="Vivek Srinivas"
-                className="w-40 h-40 rounded-full mb-6 md:mb-0 md:mr-8 border-4 border-gray-200"
-                width={160}
-                height={160}
-                style={{ width: 'auto', height: 'auto' }}
-              />
-              <div className="text-center md:text-left">
-                <h3 className="text-xl font-semibold text-gray-800 uppercase">Vivek Srinivas</h3>
-                <p className="text-gray-500 italic mb-4">Founder & CEO</p>
-                <p className="text-gray-700 leading-relaxed">
-                  A visionary leader with expertise in educational technology, shaping SmartPaths&apos; innovative direction.
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-col md:flex-row items-center bg-gray-50 shadow-lg rounded-lg p-8 transition-transform hover:scale-105">
-              <Image
-                src="/disha.jpg"
-                alt="Disha Suresh"
-                className="w-40 h-40 rounded-full mb-6 md:mb-0 md:mr-8 border-4 border-gray-200"
-                width={160}
-                height={160}
-                style={{ width: 'auto', height: 'auto' }}
-              />
-              <div className="text-center md:text-left">
-                <h3 className="text-xl font-semibold text-gray-800 uppercase">Disha Suresh</h3>
-                <p className="text-gray-500 italic mb-4">Co-Founder, Software Lead</p>
-                <p className="text-gray-700 leading-relaxed">
-                  An expert in software development, ensuring seamless technical operations at SmartPaths.
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-col md:flex-row items-center bg-gray-50 shadow-lg rounded-lg p-8 transition-transform hover:scale-105">
-              <Image
-                src="/bhargavi.jpg"
-                alt="Bhargavi Sreenivasamurthy"
-                className="w-40 h-40 rounded-full mb-6 md:mb-0 md:mr-8 border-4 border-gray-200"
-                width={160}
-                height={160}
-                style={{ width: 'auto', height: 'auto' }}
-              />
-              <div className="text-center md:text-left">
-                <h3 className="text-xl font-semibold text-gray-800 uppercase">Bhargavi Sreenivasamurthy</h3>
-                <p className="text-gray-500 italic mb-4">Co-Founder, COO</p>
-                <p className="text-gray-700 leading-relaxed">
-                  A strategic planner driving organizational growth and ensuring SmartPaths thrives in a competitive landscape.
-                </p>
-              </div>
-            </div>
-          </div>
+  <h2 className="text-5xl md:text-4xl font-extrabold tracking-tighter bg-gradient-to-b from-gray-900 to-gray-600 text-transparent bg-clip-text text-center">
+    <span className="text-orange-500">Meet the</span> Founders
+  </h2>
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+    {/* Founder 1 */}
+    <div className="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow bg-gradient-to-br from-white to-gray-50 p-6">
+      <div className="absolute inset-0 bg-pattern opacity-10 pointer-events-none" />
+      <div className="flex flex-col items-center relative z-10">
+        <div className="w-32 h-32 mb-4 relative">
+          <Image
+            src="/prateek.jpg"
+            alt="Dr. Prateek Shantharama"
+            className="rounded-full object-cover border-4 border-white shadow-md"
+            fill
+            style={{ objectFit: 'cover' }}
+          />
         </div>
+        <h3 className="text-xl font-semibold text-gray-800 uppercase">
+          Dr. Prateek Shantharama
+        </h3>
+        <p className="text-gray-500 italic mb-4">Founder, President & CTO</p>
+        <p className="text-gray-700 text-center leading-relaxed">
+          A seasoned educator with over 20 years of experience.
+          Dr. Prateek&apos;s passion for innovation drives SmartPaths.
+        </p>
+      </div>
+    </div>
+
+    {/* Founder 2 */}
+    <div className="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow bg-gradient-to-br from-white to-gray-50 p-6">
+      <div className="absolute inset-0 bg-pattern opacity-10 pointer-events-none" />
+      <div className="flex flex-col items-center relative z-10">
+        <div className="w-32 h-32 mb-4 relative">
+          <Image
+            src="/vivek.jpg"
+            alt="Vivek Srinivas"
+            className="rounded-full object-cover border-4 border-white shadow-md"
+            fill
+            style={{ objectFit: 'cover' }}
+          />
+        </div>
+        <h3 className="text-xl font-semibold text-gray-800 uppercase">
+          Vivek Srinivas
+        </h3>
+        <p className="text-gray-500 italic mb-4">Founder & CEO</p>
+        <p className="text-gray-700 text-center leading-relaxed">
+          A visionary leader with expertise in educational technology,
+          shaping SmartPaths&apos; innovative direction.
+        </p>
+      </div>
+    </div>
+
+    {/* Founder 3 */}
+    <div className="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow bg-gradient-to-br from-white to-gray-50 p-6">
+      <div className="absolute inset-0 bg-pattern opacity-10 pointer-events-none" />
+      <div className="flex flex-col items-center relative z-10">
+        <div className="w-32 h-32 mb-4 relative">
+          <Image
+            src="/bhargavi.jpg"
+            alt="Bhargavi Sreenivasamurthy"
+            className="rounded-full object-cover border-4 border-white shadow-md"
+            fill
+            style={{ objectFit: 'cover' }}
+          />
+        </div>
+        <h3 className="text-xl font-semibold text-gray-800 uppercase">
+          Bhargavi Sreenivasamurthy
+        </h3>
+        <p className="text-gray-500 italic mb-4">Co-Founder, COO</p>
+        <p className="text-gray-700 text-center leading-relaxed">
+          A strategic planner driving organizational growth and
+          ensuring SmartPaths thrives in a competitive landscape.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
       </section>
     </>
   );
