@@ -62,7 +62,12 @@ const UploadModal: React.FC<UploadModalProps> = ({
           <div className="flex flex-col items-center">
             {/* Model Q Upload */}
             <label>
-              <input type="file" onChange={handleModelQFileChange} className="w-full h-full opacity-0" />
+              <input
+                type="file"
+                onChange={handleModelQFileChange}
+                className="w-full h-full opacity-0"
+                accept=".docx,.txt,.pdf,.jpg,.jpeg,.png"
+              />
               <div className="bg-[#2B2B2B] border-2 border-solid rounded-lg w-full h-12 flex items-center justify-center cursor-pointer text-white">
                 Model Q
                 {isModelQUploaded && <Check className="text-lg text-green-500 ml-2" />}
@@ -71,7 +76,12 @@ const UploadModal: React.FC<UploadModalProps> = ({
 
             {/* Model Q&A Upload */}
             <label className="mt-2">
-              <input type="file" onChange={handleModelQandAFileChange} className="w-full h-full opacity-0" />
+              <input
+                type="file"
+                onChange={handleModelQandAFileChange}
+                className="w-full h-full opacity-0"
+                accept=".docx,.txt,.pdf,.jpg,.jpeg,.png"
+              />
               <div className="bg-[#2B2B2B] border-2 border-solid rounded-lg w-full h-12 flex items-center justify-center cursor-pointer text-white">
                 Model Q&A
                 {isModelQandAUploaded && <Check className="text-lg text-green-500 ml-2" />}
@@ -84,6 +94,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
                 type="file"
                 onChange={handleStudentResponsesFileChange}
                 className="w-full h-full opacity-0"
+                accept=".docx,.txt,.pdf,.jpg,.jpeg,.png"
                 multiple // Allow multiple file uploads
               />
               <div className="bg-[#2B2B2B] border-2 border-solid rounded-lg w-full h-12 flex items-center justify-center cursor-pointer text-white">

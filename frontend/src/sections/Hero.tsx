@@ -120,7 +120,7 @@ export const Hero: React.FC = () => {
                 <span className="text-black"> to the Future of Education</span> 
               </h1>
               <p className="text-xl text-[#010D3E] tracking-tight mt-6">
-                DISCOVER a smarter way to grade! Our AI-powered grading system delivers faster, fairer, and more insightful evaluations, empowering educators to focus on what truly matters—STUDENTS.
+              Unleash a smarter way to grade! Our AI-powered grading system provides quicker, fairer, and more insightful evaluations, allowing educators to focus on what matters most—helping students succeed.
               </p>
               <div className="flex gap-4 items-center mt-8">
                 <button className="btn btn-primary" onClick={handleSignUpClick}>Try for Free</button>
@@ -135,9 +135,9 @@ export const Hero: React.FC = () => {
               <motion.img
                 src={student_1.src}
                 alt="Cog Image"
-                className="md:absolute md:h-full md:w-auto md:max-w-none md:-left-6"
+                className="md:absolute md:h-full md:w-auto md:max-w-none md:-left-0"
                 animate={{
-                  translateX: [-30, 30],
+                  translateX: [-20, 20],
                 }}
                 transition={{
                   duration: 10,
