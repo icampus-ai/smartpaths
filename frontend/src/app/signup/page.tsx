@@ -18,7 +18,11 @@ const SignupPage: React.FC = () => {
 
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (username === "admin" && password === "admin") {
+    if (
+      (username === "admin" && password === "admin") ||
+      (username === "user" && password === "user")
+    ) {
+      localStorage.setItem("username", username);
       router.push("/dashboard");
     } else {
       setErrorMessage("Invalid credentials");

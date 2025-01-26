@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import UploadModal from "./UploadModal";
 import jsPDF from "jspdf";
+import mammoth from "mammoth";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -36,6 +37,28 @@ const PDFPreview: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
         ))}
       </Document>
     </div>
+  );
+};
+
+const DocxPreview: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
+  const [htmlContent, setHtmlContent] = useState<string>("");
+
+  useEffect(() => {
+    const fetchDocxContent = async () => {
+      const response = await fetch(fileUrl);
+      const arrayBuffer = await response.arrayBuffer();
+      const { value } = await mammoth.convertToHtml({ arrayBuffer });
+      setHtmlContent(value);
+    };
+
+    fetchDocxContent();
+  }, [fileUrl]);
+
+  return (
+    <div
+      className="w-full bg-white rounded-lg shadow-lg p-4 flex flex-col items-center"
+      dangerouslySetInnerHTML={{ __html: htmlContent }}
+    />
   );
 };
 
@@ -240,11 +263,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
               {modelQFileUrl.endsWith(".pdf") ? (
                 <PDFPreview fileUrl={modelQFileUrl} />
               ) : (
-                <iframe
-                  src={modelQFileUrl}
-                  title="Model Q&A Preview"
-                  className="w-full h-full rounded-lg"
-                />
+                <DocxPreview fileUrl={modelQFileUrl} />
               )}
             </div>
           </div>

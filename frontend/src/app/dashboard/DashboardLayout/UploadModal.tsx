@@ -1,6 +1,6 @@
 "use client";
 
-import React, { MouseEventHandler } from "react";
+import React, { useState, MouseEventHandler } from "react";
 import { Check, X } from "lucide-react";
 
 interface UploadModalProps {
@@ -34,6 +34,8 @@ const UploadModal: React.FC<UploadModalProps> = ({
   isStudentResponsesUploaded,
   error,
 }) => {
+  const [currentView, setCurrentView] = useState<"menu" | "upload">("menu");
+
   if (!isUploadMenuOpen) return null;
 
   return (
@@ -53,57 +55,75 @@ const UploadModal: React.FC<UploadModalProps> = ({
           </button>
         </div>
 
-        <div className="w-full py-4">
-          <div className="flex flex-col items-center justify-center mb-4 mt-4">
-            <p className="text-lg text-black">Drag and drop files here</p>
-            <p className="text-sm text-black">or click to upload</p>
+        {currentView === "menu" ? (
+          <div className="w-full py-4">
+            <h2 className="text-xl font-bold text-center mb-4">Choose your tasks</h2>
+            <div className="flex flex-col items-center">
+              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
+                Administrative
+              </button>
+              <button
+                className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black"
+                onClick={() => setCurrentView("upload")}
+              >
+                Evaluations
+              </button>
+              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
+                Research
+              </button>
+            </div>
           </div>
+        ) : (
+          <div className="w-full py-4">
+            <div className="flex flex-col items-center justify-center mb-4 mt-4">
+              <p className="text-lg text-black">Drag and drop files here</p>
+              <p className="text-sm text-black">or click to upload</p>
+            </div>
 
-          <div className="flex flex-col items-center">
-            {/* Model Q Upload */}
-            <label>
-              <input
-                type="file"
-                onChange={handleModelQFileChange}
-                className="w-full h-full opacity-0"
-                accept=".docx,.txt,.pdf,.jpg,.jpeg,.png"
-              />
-              <div className="bg-[#2B2B2B] border-2 border-solid rounded-lg w-full h-12 flex items-center justify-center cursor-pointer text-white">
-                Model Q
-                {isModelQUploaded && <Check className="text-lg text-green-500 ml-2" />}
-              </div>
-            </label>
+            <div className="flex flex-col items-center">
+              {/* Model Q Upload */}
+              <label>
+                <input type="file" onChange={handleModelQFileChange} className="w-full h-full opacity-0" />
+                <div className="bg-[#2B2B2B] border-2 border-solid rounded-lg w-full h-12 flex items-center justify-center cursor-pointer text-white hover:bg-orange-500 hover:text-black">
+                  Model Q
+                  {isModelQUploaded && <Check className="text-lg text-green-500 ml-2" />}
+                </div>
+              </label>
 
-            {/* Model Q&A Upload */}
-            <label className="mt-2">
-              <input
-                type="file"
-                onChange={handleModelQandAFileChange}
-                className="w-full h-full opacity-0"
-                accept=".docx,.txt,.pdf,.jpg,.jpeg,.png"
-              />
-              <div className="bg-[#2B2B2B] border-2 border-solid rounded-lg w-full h-12 flex items-center justify-center cursor-pointer text-white">
-                Model Q&A
-                {isModelQandAUploaded && <Check className="text-lg text-green-500 ml-2" />}
-              </div>
-            </label>
+              {/* Model Q&A Upload */}
+              <label className="mt-2">
+                <input type="file" onChange={handleModelQandAFileChange} className="w-full h-full opacity-0" />
+                <div className="bg-[#2B2B2B] border-2 border-solid rounded-lg w-full h-12 flex items-center justify-center cursor-pointer text-white hover:bg-orange-500 hover:text-black">
+                  Model Q&A
+                  {isModelQandAUploaded && <Check className="text-lg text-green-500 ml-2" />}
+                </div>
+              </label>
 
-            {/* Student Responses Upload */}
-            <label className="mt-2">
-              <input
-                type="file"
-                onChange={handleStudentResponsesFileChange}
-                className="w-full h-full opacity-0"
-                accept=".docx,.txt,.pdf,.jpg,.jpeg,.png"
-                multiple // Allow multiple file uploads
-              />
-              <div className="bg-[#2B2B2B] border-2 border-solid rounded-lg w-full h-12 flex items-center justify-center cursor-pointer text-white">
-                Student Responses
-                {isStudentResponsesUploaded && <Check className="text-lg text-green-500 ml-2" />}
-              </div>
-            </label>
+              {/* Student Responses Upload */}
+              <label className="mt-2">
+                <input
+                  type="file"
+                  onChange={handleStudentResponsesFileChange}
+                  className="w-full h-full opacity-0"
+                  multiple // Allow multiple file uploads
+                />
+                <div className="bg-[#2B2B2B] border-2 border-solid rounded-lg w-full h-12 flex items-center justify-center cursor-pointer text-white hover:bg-orange-500 hover:text-black">
+                  Student Responses
+                  {isStudentResponsesUploaded && <Check className="text-lg text-green-500 ml-2" />}
+                </div>
+              </label>
+            </div>
+
+            <div className="flex justify-center mt-4">
+              <button
+                className="py-2 px-4 bg-gray-300 text-black rounded-lg hover:bg-orange-500"
+                onClick={() => setCurrentView("menu")}
+              >
+                Back
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Show error only if not all files are uploaded */}
         {error && (!isModelQUploaded || !isModelQandAUploaded || !isStudentResponsesUploaded) && (
