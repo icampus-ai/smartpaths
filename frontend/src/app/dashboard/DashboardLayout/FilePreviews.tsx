@@ -2,21 +2,16 @@
 
 import React, { useState, useEffect } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
-import UploadModal from "./UploadModal";
 import jsPDF from "jspdf";
 import mammoth from "mammoth";
+import UploadModal from "./UploadModal";
 
+// Configure the PDF.js worker for React-PDF
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
-interface FilePreviewsProps {
-  modelQFileUrl: string | null;
-  studentResponsesFileUrl: string | null;
-  evaluationData: string | null; // JSON string containing base64 file data
-  selectedDifficulty: string | null;
-  handleDifficultySelection: (difficulty: string) => void;
-  handleEvaluateButtonClicked: () => Promise<void>;
-}
-
+/* ------------------------------------------------------------------
+ * PDFPreview Component
+ * ----------------------------------------------------------------*/
 const PDFPreview: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
   const [numPages, setNumPages] = useState<number>(0);
 
@@ -24,14 +19,22 @@ const PDFPreview: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
     setNumPages(numPages);
   };
 
+  const onDocumentLoadError = (err: Error) => {
+    console.error("PDF load error:", err);
+  };
+
   return (
     <div className="w-full bg-white rounded-lg shadow-lg p-4 flex flex-col items-center">
-      <Document file={fileUrl} onLoadSuccess={onDocumentLoadSuccess}>
+      <Document
+        file={fileUrl}
+        onLoadSuccess={onDocumentLoadSuccess}
+        onLoadError={onDocumentLoadError}
+      >
         {Array.from({ length: numPages }, (_, index) => (
           <Page
             key={index + 1}
             pageNumber={index + 1}
-            scale={1.5} // Increase the scale for a larger preview
+            scale={1.5}
             className="my-4 border border-gray-200 rounded-md shadow-sm"
           />
         ))}
@@ -40,28 +43,47 @@ const PDFPreview: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
   );
 };
 
-const DocxPreview: React.FC<{ fileUrl: string }> = ({ fileUrl }) => {
+/* ------------------------------------------------------------------
+ * DocxPreview Component (Reads File Directly, No Download)
+ * ----------------------------------------------------------------*/
+const DocxPreview: React.FC<{ file: File }> = ({ file }) => {
   const [htmlContent, setHtmlContent] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchDocxContent = async () => {
-      const response = await fetch(fileUrl);
-      const arrayBuffer = await response.arrayBuffer();
-      const { value } = await mammoth.convertToHtml({ arrayBuffer });
-      setHtmlContent(value);
+    const loadDocx = async () => {
+      try {
+        // Read the file's binary data in the browser
+        const arrayBuffer = await file.arrayBuffer();
+        // Convert .docx to HTML
+        const { value } = await mammoth.convertToHtml({ arrayBuffer });
+        setHtmlContent(value);
+      } catch (err) {
+        console.error("Error converting docx:", err);
+        setError("Error processing .docx file. Please ensure it is valid.");
+      }
     };
+    loadDocx();
+  }, [file]);
 
-    fetchDocxContent();
-  }, [fileUrl]);
+  if (error) {
+    return (
+      <div className="w-full bg-white rounded-lg shadow-lg p-4 flex flex-col items-center">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
 
   return (
-    <div
-      className="w-full bg-white rounded-lg shadow-lg p-4 flex flex-col items-center"
-      dangerouslySetInnerHTML={{ __html: htmlContent }}
-    />
+    <div className="w-full bg-white rounded-lg shadow-lg p-4 flex flex-col items-center">
+      <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+    </div>
   );
 };
 
+/* ------------------------------------------------------------------
+ * EvaluationResults Component (Unchanged from your code)
+ * ----------------------------------------------------------------*/
 const EvaluationResults: React.FC<{ evaluationData: string }> = ({ evaluationData }) => {
   const decodedData = JSON.parse(evaluationData);
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
@@ -69,11 +91,15 @@ const EvaluationResults: React.FC<{ evaluationData: string }> = ({ evaluationDat
   const decodedFileContent = atob(decodedData.files[currentFileIndex].file);
 
   const handlePrevious = () => {
-    setCurrentFileIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : totalFiles - 1));
+    setCurrentFileIndex((prevIndex) =>
+      prevIndex > 0 ? prevIndex - 1 : totalFiles - 1
+    );
   };
 
   const handleNext = () => {
-    setCurrentFileIndex((prevIndex) => (prevIndex < totalFiles - 1 ? prevIndex + 1 : 0));
+    setCurrentFileIndex((prevIndex) =>
+      prevIndex < totalFiles - 1 ? prevIndex + 1 : 0
+    );
   };
 
   return (
@@ -98,6 +124,18 @@ const EvaluationResults: React.FC<{ evaluationData: string }> = ({ evaluationDat
   );
 };
 
+/* ------------------------------------------------------------------
+ * Main FilePreviews Component
+ * ----------------------------------------------------------------*/
+interface FilePreviewsProps {
+  modelQFileUrl: string | null;
+  studentResponsesFileUrl: string | null;
+  evaluationData: string | null; // JSON string containing base64 file data
+  selectedDifficulty: string | null;
+  handleDifficultySelection: (difficulty: string) => void;
+  handleEvaluateButtonClicked: () => Promise<void>;
+}
+
 const FilePreviews: React.FC<FilePreviewsProps> = ({
   modelQFileUrl: initialModelQFileUrl,
   studentResponsesFileUrl: initialStudentResponsesFileUrl,
@@ -106,16 +144,25 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
   handleDifficultySelection,
   handleEvaluateButtonClicked,
 }) => {
-  const [modelQFileUrl, setModelQFileUrl] = useState<string | null>(initialModelQFileUrl);
-  const [studentResponsesFileUrl, setStudentResponsesFileUrl] = useState<string | null>(initialStudentResponsesFileUrl);
+  // We store both the File object and the Blob URL for PDF
+  const [modelQFile, setModelQFile] = useState<File | null>(null);
+  const [modelQBlobUrl, setModelQBlobUrl] = useState<string | null>(initialModelQFileUrl);
+
+  const [studentResponsesFile, setStudentResponsesFile] = useState<File | null>(null);
+  const [studentResponsesBlobUrl, setStudentResponsesBlobUrl] = useState<string | null>(
+    initialStudentResponsesFileUrl
+  );
+
   const [dropdown3, setDropdown3] = useState<string>("");
   const [isUploadModalOpen, setIsUploadModalOpen] = useState<boolean>(false);
-  const [modelQFile, setModelQFile] = useState<File | null>(null);
-  const [studentResponsesFile, setStudentResponsesFile] = useState<File | null>(null);
+
   const [isModelQUploaded, setIsModelQUploaded] = useState(false);
   const [isStudentResponsesUploaded, setIsStudentResponsesUploaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  /* ----------------------------------------
+   * Show/Hide Upload Modal
+   * --------------------------------------*/
   const handleFileUploadClick = () => {
     setIsUploadModalOpen(true);
   };
@@ -124,26 +171,42 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
     setIsUploadModalOpen(false);
   };
 
+  /* ----------------------------------------
+   * Model Q File Upload
+   * --------------------------------------*/
   const handleModelQFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    if (event.target.files) {
+    if (event.target.files?.length) {
       const file = event.target.files[0];
       setModelQFile(file);
-      setModelQFileUrl(URL.createObjectURL(file));
+
+      // If it's a PDF, we create a blob URL for PDFPreview
+      // If it's docx, we'll parse in DocxPreview directly from the File object
+      const url = URL.createObjectURL(file);
+      setModelQBlobUrl(url);
+
       setIsModelQUploaded(true);
       checkUploadStatus(true, isStudentResponsesUploaded);
     }
   };
 
-  const handleStudentResponsesFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    if (event.target.files) {
+  /* ----------------------------------------
+   * Student Responses File Upload
+   * --------------------------------------*/
+  const handleStudentResponsesFileChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    if (event.target.files?.length) {
       const file = event.target.files[0];
       setStudentResponsesFile(file);
-      setStudentResponsesFileUrl(URL.createObjectURL(file));
+      setStudentResponsesBlobUrl(URL.createObjectURL(file));
       setIsStudentResponsesUploaded(true);
       checkUploadStatus(isModelQUploaded, true);
     }
   };
 
+  /* ----------------------------------------
+   * Drag & Drop Handling
+   * --------------------------------------*/
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
   };
@@ -152,24 +215,33 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
     event.preventDefault();
     if (event.dataTransfer.items) {
       const files = event.dataTransfer.items;
+      let isModelSet = false;
+      let isStudentSet = false;
+
+      // We assume the first file is "Model Q", the second is "Student Responses"
       for (let i = 0; i < files.length; i++) {
         const file = files[i].getAsFile();
         if (file) {
-          if (i === 0) {
+          if (!isModelSet) {
             setModelQFile(file);
-            setModelQFileUrl(URL.createObjectURL(file));
+            setModelQBlobUrl(URL.createObjectURL(file));
             setIsModelQUploaded(true);
-          } else if (i === 1) {
+            isModelSet = true;
+          } else if (!isStudentSet) {
             setStudentResponsesFile(file);
-            setStudentResponsesFileUrl(URL.createObjectURL(file));
+            setStudentResponsesBlobUrl(URL.createObjectURL(file));
             setIsStudentResponsesUploaded(true);
+            isStudentSet = true;
           }
         }
       }
-      checkUploadStatus(true, true);
+      checkUploadStatus(isModelSet, isStudentSet);
     }
   };
 
+  /* ----------------------------------------
+   * Check if both files are uploaded
+   * --------------------------------------*/
   const checkUploadStatus = (modelUploaded: boolean, studentUploaded: boolean) => {
     if (modelUploaded && studentUploaded) {
       setIsUploadModalOpen(false);
@@ -183,6 +255,9 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
     }
   };
 
+  /* ----------------------------------------
+   * Download Report
+   * --------------------------------------*/
   const handleDownloadReport = () => {
     if (evaluationData) {
       const decodedData = JSON.parse(evaluationData);
@@ -194,11 +269,15 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
     }
   };
 
-  // If neither the model Q&A nor evaluation data is provided, show nothing
-  if (!modelQFileUrl && !evaluationData) return null;
+  /* ----------------------------------------
+   * If no file/eval data, hide previews
+   * --------------------------------------*/
+  // If neither the model Q file nor evaluation data is provided, we show nothing
+  if (!modelQBlobUrl && !evaluationData) return null;
 
   return (
     <div className="mt-8 w-full flex flex-col space-y-4 lg:space-y-0 lg:space-x-4 lg:flex-col relative">
+      {/* Top Controls */}
       <div className="w-full flex justify-between mb-4 p-2 border rounded-lg bg-white shadow-sm space-x-2">
         <button
           onClick={handleFileUploadClick}
@@ -229,11 +308,11 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
           <option value="">Status</option>
           <option value="option1">Pending</option>
           <option value="option2">Completed</option>
-          <option value="option3">Hold</option>
           <option value="option3">Download Report</option>
         </select>
       </div>
 
+      {/* Evaluate & Back Buttons */}
       {selectedDifficulty && (
         <div className="flex flex-col items-center mb-4">
           <button
@@ -251,25 +330,37 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
         </div>
       )}
 
+      {/* Preview Section */}
       <div className="flex flex-row space-x-4">
-        {/* -------- MODEL Q&A PREVIEW -------- */}
-        {modelQFileUrl && (
+        {/* MODEL Q&A PREVIEW */}
+        {modelQBlobUrl && (
           <div className="flex-1 flex flex-col">
             <h2 className="text-4xl font-bold text-center mb-4 mt-8">
               <span className="text-orange-500">Model</span>
               <span className="text-black"> Q&A</span>
             </h2>
             <div className="min-h-[600px] min-w-[800px] max-h-[80vh] bg-gray-50 rounded-lg shadow-md p-4 overflow-auto flex-grow">
-              {modelQFileUrl.endsWith(".pdf") ? (
-                <PDFPreview fileUrl={modelQFileUrl} />
+              {/* 
+                - If extension is .pdf → Show PDFPreview using blob URL
+                - If extension is .docx → Show DocxPreview using the raw File
+                - Otherwise → fallback to iframe
+              */}
+              {modelQFile && modelQFile.name.toLowerCase().endsWith(".pdf") ? (
+                <PDFPreview fileUrl={modelQBlobUrl} />
+              ) : modelQFile && modelQFile.name.toLowerCase().endsWith(".docx") ? (
+                <DocxPreview file={modelQFile} />
               ) : (
-                <DocxPreview fileUrl={modelQFileUrl} />
+                <iframe
+                  src={modelQBlobUrl}
+                  title="File Preview"
+                  className="w-full h-full rounded-lg"
+                />
               )}
             </div>
           </div>
         )}
 
-        {/* -------- EVALUATION RESULTS -------- */}
+        {/* EVALUATION RESULTS */}
         {evaluationData && (
           <div className="flex-1 flex flex-col">
             <h2 className="text-4xl font-bold text-center mb-4 mt-8 text-orange-600">
@@ -283,6 +374,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
         )}
       </div>
 
+      {/* Upload Modal */}
       {isUploadModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
           <UploadModal
@@ -297,6 +389,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
             error={error}
             handleMouseDown={() => {}}
             handleMouseMove={() => {}}
+            // If you have "Model QandA File" logic, use the same handler as handleModelQFileChange or define separately
             handleModelQandAFileChange={handleModelQFileChange}
             isModelQandAUploaded={isModelQUploaded}
           />

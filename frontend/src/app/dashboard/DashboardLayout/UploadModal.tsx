@@ -34,7 +34,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
   isStudentResponsesUploaded,
   error,
 }) => {
-  const [currentView, setCurrentView] = useState<"menu" | "upload">("menu");
+  const [currentView, setCurrentView] = useState<"menu" | "upload" | "administrative" | "research">("menu");
 
   if (!isUploadMenuOpen) return null;
 
@@ -59,7 +59,10 @@ const UploadModal: React.FC<UploadModalProps> = ({
           <div className="w-full py-4">
             <h2 className="text-xl font-bold text-center mb-4">Choose your tasks</h2>
             <div className="flex flex-col items-center">
-              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
+              <button
+                className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black"
+                onClick={() => setCurrentView("administrative")}
+              >
                 Administrative
               </button>
               <button
@@ -68,8 +71,81 @@ const UploadModal: React.FC<UploadModalProps> = ({
               >
                 Evaluations
               </button>
-              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
+              <button
+                className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black"
+                onClick={() => setCurrentView("research")}
+              >
                 Research
+              </button>
+            </div>
+          </div>
+        ) : currentView === "administrative" ? (
+          <div className="w-full py-4">
+            <h2 className="text-xl font-bold text-center mb-4">Administrative Options</h2>
+            <div className="flex flex-col items-center">
+              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
+                Admissions and Enrollment
+              </button>
+              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
+                Class Scheduling and Timetabling
+              </button>
+              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
+                Finance and Budgeting
+              </button>
+              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
+                Human Resources Management
+              </button>
+              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
+                Document Processing and Compliance
+              </button>
+            </div>
+            <div className="flex justify-center mt-4">
+              <button
+                className="py-2 px-4 bg-gray-300 text-black rounded-lg hover:bg-orange-500"
+                onClick={() => setCurrentView("menu")}
+              >
+                Back
+              </button>
+            </div>
+          </div>
+        ) : currentView === "research" ? (
+          <div className="w-full py-4">
+            <h2 className="text-xl font-bold text-center mb-4">Research Options</h2>
+            <div className="flex flex-col items-center">
+              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
+                Literature Discovery and Review
+              </button>
+              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
+                Manuscript Writing and Editing
+              </button>
+              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
+                Research Collaboration and Networking
+              </button>
+              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
+                Grant Proposal Development
+              </button>
+              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
+                Experimental Design and Management
+              </button>
+              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
+                Peer Review Assistance
+              </button>
+              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
+                Publication and Dissemination
+              </button>
+              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
+                Patent and Intellectual Property Analysis
+              </button>
+              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
+                Post-Research Impact Evaluation
+              </button>
+            </div>
+            <div className="flex justify-center mt-4">
+              <button
+                className="py-2 px-4 bg-gray-300 text-black rounded-lg hover:bg-orange-500"
+                onClick={() => setCurrentView("menu")}
+              >
+                Back
               </button>
             </div>
           </div>
@@ -83,7 +159,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
             <div className="flex flex-col items-center">
               {/* Model Q Upload */}
               <label>
-                <input type="file" onChange={handleModelQFileChange} className="w-full h-full opacity-0" />
+                <input type="file" accept=".pdf,.docx" onChange={handleModelQFileChange} className="w-full h-full opacity-0" />
                 <div className="bg-[#2B2B2B] border-2 border-solid rounded-lg w-full h-12 flex items-center justify-center cursor-pointer text-white hover:bg-orange-500 hover:text-black">
                   Model Q
                   {isModelQUploaded && <Check className="text-lg text-green-500 ml-2" />}
@@ -92,7 +168,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
 
               {/* Model Q&A Upload */}
               <label className="mt-2">
-                <input type="file" onChange={handleModelQandAFileChange} className="w-full h-full opacity-0" />
+                <input type="file" accept=".pdf,.docx" onChange={handleModelQandAFileChange} className="w-full h-full opacity-0" />
                 <div className="bg-[#2B2B2B] border-2 border-solid rounded-lg w-full h-12 flex items-center justify-center cursor-pointer text-white hover:bg-orange-500 hover:text-black">
                   Model Q&A
                   {isModelQandAUploaded && <Check className="text-lg text-green-500 ml-2" />}
@@ -103,6 +179,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
               <label className="mt-2">
                 <input
                   type="file"
+                  accept=".pdf,.docx"
                   onChange={handleStudentResponsesFileChange}
                   className="w-full h-full opacity-0"
                   multiple // Allow multiple file uploads
