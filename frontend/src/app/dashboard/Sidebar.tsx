@@ -61,8 +61,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, toggleSidebar, onProfileC
               {!imageUrl && <User className="text-6xl text-[#FF6600]" />}
             </div>
           </label>
-          <span className="text-white mt-4 font-semibold text-lg">Prateek</span>
-          <span className="text-gray-400">prateek@example.com</span>
+          <span className="text-white mt-4 font-semibold text-lg">User</span>
+          <span className="text-gray-400">user@example.com</span>
         </div>
       )}
       <ul className="mt-10 space-y-6">
@@ -88,8 +88,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, toggleSidebar, onProfileC
           {isExpanded && <span className="font-medium text-lg">Analytics</span>}
         </li>
         <li
-          className={`flex items-center gap-4 cursor-pointer hover:text-[#E0E0E0] transition-all ${activeMenu === "/settings" ? "scale-110" : ""}`}
-          onClick={() => handleNavigation("/settings")}
+          className={`flex items-center gap-4 cursor-pointer hover:text-[#E0E0E0] transition-all ${activeMenu === "/usage" ? "scale-110" : ""}`}
+          onClick={() => handleNavigation("/usage")}
         >
           <Settings className="text-xl text-[#FF6600]" />
           {isExpanded && <span className="font-medium text-lg">Usage</span>}

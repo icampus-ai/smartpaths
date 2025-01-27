@@ -9,25 +9,25 @@ import { StaticImageData } from "next/image";
 
 const Features = () => {
   const [selectedCourse, setSelectedCourse] = useState<
-    "Mathematics" | "Science" | "Economics"
+    "Mathematics" | "Chemistry" | "Economics"
   >("Mathematics");
 
   const courseResults: {
-    [key in "Mathematics" | "Science" | "Economics"]: string;
+    [key in "Mathematics" | "Chemistry" | "Economics"]: string;
   } = {
     Mathematics:
       "Results for Mathematics: Excellent performance with an average score of 85%.",
-    Science:
+    Chemistry:
       "Results for Science: Good performance with an average score of 78%.",
     Economics:
       "Results for Economics: Satisfactory performance with an average score of 70%.",
   };
 
   const courseImages: {
-    [key in "Mathematics" | "Science" | "Economics"]: StaticImageData;
+    [key in "Mathematics" | "Chemistry" | "Economics"]: StaticImageData;
   } = {
     Mathematics: evaluationImage,
-    Science: evaluationImage,
+    Chemistry: evaluationImage,
     Economics: evaluationImage,
   };
 
@@ -67,8 +67,8 @@ const Features = () => {
                   src={evaluationImage}
                   alt="Seamless Grading Experience"
                   className="rounded-lg shadow-xl hover:scale-105 transition-transform"
-                  width={500}
-                  height={300}
+                  width={800}
+                  height={800}
                 />
               </div>
               <div className="p-4">
@@ -129,7 +129,7 @@ const Features = () => {
                   <span className="text-orange-500">Detailed</span> Analytics
                 </h3>
                 <p className="text-lg text-gray-700 mt-4 text-center">
-                  Our platform provides actionable insights into each student’s strengths, weaknesses, and areas for improvement, enabling personalized learning paths and better academic outcomes.
+                  Our platform provides actionable insights into each students strengths, weaknesses, and areas for improvement, enabling personalized learning paths and better academic outcomes.
                 </p>
               </div>
               <div className="p-6 bg-white rounded-lg shadow-lg hover:scale-105 transition-transform">
@@ -164,12 +164,12 @@ const Features = () => {
                 value={selectedCourse}
                 onChange={(e) =>
                   setSelectedCourse(
-                    e.target.value as "Mathematics" | "Science" | "Economics"
+                    e.target.value as "Mathematics" | "Chemistry" | "Economics"
                   )
                 }
               >
                 <option value="Mathematics">Mathematics</option>
-                <option value="Science">Science</option>
+                <option value="Science">Chemistry</option>
                 <option value="Economics">Economics</option>
               </select>
               <div className="mt-8 text-lg text-black">
@@ -180,7 +180,7 @@ const Features = () => {
                   src={courseImages[selectedCourse]}
                   alt={`${selectedCourse} Evaluation`}
                   className="rounded-lg shadow-lg hover:scale-105 transition-transform"
-                  width={500}
+                  width={900}
                   height={300}
                 />
               </div>

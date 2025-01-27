@@ -80,9 +80,9 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
 
   const subscriptionPlans = [
     'Select Plan',
-    'Basic',
-    'Standard',
-    'Premium',
+    'Free',
+    'Pay per Evaluation',
+    'Oraganization',
   ];
 
   const handleTabChange = (tab: 'profile' | 'subscription' | 'payment') => {
