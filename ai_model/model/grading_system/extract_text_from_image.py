@@ -1,5 +1,6 @@
 from groq import Groq
 import base64
+from get_llama_response_from_groq import get_llama_response_from_groq
 
 def extract_text(image_path):
     """
@@ -46,7 +47,13 @@ def extract_text(image_path):
 
 
     # Extract and return the response
-    return chat_completion.choices[0].message.content
+    text =  chat_completion.choices[0].message.content
+
+    prompt = f"faithfully just reconsturct the text from this students answer to accomodate any simple english errors : {text}"
+
+    reconstructed_text = get_llama_response_from_groq(prompt)
+
+    return reconstructed_text
 
 # # Example usage
 # if __name__ == "__main__":
