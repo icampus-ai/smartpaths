@@ -1,4 +1,9 @@
 import base64
+import easyocr
+import pytesseract
+from pdf2image import convert_from_path
+from docx import Document
+import os
 from ai_model.model.grading_system.grader import grade_student_answers_v2
 from ai_model.model.grading_system.rubrics import generate_rubrics
 from ai_model.model.grading_system.get_overall_feedback import get_overall_feedback
@@ -14,12 +19,33 @@ from backend.app.utils.file_type import (
     generate_summary
 )
 
+def extract_text_from_handwritten_image(image):
+    """Extract text from a handwritten document image."""
+    text = pytesseract.image_to_string(image)
+    return text
+
+def extract_text_from_pdf(pdf_path):
+    """Extract text from a PDF file containing handwritten text."""
+    images = convert_from_path(pdf_path)
+    text = ""
+    for image in images:
+        text += extract_text_from_handwritten_image(image) + "\n"
+    return text
+
+def extract_text_from_docx(docx_path):
+    """Extract text from a DOCX file containing handwritten text."""
+    doc = Document(docx_path)
+    text = ""
+    for paragraph in doc.paragraphs:
+        text += paragraph.text + "\n"
+    return text
+
 def read_file_content(file, file_type):
     """Read file content based on its type."""
     if file_type == 'application/pdf':
-        return extract_pdf_text(file.read())
+        return extract_pdf_text(file.read()) + extract_text_from_pdf(file)
     elif file_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-        return extract_docx_text(file.read())
+        return extract_docx_text(file.read()) + extract_text_from_docx(file)
     return file.read().decode("utf-8")
 
 def process_model_files(model_question_paper, model_question_answer_file, file_type):
@@ -47,8 +73,7 @@ def process_student_answers(student_answer_file, file_type, model_answers, gener
 
     updated_student_content, total_score, feedbacks = append_grading_results(student_content, grading_results)
 
-    
-      # Generate overall summary
+    # Generate overall summary
     summary = generate_summary(total_score, generated_rubrics['model_total_score'], get_overall_feedback(feedbacks))
     
     # Combine the grading results with the summary
@@ -62,6 +87,15 @@ def save_graded_file(updated_content, file_name, file_type):
         save_as_docx(updated_content, f"{file_name}_graded.docx")
     elif file_type == 'application/pdf':
         save_as_pdf(updated_content, f"{file_name}_graded.pdf")
+    elif file_type == 'image/jpeg' or file_type == 'image/png':
+        text_content = extract_text_from_handwritten_image(file_name)
+        save_as_text(text_content, f"{file_name}_graded.txt")
+    elif file_type == 'application/pdf':
+        text_content = extract_text_from_pdf(file_name)
+        save_as_text(text_content, f"{file_name}_graded.txt")
+    elif file_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+        text_content = extract_text_from_docx(file_name)
+        save_as_text(text_content, f"{file_name}_graded.txt")
     else:
         save_as_text(updated_content, f"{file_name}_graded.txt")
 
