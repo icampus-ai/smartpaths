@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Header } from "../../sections/Header";
 import Image from "next/image";
 import abstract34 from "../../assets/abstract_33.png"; // Adjust the path as needed
-import studentsImage from "../../assets/students_3.png"; // Adjust the path as needed
+import studentsImage from "../../assets/student_1.png"; // Adjust the path as needed
 
 const SignupPage: React.FC = () => {
   const router = useRouter();
