@@ -33,7 +33,7 @@ const pricingTiers = [
   },
   {
     title: "Pay / Evaluation",
-    monthlyPrice: 2.99,
+    monthlyPrice: 0.99,
     buttonText: "Sign up now",
     popular: true,
     inverse: true,
@@ -46,7 +46,7 @@ const pricingTiers = [
     ],
   },
   {
-    title: "Business",
+    title: "Organization",
     buttonText: "Let's Evaluate Your Needs",
     popular: false,
     inverse: false,
