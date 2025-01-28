@@ -7,7 +7,7 @@ import os
 from ai_model.model.grading_system.grader import grade_student_answers_v2
 from ai_model.model.grading_system.rubrics import generate_rubrics
 from ai_model.model.grading_system.get_overall_feedback import get_overall_feedback
-from ai_model.model.grading_system.extract_text import extract_text
+from ai_model.model.grading_system.extract_text_from_image import extract_text
 from backend.app.utils.file_type import (
     extract_pdf_text, 
     extract_docx_text, 
@@ -22,6 +22,7 @@ from backend.app.utils.file_type import (
 
 def extract_text_from_handwritten_image(image):
     """Extract text from a handwritten document image."""
+    print("Extracting text from handwritten image...")
     text = pytesseract.image_to_string(image)
     return text
 
@@ -59,7 +60,9 @@ def process_model_files(model_question_paper, model_question_answer_file, file_t
 def process_student_answers(student_answer_file, file_type, model_answers, generated_rubrics, difficulty_level):
     """Process a single student's answers and return grading results."""
     file_name = student_answer_file.filename
+    print(f"File name.............: {file_name}")
     student_content = extract_text(student_answer_file)
+    print(f"Student content........: {student_content}")
     student_extracted_answers = extract_student_data(student_content)
 
     grading_results = {}
@@ -84,13 +87,13 @@ def process_student_answers(student_answer_file, file_type, model_answers, gener
 
 def save_graded_file(updated_content, file_name, file_type):
     """Save graded content to the appropriate file format."""
+    print(f"File type: {file_type}")
+    print(f"File name: {file_name}")
+    print(f"Updated content: {updated_content}")
     if file_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
         save_as_docx(updated_content, f"{file_name}_graded.docx")
-    elif file_type == 'application/pdf':
+    elif file_type == 'application/pdf' or file_type == 'image/jpeg' or file_type == 'image/png':
         save_as_pdf(updated_content, f"{file_name}_graded.pdf")
-    elif file_type == 'image/jpeg' or file_type == 'image/png':
-        text_content = extract_text_from_handwritten_image(file_name)
-        save_as_text(text_content, f"{file_name}_graded.txt")
     elif file_type == 'application/pdf':
         text_content = extract_text_from_pdf(file_name)
         save_as_text(text_content, f"{file_name}_graded.txt")
@@ -103,6 +106,7 @@ def save_graded_file(updated_content, file_name, file_type):
 def evaluate_student_answers(model_question_paper, model_question_answer_file, student_answer_files, difficulty_level, file_type='application/pdf'):
     """Evaluate student answers against model answers and rubrics."""
     # Process model files
+    print("Processing student files...", student_answer_files)
     model_question_paper_text, model_answers = process_model_files(model_question_paper, model_question_answer_file, file_type)
     
     # Generate rubrics from the model question paper

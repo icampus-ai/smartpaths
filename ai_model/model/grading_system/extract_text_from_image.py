@@ -1,6 +1,9 @@
 from groq import Groq
 import base64
-from get_llama_response_from_groq import get_llama_response_from_groq
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
+from ai_model.model.grading_system.get_llama_response_from_groq import get_llama_response_from_groq
 
 def extract_text(image_data):
     """
@@ -13,8 +16,15 @@ def extract_text(image_data):
         str: Response from the model.
     """
     # Function to encode the image into Base64
-    def encode_image(image_data):
-        return base64.b64encode(image_data).decode('utf-8')
+    def encode_image(image):
+        # Open the JPEG image in binary mode
+        try:
+            image_data = image.read()
+            return base64.b64encode(image_data).decode('utf-8')
+        except FileNotFoundError:
+            raise FileNotFoundError(f"The file at {image} was not found.")
+        except Exception as e:
+            raise RuntimeError(f"An error occurred while encoding the image: {e}")
 
     # Encode the image
     base64_image = encode_image(image_data)
