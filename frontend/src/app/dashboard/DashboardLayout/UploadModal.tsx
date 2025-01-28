@@ -170,7 +170,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
               <label className="mt-2">
                 <input
                   type="file"
-                  accept=".pdf,.docx"
+                  accept=".pdf,.docx,.jpg"
                   onChange={handleStudentResponsesFileChange}
                   className="w-full h-full opacity-0"
                   multiple // Allow multiple file uploads
