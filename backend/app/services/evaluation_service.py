@@ -7,6 +7,7 @@ import os
 from ai_model.model.grading_system.grader import grade_student_answers_v2
 from ai_model.model.grading_system.rubrics import generate_rubrics
 from ai_model.model.grading_system.get_overall_feedback import get_overall_feedback
+from ai_model.model.grading_system.extract_text import extract_text
 from backend.app.utils.file_type import (
     extract_pdf_text, 
     extract_docx_text, 
@@ -43,9 +44,9 @@ def extract_text_from_docx(docx_path):
 def read_file_content(file, file_type):
     """Read file content based on its type."""
     if file_type == 'application/pdf':
-        return extract_pdf_text(file.read()) + extract_text_from_pdf(file)
+        return extract_pdf_text(file.read())
     elif file_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-        return extract_docx_text(file.read()) + extract_text_from_docx(file)
+        return extract_docx_text(file.read())
     return file.read().decode("utf-8")
 
 def process_model_files(model_question_paper, model_question_answer_file, file_type):
@@ -58,7 +59,7 @@ def process_model_files(model_question_paper, model_question_answer_file, file_t
 def process_student_answers(student_answer_file, file_type, model_answers, generated_rubrics, difficulty_level):
     """Process a single student's answers and return grading results."""
     file_name = student_answer_file.filename
-    student_content = read_file_content(student_answer_file, file_type)
+    student_content = extract_text(student_answer_file)
     student_extracted_answers = extract_student_data(student_content)
 
     grading_results = {}
