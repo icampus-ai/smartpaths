@@ -87,12 +87,6 @@ const UploadModal: React.FC<UploadModalProps> = ({
                 Admissions and Enrollment
               </button>
               <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
-                Class Scheduling and Timetabling
-              </button>
-              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
-                Finance and Budgeting
-              </button>
-              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
                 Human Resources Management
               </button>
               <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
@@ -123,9 +117,6 @@ const UploadModal: React.FC<UploadModalProps> = ({
               </button>
               <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
                 Grant Proposal Development
-              </button>
-              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
-                Experimental Design and Management
               </button>
               <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
                 Peer Review Assistance

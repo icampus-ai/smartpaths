@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { motion, useScroll } from 'framer-motion';
 import Image from 'next/image';
 import ArrowIcon from '../assets/arrow-right.svg';
-import student_1 from '../assets/student_1.png';
+import student_1 from '../assets/aibrain.png';
 import private_1 from '../assets/private_1.png';
 import speed from '../assets/speed.png';
 import fair from '../assets/fair.png';
@@ -33,7 +33,7 @@ const pricingTiers = [
   },
   {
     title: "Pay / Evaluation",
-    monthlyPrice: 2.99,
+    monthlyPrice: 0.99,
     buttonText: "Sign up now",
     popular: true,
     inverse: true,
@@ -46,7 +46,7 @@ const pricingTiers = [
     ],
   },
   {
-    title: "Business",
+    title: "Organization",
     buttonText: "Let's Evaluate Your Needs",
     popular: false,
     inverse: false,

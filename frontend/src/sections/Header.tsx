@@ -40,17 +40,6 @@ export const Header = () => {
       `}
     >
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" legacyBehavior>
-          <a className="flex items-center gap-2">
-            <Image src={Logo} alt="SmartPaths Logo" height={50} width={50} />
-            <span className="font-bold">
-              <span className="text-orange-500">Smart</span>
-              <span className="text-black">Paths</span>
-            </span>
-          </a>
-        </Link>
-
         {/* Mobile Menu Button */}
         <button
           onClick={handleMenuToggle}
@@ -58,6 +47,20 @@ export const Header = () => {
         >
           <Image src={MenuIcon} alt="Menu Icon" height={24} width={24} />
         </button>
+
+        {/* Logo */}
+        <Link href="/" legacyBehavior>
+          <a className="flex items-center gap-2 mx-auto md:mx-0">
+            <Image src={Logo} alt="SmartPaths Logo" height={50} width={50} />
+            <span className="font-bold hidden md:inline">
+              <span className="text-orange-500">Smart</span>
+              <span className="text-black">Paths</span>
+            </span>
+          </a>
+        </Link>
+
+        {/* Placeholder for alignment */}
+        <div className="md:hidden w-6 h-6"></div>
 
         {/* Nav Items */}
         <nav
