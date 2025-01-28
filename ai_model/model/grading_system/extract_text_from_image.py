@@ -2,23 +2,22 @@ from groq import Groq
 import base64
 from get_llama_response_from_groq import get_llama_response_from_groq
 
-def extract_text(image_path):
+def extract_text(image_data):
     """
     Analyzes an image using the Groq API and returns the model's response.
 
     Parameters:
-        image_path (str): Path to the image file.
+        image_data (bytes): Image data in bytes.
 
     Returns:
         str: Response from the model.
     """
     # Function to encode the image into Base64
-    def encode_image(image_path):
-        with open(image_path, "rb") as image_file:
-            return base64.b64encode(image_file.read()).decode('utf-8')
+    def encode_image(image_data):
+        return base64.b64encode(image_data).decode('utf-8')
 
     # Encode the image
-    base64_image = encode_image(image_path)
+    base64_image = encode_image(image_data)
 
     # Initialize Groq client with the API key
     client = Groq(api_key="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")
@@ -45,11 +44,10 @@ def extract_text(image_path):
         # top_k=1           # Only the single most likely token is considered at each step
     )
 
-
     # Extract and return the response
-    text =  chat_completion.choices[0].message.content
+    text = chat_completion.choices[0].message.content
 
-    prompt = f"faithfully just reconsturct the text from this students answer to accomodate any simple english errors : {text}"
+    prompt = f"faithfully just reconstruct the text from this student's answer to accommodate any simple English errors: {text}"
 
     reconstructed_text = get_llama_response_from_groq(prompt)
 
@@ -57,6 +55,10 @@ def extract_text(image_path):
 
 # # Example usage
 # if __name__ == "__main__":
-#     image_path = r"C:\Users\Vivek\Downloads\handwritten_answer.jpg"  # Path to your image
-#     response = extract_text(image_path)
+#     # Load your image into memory (e.g., from a file)
+#     image_path = r"C:\Users\Vivek\Downloads\handwritten_answer.jpg"  # Example file path
+#     with open(image_path, "rb") as image_file:
+#         image_data = image_file.read()
+
+#     response = extract_text(image_data)
 #     print("Response from the model:", response)
