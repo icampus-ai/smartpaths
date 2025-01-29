@@ -1,4 +1,5 @@
 from ai_model.model.grading_system.llama_utils import get_llama_response_1, get_llama_response
+from ai_model.model.grading_system.get_llama_response_from_groq import get_llama_response_from_groq
 import re
 import json
 import time
@@ -25,7 +26,7 @@ def evaluate_answer(model_answer: str, student_answer: str, max_score: float) ->
     Student Answer:
     {student_answer}
     """
-    evaluation = get_llama_response(prompt)
+    evaluation = get_llama_response_from_groq(prompt)
     end_time = time.time()
     elapsed_time = end_time - start_time
 

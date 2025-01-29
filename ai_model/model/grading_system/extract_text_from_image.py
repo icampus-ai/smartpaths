@@ -56,12 +56,12 @@ def extract_text(image_data):
 
     # Extract and return the response
     text = chat_completion.choices[0].message.content
-
+    print("Extracted text:", text)
     prompt = f"faithfully just reconstruct the text from this student's answer to accommodate any simple English errors: {text}"
 
-    reconstructed_text = get_llama_response_from_groq(prompt)
+   # reconstructed_text = get_llama_response_from_groq(prompt)
 
-    return reconstructed_text
+    return text
 
 # # Example usage
 # if __name__ == "__main__":

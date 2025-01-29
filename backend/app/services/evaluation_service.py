@@ -1,7 +1,7 @@
 import base64
-import easyocr
-import pytesseract
-from pdf2image import convert_from_path
+# import easyocr
+# import pytesseract
+# from pdf2image import convert_from_path
 from docx import Document
 import os
 from ai_model.model.grading_system.grader import grade_student_answers_v2
