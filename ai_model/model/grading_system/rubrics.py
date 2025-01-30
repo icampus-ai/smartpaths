@@ -59,13 +59,13 @@ def extract_rubrics_raw(model_question_paper: str) -> str:
 
     prompt = f"""
      You are an expert in educational assessment tasked with reading the paper and marks allocated to each question.
-     Your goal is to identify all question. You should not add any new information that is not in the question paper. 
+     Your goal is to identify all questions possibly present. You should not add any new information that is not in the question paper. 
      For each question, please follow this strict format:
      **Question [number]**: [question text] — [marks] Marks
      
      Here is the model Question Paper: {model_question_paper}
     """
-    raw_response = get_llama_response(prompt)
+    raw_response = get_llama_response_from_groq(prompt)
     
     # Print raw response from LLaMA
     print("Raw LLaMA Response:")
@@ -84,8 +84,9 @@ def generate_rubrics(question_paper: str) -> dict:
         dict: Grading information including individual questions and total max score.
     """
     raw_response = extract_rubrics_raw(question_paper)
-    print("Raw Response:", raw_response)
-    return extract_questions_and_scores(raw_response)
+    response = raw_response.replace('*', '')
+    print("Response:", response)
+    return extract_questions_and_scores(response)
 
 def extract_questions_and_scores(raw_response):
     """
@@ -97,9 +98,8 @@ def extract_questions_and_scores(raw_response):
     Returns:
         dict: A dictionary of questions with their respective scores and the total score.
     """
-    # Updated regex pattern to capture question number, question text, and marks
-    # Account for square brackets around the question number, flexibility in spaces and "Marks"
-    pattern = r"\*\*Question \[(\d+)\]\*\*: (.*?) — (\d+)\s*Marks?"
+    # Refined regex pattern to match the question and score details
+    pattern = r"Question (\d+): (.*?) — (\d+)\s*Marks?"
     
     # Find all matches using the regex pattern
     matches = re.findall(pattern, raw_response, re.IGNORECASE | re.DOTALL)
@@ -110,7 +110,7 @@ def extract_questions_and_scores(raw_response):
     question_results = {}
     total_max_score = 0
     
-    # Find all matches and process
+    # Find all matches and process them
     for match in matches:
         question_number, question_text, max_score = match
         question_text = question_text.strip().replace('\n', ' ')  # Clean up newlines and extra spaces
@@ -132,7 +132,6 @@ def extract_questions_and_scores(raw_response):
         "question_results": question_results,
         "model_total_score": total_max_score
     }
-
 
 
 # # Example usage
