@@ -33,14 +33,21 @@ def extract_model_data(file_content):
 def extract_student_data(text: str):
     student_data = {}
     questions_and_answers = {}
-    question_pattern = r"(\d+)\.\s*(.*?)\nAnswer:(.*?)(?=\n\d+\.|$)"
+    
+    # Updated regex pattern
+    question_pattern = r"Question (\d+):\s*(.*?)\s*Answer:\s*(.*?)(?=\s*Question \d+|$)"
+    
+    # Finding all question-answer pairs
     matches = re.findall(question_pattern, text, re.DOTALL)
 
+    # Populate the dictionary with questions and answers
     for question_number, question_text, answer_text in matches:
         questions_and_answers[question_number] = {
             "question": question_text.strip(),
             "answer": answer_text.strip()
         }
+
+    print(f"questions_and_answers : {questions_and_answers}")
     student_data['questionAndAnswers'] = questions_and_answers
     return student_data
 
@@ -50,7 +57,7 @@ def append_grading_results(student_content, grading_results):
     Appends grading results to the student content after each question and answer.
     """
     updated_text = ""
-    question_pattern = r"(\d+)\.\s*(.*?)\nAnswer:(.*?)(?=\n\d+\.|$)"
+    question_pattern = r"Question (\d+):\s*(.*?)\nAnswer:\s*(.*?)(?=\nQuestion \d+:|$)"
     last_pos = 0
     total_score = 0
     feedbacks = []
@@ -165,6 +172,8 @@ def save_as_pdf(content, file_name):
     """
     pdf = FPDF()
     pdf.add_page()
+
+    content = content.encode('latin-1', 'replace').decode('latin-1')
 
     # Set font (change to your desired font and size)
     pdf.set_font("Arial", size=12)  # You can adjust this

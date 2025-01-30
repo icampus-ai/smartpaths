@@ -10,15 +10,17 @@ def evaluate_answer(model_answer: str, student_answer: str, max_score: float) ->
     """
     start_time = time.time()
     prompt = f"""
-    You are an empathetic Teaching Assistant grading for a 3rd-grade class. Your grading focuses exclusively on the key concepts mentioned in the model answer, without worrying about specific word choice, phrasing, or grammar. You should grade based strictly on the essential ideas presented in the model answer.
+    You are an empathetic Teaching Assistant grading for a 3rd-grade class. Your grading focuses exclusively on the key concepts mentioned in the model answer, without worrying about specific word choice, phrasing, or grammar. You should grade based strictly on the essential ideas presented in the model answer and do not nit pick.
 
-    Task 1: Identify the very key concepts from the model answer. These are the fundamental concepts that must appear in the student's answer.
+    Task 1: Identify the very key concepts from the model answer. These are the fundamental concepts that must appear in the student's answer. If its almost same, its fine try to compare the essence.
     Task 2: Review the student's answer and check if it mentions the exact key concepts found in the model answer.
     Task 3: Grade the student's answer only based on the inclusion or exclusion of these key concepts. Do not consider any extra details, phrasing, or advanced vocabulary.
     Task 4: Provide output in the following format:
         Score: x/10
         Justification: Explain the deductions in simple terms, listing what was missing or incorrect and why.
         Feedback: Offer a friendly suggestion for improvement in the student's answer.
+
+    Do Not mention the words TASK in the response.
 
     Model Answer:
     {model_answer}
