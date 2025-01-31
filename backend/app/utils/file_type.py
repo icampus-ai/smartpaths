@@ -33,19 +33,24 @@ def extract_model_data(file_content):
 def extract_student_data(text: str):
     student_data = {}
     questions_and_answers = {}
-    
-    # Updated regex pattern
-    question_pattern = r"Question (\d+):\s*(.*?)\s*Answer:\s*(.*?)(?=\s*Question \d+|$)"
-    
-    # Finding all question-answer pairs
-    matches = re.findall(question_pattern, text, re.DOTALL)
 
-    # Populate the dictionary with questions and answers
-    for question_number, question_text, answer_text in matches:
-        questions_and_answers[question_number] = {
-            "question": question_text.strip(),
-            "answer": answer_text.strip()
-        }
+    # Define multiple patterns to try
+    patterns = [
+        r"(\d+)\.\s*(.*?)\nAnswer:(.*?)(?=\n\d+\.|$)",  # Default pattern
+        r"Question (\d+):\s*(.*?)\s*Answer:\s*(.*?)(?=\s*Question \d+|$)"  # Alternative pattern
+    ]
+
+    # Try each pattern until matches are found
+    for pattern in patterns:
+        matches = re.findall(pattern, text, re.DOTALL)
+        if matches:
+            # Populate the dictionary with questions and answers
+            for question_number, question_text, answer_text in matches:
+                questions_and_answers[question_number.strip()] = {
+                    "question": question_text.strip(),
+                    "answer": answer_text.strip()
+                }
+            break  # Exit the loop once matches are found
 
     print(f"questions_and_answers : {questions_and_answers}")
     student_data['questionAndAnswers'] = questions_and_answers
@@ -58,34 +63,49 @@ def append_grading_results(student_content, grading_results):
     """
     updated_text = ""
     question_pattern = r"Question (\d+):\s*(.*?)\nAnswer:\s*(.*?)(?=\nQuestion \d+:|$)"
+    question_pattern = r"(\d+)\.\s*(.*?)\nAnswer:(.*?)(?=\n\d+\.|$)"
     last_pos = 0
     total_score = 0
     feedbacks = []
-    for match in re.finditer(question_pattern, student_content, re.DOTALL):
-        question_number, question_text, answer_text = match.groups()
-        start, end = match.span()
+       # Define multiple patterns to try
+  
+    patterns = [
+        r"(\d+)\.\s*(.*?)\nAnswer:(.*?)(?=\n\d+\.|$)",  # Default pattern
+        r"Question (\d+):\s*(.*?)\s*Answer:\s*(.*?)(?=\s*Question \d+|$)"  # Alternative pattern
+    ]
 
-        # Add original content before the current question
-        updated_text += student_content[last_pos:start]
-        last_pos = end
+    # Try each pattern until matches are found
+    for pattern in patterns:
+        matches = re.findall(pattern, student_content, re.DOTALL)
+        if matches:
+            last_pos = 0
+            for match in matches:
+                question_number, question_text, answer_text = match
+                start_pos = student_content.find(f"{question_number}. {question_text}\nAnswer:{answer_text}", last_pos)
+                if start_pos == -1:
+                    start_pos = student_content.find(f"Question {question_number}: {question_text}\nAnswer: {answer_text}", last_pos)
+                end_pos = start_pos + len(f"{question_number}. {question_text}\nAnswer:{answer_text}")
+                updated_text += student_content[last_pos:start_pos]
 
-        # Append the question, answer, and grading results
-        updated_text += f"{question_number}. {question_text}\n"
-        updated_text += f"Answer: {answer_text}\n"
-        
-        # Grading Results for the current question
-        grading_result = grading_results.get(question_number, {})
-        total_score  += grading_result.get('score_achieved', 0)
-        updated_text += f"Score: {grading_result.get('score_achieved', 0)}/{grading_result.get('maximum_score', 0)}\n"
-        updated_text += f"Justification: {grading_result.get('justification', 'N/A')}\n"
-        updated_text += f"Feedback: {grading_result.get('feedback', 'No feedback provided')}\n"
-        feedbacks.append(grading_result.get('feedback', ''))
+                # Append the question, answer, and grading results
+                updated_text += f"{question_number}. {question_text}\n"
+                updated_text += f"Answer: {answer_text}\n"
+                
+                # Grading Results for the current question
+                grading_result = grading_results.get(question_number.strip(), {})
+                total_score += grading_result.get('score_achieved', 0)
+                updated_text += f"Score: {grading_result.get('score_achieved', 0)}/{grading_result.get('maximum_score', 0)}\n"
+                updated_text += f"Justification: {grading_result.get('justification', 'N/A')}\n"
+                updated_text += f"Feedback: {grading_result.get('feedback', 'No feedback provided')}\n"
+                feedbacks.append(grading_result.get('feedback', ''))
 
+                last_pos = end_pos
+            # Add any remaining content after the last question
+            updated_text += student_content[last_pos:]
+            break  # Exit the loop once matches are found
 
-    # Add any remaining content after the last question
-    updated_text += student_content[last_pos:]
-    
     return updated_text, total_score, feedbacks
+    
 
 def extract_pdf_text(pdf_content):
     """

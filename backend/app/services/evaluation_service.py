@@ -67,6 +67,7 @@ def process_student_answers(student_answer_file, file_type, model_answers, gener
         student_content = read_file_content(student_answer_file, file_type)   
     print(f"Student content........: {student_content}")
     student_extracted_answers = extract_student_data(student_content)
+    print(f"Student extracted answers........: {student_extracted_answers}")
     grading_results = {}
     for question_number, qa in student_extracted_answers['questionAndAnswers'].items():
         print("Inside process_stuend_answers")
@@ -127,7 +128,7 @@ def evaluate_student_answers(model_question_paper, model_question_answer_file, s
             student_answer_file, student_answer_file.content_type, model_answers, generated_rubrics, difficulty_level
         )
         # Save graded file
-        save_graded_file(updated_student_content, file_name, file_type)
+        save_graded_file(updated_student_content, file_name, student_answer_file.content_type)
 
         # Encode graded content for report
         encoded_content = base64.b64encode(updated_student_content.encode("utf-8")).decode("utf-8")
