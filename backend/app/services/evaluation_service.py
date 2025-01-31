@@ -61,10 +61,12 @@ def process_student_answers(student_answer_file, file_type, model_answers, gener
     """Process a single student's answers and return grading results."""
     file_name = student_answer_file.filename
     print(f"File name.............: {file_name}")
-    student_content = extract_text(student_answer_file)
+    if file_type == 'image/jpeg' or file_type == 'image/png':
+        student_content = extract_text(student_answer_file)
+    else:  
+        student_content = read_file_content(student_answer_file, file_type)   
     print(f"Student content........: {student_content}")
     student_extracted_answers = extract_student_data(student_content)
-
     grading_results = {}
     for question_number, qa in student_extracted_answers['questionAndAnswers'].items():
         print("Inside process_stuend_answers")
@@ -107,7 +109,7 @@ def save_graded_file(updated_content, file_name, file_type):
     else:
         save_as_text(updated_content, f"{file_name}_graded.txt")
 
-def evaluate_student_answers(model_question_paper, model_question_answer_file, student_answer_files, difficulty_level, file_type='application/pdf'):
+def evaluate_student_answers(model_question_paper, model_question_answer_file, student_answer_files, difficulty_level, file_type):
     """Evaluate student answers against model answers and rubrics."""
     # Process model files
     print("Processing student files...", student_answer_files)
@@ -122,7 +124,7 @@ def evaluate_student_answers(model_question_paper, model_question_answer_file, s
     for student_answer_file in student_answer_files:
         # Process student answers
         file_name, updated_student_content = process_student_answers(
-            student_answer_file, file_type, model_answers, generated_rubrics, difficulty_level
+            student_answer_file, student_answer_file.content_type, model_answers, generated_rubrics, difficulty_level
         )
         # Save graded file
         save_graded_file(updated_student_content, file_name, file_type)

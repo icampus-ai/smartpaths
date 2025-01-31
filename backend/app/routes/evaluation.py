@@ -37,7 +37,7 @@ def evaluation():
     if invalid_files:
         return jsonify({"error": f"The following student answer files must be a PDF, TXT, DOCX, JPEG, or PNG: {', '.join(invalid_files)}"}), 400
 
-    answer_evaluated_report = evaluate_student_answers(model_question_paper, model_question_answer, student_answers, difficulty_level)
+    answer_evaluated_report = evaluate_student_answers(model_question_paper, model_question_answer, student_answers, difficulty_level, model_question_paper.content_type)
 
     return jsonify({
         "message": "Student answers are evaluated successfully",
