@@ -1,5 +1,6 @@
 import re
 from ai_model.model.grading_system.llama_utils import get_llama_response
+from ai_model.model.grading_system.get_llama_response_from_groq import get_llama_response_from_groq
 # from llama_utils import get_llama_response
 
 def get_overall_feedback(feedback_list: list) -> str:
@@ -28,7 +29,7 @@ def get_overall_feedback(feedback_list: list) -> str:
     """
     
     # Step 2: Get response from LLaMA
-    raw_feedback = get_llama_response(prompt)
+    raw_feedback = get_llama_response_from_groq(prompt)
     
     # Step 3: Extract the overall feedback using regex
     extracted_feedback = extract_feedback(raw_feedback)

@@ -173,6 +173,8 @@ def save_as_pdf(content, file_name):
     pdf = FPDF()
     pdf.add_page()
 
+    print("Saving info as PDF...")
+
     content = content.encode('latin-1', 'replace').decode('latin-1')
 
     # Set font (change to your desired font and size)
