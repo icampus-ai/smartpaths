@@ -51,7 +51,7 @@ const UpdatesPage: React.FC = () => {
   return (
     <>
       <Header />
-      <section className="relative min-h-screen bg-white py-20 px-6">
+      <section className="relative min-h-screen bg-white py-20 px-6 mt-16">
         {/* Background Image */}
         <div className="absolute inset-0 overflow-hidden">
           <Image
@@ -67,8 +67,9 @@ const UpdatesPage: React.FC = () => {
             <span className="text-orange-500">Smart</span>
             <span className="text-black">Paths Software Updates</span>
           </h1>
-          <p className="text-center text-lg text-black mt-4">
-            Explore the evolution of SmartPaths.
+          <p className="text-center text-4xl text-black mt-4">
+            <span className="text-orange-500">Explore</span>
+            <span className="text-black"> the evolution of SmartPaths.</span>
           </p>
           <div className="mt-12 space-y-6 relative">
             {/* Vertical Line */}

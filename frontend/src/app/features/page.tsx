@@ -1,36 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Header } from "../../sections/Header";
 import Image from "next/image";
-import evaluationImage from "../../assets/product-image.png"; // Ensure the image exists
+import evaluationImage from "../../assets/evaluate.png"; // Ensure the image exists
 import backgroundImage from "../../assets/abstract_33.png"; // Background image
-import { StaticImageData } from "next/image";
+import { FaCheckCircle } from "react-icons/fa";
 
 const Features = () => {
-  const [selectedCourse, setSelectedCourse] = useState<
-    "Mathematics" | "Chemistry" | "Economics"
-  >("Mathematics");
-
-  const courseResults: {
-    [key in "Mathematics" | "Chemistry" | "Economics"]: string;
-  } = {
-    Mathematics:
-      "Results for Mathematics: Excellent performance with an average score of 85%.",
-    Chemistry:
-      "Results for Science: Good performance with an average score of 78%.",
-    Economics:
-      "Results for Economics: Satisfactory performance with an average score of 70%.",
-  };
-
-  const courseImages: {
-    [key in "Mathematics" | "Chemistry" | "Economics"]: StaticImageData;
-  } = {
-    Mathematics: evaluationImage,
-    Chemistry: evaluationImage,
-    Economics: evaluationImage,
-  };
-
   return (
     <>
       <Header />
@@ -48,37 +25,51 @@ const Features = () => {
 
         <div className="container mx-auto px-6 md:px-12 lg:px-24 relative z-10">
           {/* Section Heading */}
-          <h1 className="text-4xl md:text-7xl font-extrabold bg-gradient-to-b from-black to-gray-700 text-transparent bg-clip-text text-center">
+          <h1 className="text-4xl md:text-7xl font-extrabold bg-gradient-to-b from-black to-gray-700 text-transparent bg-clip-text text-center mt-16">
             <span className="text-orange-500">Enhancing </span> Education:  
             <span className="text-orange-500"> Smart</span>Paths Feature Suite
           </h1>
 
           {/* Seamless Grading Section */}
-          <div className="mt-16">
-            <h2 className="text-4xl font-bold text-black text-center">
+          <div className="mt-16 text-center">
+            <h2 className="text-4xl font-bold text-black">
               <span className="text-orange-500">Seamless</span> Grading Experience
             </h2>
-            <p className="text-lg text-black text-center mt-4">
+            <p className="text-lg text-black mt-4">
               Empower educators to evaluate students efficiently with our AI-driven grading platform.
             </p>
-            <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="p-4">
-                <Image
-                  src={evaluationImage}
-                  alt="Seamless Grading Experience"
-                  className="rounded-lg shadow-xl hover:scale-105 transition-transform"
-                  width={800}
-                  height={800}
-                />
-              </div>
-              <div className="p-4">
-                <ul className="list-disc text-lg text-black space-y-4 pl-6">
-                  <li>Effortlessly upload student assignments and exams.</li>
-                  <li>Leverage advanced AI algorithms for fair grading.</li>
-                  <li>Access detailed insights and analytics for improvement.</li>
-                  <li>Provide personalized feedback to students.</li>
-                  <li>Track student progress and identify focus areas.</li>
-                </ul>
+            <div className="mt-12 space-y-6 relative">
+              {/* Vertical Line */}
+              <div className="absolute left-6 top-0 bottom-0 w-1 bg-gradient-to-b from-orange-500 to-black-900 rounded-full"></div>
+
+              {[
+                "Seamlessly upload question papers with automated, customizable rubric extraction.",
+                "Leverage advanced AI algorithms and models for lightning-fast, accurate, fair, and unbiased grading.",
+                "Gain comprehensive insights and analytics to enhance student and faculty performance.",
+                "Deliver personalized feedback on each question along with overall performance insights for students.",
+                "Adapt grading to multiple difficulty levels based on overall class performance.",
+              ].map((feature, index) => (
+                <div key={index} className={`relative pl-16 text-left ${index === 4 ? 'mb-20' : ''}`}>
+                  {/* Icon */}
+                  <div className="absolute left-4 top-4 w-8 h-8 flex items-center justify-center bg-black text-white rounded-full shadow">
+                    <FaCheckCircle size={16} />
+                  </div>
+                  {/* Feature */}
+                  <div className="bg-gray-100 text-gray-800 shadow-md rounded-lg p-4">
+                    <p className="text-lg">{feature}</p>
+                  </div>
+                </div>
+              ))}
+              <div className="flex justify-center mt-8">
+                <div className="transition-transform transform hover:scale-150">
+                  <Image
+                    src={evaluationImage}
+                    alt="Seamless Grading Experience"
+                    className="rounded-lg shadow-xl"
+                    width={900}
+                    height={900}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -143,47 +134,23 @@ const Features = () => {
             </div>
           </div>
 
-          {/* Use Cases Section */}
-          <div className="mt-20">
-            <h2 className="text-4xl font-bold text-gray-900 text-center">
-              <span className="text-orange-500">Evaluation</span> Use Cases
+          {/* Discover How it Works Section */}
+          <div className="mt-20 text-center">
+            <h2 className="text-4xl font-bold text-black">
+              <span className="text-orange-500">Discover </span>
+              <span className="text-black"> How it works</span>
             </h2>
-            <p className="text-lg text-black text-center mt-4">
-              Explore how our platform works across various subjects.
-            </p>
-            <div className="mt-12 text-center">
-              <label
-                htmlFor="course-select"
-                className="text-lg text-black font-medium"
-              >
-                Select a Course: 
-              </label>
-              <select
-                id="course-select"
-                className="mt-4 p-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-orange-500"
-                value={selectedCourse}
-                onChange={(e) =>
-                  setSelectedCourse(
-                    e.target.value as "Mathematics" | "Chemistry" | "Economics"
-                  )
-                }
-              >
-                <option value="Mathematics">Mathematics</option>
-                <option value="Science">Chemistry</option>
-                <option value="Economics">Economics</option>
-              </select>
-              <div className="mt-8 text-lg text-black">
-                <p className="font-semibold">{courseResults[selectedCourse]}</p>
-              </div>
-              <div className="mt-8 flex justify-center">
-                <Image
-                  src={courseImages[selectedCourse]}
-                  alt={`${selectedCourse} Evaluation`}
-                  className="rounded-lg shadow-lg hover:scale-105 transition-transform"
-                  width={900}
-                  height={300}
-                />
-              </div>
+            <div className="mt-8 flex justify-center">
+              <iframe
+                width="900"
+                height="506"
+                src="https://www.youtube.com/embed/fe_WZwebNTc"
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="rounded-lg shadow-xl"
+              ></iframe>
             </div>
           </div>
         </div>
