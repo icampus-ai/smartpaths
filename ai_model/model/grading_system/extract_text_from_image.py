@@ -62,7 +62,9 @@ def extract_text(image_data):
         Extract all text from this image and return it exactly as it is present in the image.
         The format should be:
 
-        Question [Question Number]: [Question Text]
+        [Header which is present in the image before the questions start]
+
+        [Question Number in the format uploaded]: [Question Text]
         Answer: [Answer Text]
         """
 
