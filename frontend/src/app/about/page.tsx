@@ -44,7 +44,8 @@ const About = () => {
               </h1>
               <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
                 <p className="text-2xl text-gray-600 tracking-tight max-w-3xl mx-auto">
-                  Discover SmartPaths and how we are shaping the future of education with innovative academic workflows.
+                  
+Three young evaluators identified biases in the traditional manual evaluation process and recognized its inefficiency. To address this, SmartPaths was created, an AI - Agent solution designed to streamline and optimize manual academic workflows.
                 </p>
               </div>
             </div>
