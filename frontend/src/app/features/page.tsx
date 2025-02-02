@@ -144,7 +144,7 @@ const Features = () => {
               <iframe
                 width="900"
                 height="506"
-                src="https://www.youtube.com/embed/fe_WZwebNTc"
+                src="https://www.youtube.com/embed/IAAzeD8xYAI"
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

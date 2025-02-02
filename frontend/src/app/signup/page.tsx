@@ -45,7 +45,7 @@ const SignupPage: React.FC = () => {
         </div>
 
         {/* Title */}
-        <div className="relative z-10 text-center mb-10">
+        <div className="relative z-10 text-center mb-10 mt-20"> {/* Added mt-20 for margin-top */}
           <h1 className="text-7xl font-extrabold text-gray-800">
             <span className="text-orange-500">Your</span>
             <span className="text-black"> Journey,</span>

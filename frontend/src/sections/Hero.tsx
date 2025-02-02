@@ -120,7 +120,7 @@ export const Hero: React.FC = () => {
                 <span className="text-black"> to the Future of Education</span> 
               </h1>
               <p className="text-xl text-[#010D3E] tracking-tight mt-6">
-              Unleash a smarter way to grade! Our AI-powered grading system provides quicker, fairer, and more insightful evaluations, allowing educators to focus on what matters most—helping students succeed.
+              Experience a streamlined approach to administrative tasks, grading, research, and more—powered by our on-premise AI Agents. By automating repetitive tasks and delivering real-time insights, institutions can optimize their academic processes with greater efficiency and reliability.
               </p>
               <div className="flex gap-4 items-center mt-8">
                 <button className="btn btn-primary" onClick={handleSignUpClick}>Try for Free</button>
@@ -188,7 +188,7 @@ export const Hero: React.FC = () => {
               <span className="text-black"> Exclusive Premiere Feature</span>
             </h2>
             <p className="section-description text-2xl text-black tracking-tight mt-5">
-              Evaluate and Elevate!
+            Unleash a smarter way to grade! Our AI-powered grading system provides quicker, fairer, and more insightful evaluations, allowing educators to focus on what matters most — helping students succeed.
             </p>
           </div>
           <div className="flex justify-center">
@@ -201,17 +201,17 @@ export const Hero: React.FC = () => {
               <div className="metric-card p-6 bg-white rounded-lg shadow-lg transform transition-transform hover:scale-105">
                 <Image src={timeSavingsIcon} alt="Time Savings Icon" width={100} height={100} className="mx-auto mb-4" />
                 <h3 className="text-2xl font-bold mb-2 text-center text-gray-800">Time Savings</h3>
-                <p className="text-gray-800 text-4xl font-bold text-center">75%</p>
+                <p className="text-gray-800 text-4xl font-bold text-center">99%</p>
               </div>
               <div className="metric-card p-6 bg-white rounded-lg shadow-lg transform transition-transform hover:scale-105">
                 <Image src={insightsIcon} alt="Insights Icon" width={100} height={100} className="mx-auto mb-4" />
                 <h3 className="text-2xl font-bold mb-2 text-center text-gray-800">Detailed Insights</h3>
-                <p className="text-gray-800 text-4xl font-bold text-center">85%</p>
+                <p className="text-gray-800 text-4xl font-bold text-center">95%</p>
               </div>
               <div className="metric-card p-6 bg-white rounded-lg shadow-lg transform transition-transform hover:scale-105">
                 <Image src={biasReductionIcon} alt="Bias Reduction Icon" width={100} height={100} className="mx-auto mb-4" />
                 <h3 className="text-2xl font-bold mb-2 text-center text-gray-800">Bias Reduction</h3>
-                <p className="text-gray-800 text-4xl font-bold text-center">90%</p>
+                <p className="text-gray-800 text-4xl font-bold text-center">99%</p>
               </div>
             </div>
           </div>

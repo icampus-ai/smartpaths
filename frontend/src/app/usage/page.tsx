@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Sidebar from "./Sidebar"; // Import the Sidebar component
 
 interface Tier {
   name: string;
@@ -26,7 +27,12 @@ const TiersPage: React.FC = () => {
   };
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-white min-h-screen flex">
+      <Sidebar 
+        isExpanded={true} 
+        toggleSidebar={() => {}} 
+        onProfileClick={() => {}} 
+      /> {/* Add the Sidebar component */}
       <div className="container mx-auto px-4 py-6">
         <div className="text-center mb-6">
           <h1 className="text-4xl font-bold text-orange-500">SmartPaths</h1>
