@@ -2,6 +2,7 @@ from groq import Groq
 import base64
 import sys
 import os
+import re
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 
@@ -62,9 +63,9 @@ def extract_text(image_data):
         Extract all text from this image and return it exactly as it is present in the image.
         The format should be:
 
-        [Header which is present in the image before the questions start]
+        [Text before the questions start from image exactly the way it is] - do NOT include this instruction 
 
-        [Question Number in the format uploaded]: [Question Text]
+        Question [Question Number]: [Question Text]
         Answer: [Answer Text]
         """
 
@@ -92,10 +93,11 @@ def extract_text(image_data):
 
         # Remove any asterisks from the extracted text
         text_without_stars = text.replace('*', '')
+        lines = text_without_stars.splitlines()
+        final_text = "\n".join(lines[1:])
+        print("Extracted text without asterisks:", final_text)
 
-        print("Extracted text without asterisks:", text_without_stars)
-
-        return text_without_stars
+        return final_text
 
     except Exception as e:
         print(f"An error occurred while processing the request: {e}")
