@@ -20,5 +20,5 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
-    app.run(host='thesmartpaths', port=8000, debug=False)
+    app.run(host='137.184.95.180', port=8000, debug=False)
 
