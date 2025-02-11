@@ -142,6 +142,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
   evaluationData,
   selectedDifficulty,
   handleDifficultySelection,
+  handleEvaluateButtonClicked,
 }) => {
   // We store both the File object and the Blob URL for PDF
   const [modelQFile, setModelQFile] = useState<File | null>(null);
@@ -266,22 +267,6 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
       doc.text(decodedFileContent, 10, 10);
       doc.save("evaluation_report.pdf");
     }
-  };
-
-  /* ----------------------------------------
-   * Evaluate Button Click Handler
-   * --------------------------------------*/
-  const handleEvaluateButtonClicked = async () => {
-    return new Promise<void>((resolve, reject) => {
-      try {
-        // Your existing logic here...
-        console.log("Evaluation started...");
-        resolve(); // Resolve the promise manually
-      } catch (error) {
-        console.error("Evaluation failed:", error);
-        reject(error); // Reject the promise if there's an error
-      }
-    });
   };
 
   /* ----------------------------------------
