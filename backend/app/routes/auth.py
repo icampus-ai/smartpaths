@@ -12,7 +12,7 @@ auth_bp = Blueprint("auth", __name__)
 def home():
     return "Welcome! <a href='/login'>Login with Google</a>"
 
-@auth_bp.route("/login")
+@auth_bp.route("/api/google/login")
 def login():
     return google_login()
 
