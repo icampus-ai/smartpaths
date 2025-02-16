@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import Link from 'next/link';
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
 
-import Logo from '../assets/smartpathslogo.png';
-import MenuIcon from '../assets/menu.svg';
+import Logo from "../assets/smartpathslogo.png";
+import MenuIcon from "../assets/menu.png";
 
 export const Header = () => {
   const router = useRouter();
@@ -14,7 +14,7 @@ export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleTryForFreeClick = () => {
-    router.push('/signup');
+    router.push("/signup");
   };
 
   const handleMenuToggle = () => {
@@ -23,34 +23,31 @@ export const Header = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Add shadow when scrolling beyond 20px
       setIsScrolled(window.scrollY > 20);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <header
-      className={`
-        fixed w-full z-50 top-0 left-0 transition-shadow
-        bg-white text-black
-        ${isScrolled ? 'shadow-md' : 'shadow-none'}
-      `}
+      className={`fixed w-full z-50 top-0 left-0 transition-shadow bg-white text-black ${
+        isScrolled ? "shadow-md" : "shadow-none"
+      }`}
     >
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <div className="container mx-auto px-4 py-4 flex items-center justify-between w-full">
         {/* Mobile Menu Button */}
         <button
           onClick={handleMenuToggle}
-          className="md:hidden focus:outline-none"
+          className="md:hidden focus:outline-none z-50"
         >
           <Image src={MenuIcon} alt="Menu Icon" height={24} width={24} />
         </button>
 
         {/* Logo */}
         <Link href="/" legacyBehavior>
-          <a className="flex items-center gap-2 mx-auto md:mx-0">
+          <a className="flex items-center gap-2">
             <Image src={Logo} alt="SmartPaths Logo" height={50} width={50} />
             <span className="font-bold hidden md:inline">
               <span className="text-orange-500">Smart</span>
@@ -59,18 +56,16 @@ export const Header = () => {
           </a>
         </Link>
 
-        {/* Placeholder for alignment */}
-        <div className="md:hidden w-6 h-6"></div>
-
-        {/* Nav Items */}
+        {/* Navigation Menu */}
         <nav
-          className={`
-            absolute top-full left-0 w-full bg-white md:bg-transparent md:w-auto md:static
-            flex flex-col md:flex-row items-start md:items-center
-            gap-4 md:gap-8 p-4 md:p-0
-            transform md:transform-none transition-transform
-            md:opacity-100
-            ${isMenuOpen ? 'translate-y-0' : '-translate-y-full md:translate-y-0'}
+          className={`absolute top-full left-0 w-full bg-white md:bg-transparent md:w-auto md:static
+            flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8 p-4 md:p-0
+            transition-all duration-300 ease-in-out
+            ${
+              isMenuOpen
+                ? "opacity-100 max-h-screen"
+                : "opacity-0 max-h-0 overflow-hidden md:opacity-100 md:max-h-full"
+            }
           `}
         >
           <Link href="/about" legacyBehavior>

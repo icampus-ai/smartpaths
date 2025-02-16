@@ -113,6 +113,9 @@ const DashboardLayout: React.FC = () => {
     setIsDifficultySelected(true);
   };
 
+  /* ----------------------------------------
+   * Evaluate Button Click Handler
+   * --------------------------------------*/
   const handleEvaluateButtonClicked = async () => {
     if (!modelQFile || !modelQandAFile || studentResponsesFiles.length === 0 || !selectedDifficulty) {
       setError("Please make sure all files are uploaded and difficulty is selected.");
