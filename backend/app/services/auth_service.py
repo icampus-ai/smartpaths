@@ -1,69 +1,86 @@
-from authlib.integrations.flask_client import OAuth
-from flask import url_for, request, redirect, session, current_app
-from werkzeug.security import generate_password_hash, check_password_hash
+import json
+import requests
+from flask import session, redirect, url_for, request
+from flask_login import UserMixin, login_user, logout_user
+from oauthlib.oauth2 import WebApplicationClient
 
-oauth = OAuth()
+# Google OAuth credentials (Replace with actual credentials)
+GOOGLE_CLIENT_ID = "your_google_client_id"
+GOOGLE_CLIENT_SECRET = "your_google_client_secret"
+GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
 
-# Configure Google OAuth
-google = oauth.register(
-    name='google',
-    client_id='YOUR_GOOGLE_CLIENT_ID',
-    client_secret='YOUR_GOOGLE_CLIENT_SECRET',
-    authorize_url='https://accounts.google.com/o/oauth2/auth',
-    authorize_params=None,
-    access_token_url='https://accounts.google.com/o/oauth2/token',
-    access_token_params=None,
-    refresh_token_url=None,
-    redirect_uri='http://localhost:5000/auth/google/callback',
-    client_kwargs={'scope': 'profile email'}
-)
+client = WebApplicationClient(GOOGLE_CLIENT_ID)
 
-# Configure GitHub OAuth
-github = oauth.register(
-    name='github',
-    client_id='YOUR_GITHUB_CLIENT_ID',
-    client_secret='YOUR_GITHUB_CLIENT_SECRET',
-    authorize_url='https://github.com/login/oauth/authorize',
-    authorize_params=None,
-    access_token_url='https://github.com/login/oauth/access_token',
-    access_token_params=None,
-    refresh_token_url=None,
-    redirect_uri='http://localhost:5000/auth/github/callback',
-    client_kwargs={'scope': 'user:email'}
-)
+# User class (no database)
+class User(UserMixin):
+    def __init__(self, id, name, email, picture):
+        self.id = id
+        self.name = name
+        self.email = email
+        self.picture = picture
 
-def login_google():
-    redirect_uri = url_for('auth.auth_google_callback_route', _external=True)
-    return google.authorize_redirect(redirect_uri)
+# Load user from session
+def load_user(user_id):
+    user_data = session.get("user")
+    if user_data:
+        return User(user_data["sub"], user_data["name"], user_data["email"], user_data["picture"])
+    return None
 
-def auth_google_callback():
-    token = google.authorize_access_token()
-    resp = google.get('userinfo')
-    user_info = resp.json()
-    return user_info
+# Fetch Google provider config
+def get_google_provider_cfg():
+    return requests.get(GOOGLE_DISCOVERY_URL).json()
 
-def login_github():
-    redirect_uri = url_for('auth.auth_github_callback_route', _external=True)
-    return github.authorize_redirect(redirect_uri)
+# Google Login
+def google_login():
+    google_provider_cfg = get_google_provider_cfg()
+    authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
-def auth_github_callback():
-    token = github.authorize_access_token()
-    resp = github.get('user')
-    user_info = resp.json()
-    return user_info
+    request_uri = client.prepare_request_uri(
+        authorization_endpoint,
+        redirect_uri=url_for("auth.google_callback", _external=True),
+        scope=["openid", "email", "profile"],
+    )
+    return redirect(request_uri)
 
-def get_user_by_email(email):
-    user = current_app.mongo.your_database_name.users.find_one({'email': email})
-    return user
+# Google Callback
+def google_callback():
+    code = request.args.get("code")
+    google_provider_cfg = get_google_provider_cfg()
+    token_endpoint = google_provider_cfg["token_endpoint"]
 
-def create_user(first_name, last_name, middle_name, email, password):
-    hashed_password = generate_password_hash(password)
-    user = {
-        'first_name': first_name,
-        'last_name': last_name,
-        'middle_name': middle_name,
-        'email': email,
-        'password': hashed_password
-    }
-    current_app.mongo.your_database_name.users.insert_one(user)
-    return user
+    token_url, headers, body = client.prepare_token_request(
+        token_endpoint,
+        authorization_response=request.url,
+        redirect_url=request.base_url,
+        code=code,
+    )
+    token_response = requests.post(
+        token_url,
+        headers=headers,
+        data=body,
+        auth=(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET),
+    )
+
+    client.parse_request_body_response(json.dumps(token_response.json()))
+    userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
+    uri, headers, body = client.add_token(userinfo_endpoint)
+    userinfo_response = requests.get(uri, headers=headers, data=body)
+
+    if userinfo_response.json().get("email_verified"):
+        user = User(
+            id=userinfo_response.json()["sub"],
+            name=userinfo_response.json()["name"],
+            email=userinfo_response.json()["email"],
+            picture=userinfo_response.json()["picture"],
+        )
+        session["user"] = userinfo_response.json()
+        login_user(user)
+        return redirect(url_for("auth.dashboard"))
+
+    return "User email not verified", 400
+
+# Logout
+def google_logout():
+    logout_user()
+    session.clear()
+    return redirect(url_for("auth.home"))

@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
-# from app.routes.auth import auth_bp, oauth
+from app.routes.auth import auth_bp
 from app.routes.evaluation import evaluation_bp
 
 def create_app():
@@ -13,7 +13,7 @@ def create_app():
 }})
     # oauth.init_app(app)
     
-    # app.register_blueprint(auth_bp)
+    app.register_blueprint(auth_bp)
     app.register_blueprint(evaluation_bp)
     
     return app
