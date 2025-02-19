@@ -12,8 +12,6 @@ const SignupPage: React.FC = () => {
   const [isSignup, setIsSignup] = useState(true);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
@@ -27,6 +25,11 @@ const SignupPage: React.FC = () => {
     } else {
       setErrorMessage("Invalid credentials");
     }
+  };
+
+  const handleGoogleLogin = () => {
+    // Redirect to your backend API for Google OAuth 2.0 authentication
+    window.location.href = "http://localhost:8000/api/auth/google";
   };
 
   return (
@@ -73,66 +76,14 @@ const SignupPage: React.FC = () => {
             </div>
 
             {isSignup ? (
-              <form className="space-y-6">
-                {/* Full Name Field */}
-                <div>
-                  <label htmlFor="fullName" className="block text-gray-700 font-medium mb-1">
-                    Full Name
-                  </label>
-                  <input
-                    id="fullName"
-                    type="text"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Enter your full name"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-300 focus:outline-none transition"
-                  />
-                </div>
-
-                {/* Email Field */}
-                <div>
-                  <label htmlFor="email" className="block text-gray-700 font-medium mb-1">
-                    Email Address
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email address"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-300 focus:outline-none transition"
-                  />
-                </div>
-
-                {/* Password Field */}
-                <div>
-                  <label htmlFor="password" className="block text-gray-700 font-medium mb-1">
-                    Password
-                  </label>
-                  <input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter your password"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-300 focus:outline-none transition"
-                  />
-                </div>
-
-                <div className="flex items-center">
-                  <input type="checkbox" id="terms" className="mr-2" />
-                  <label htmlFor="terms" className="text-gray-600 text-sm">
-                    I accept all terms & conditions
-                  </label>
-                </div>
-
+              <div className="space-y-6">
                 <button
-                  type="submit"
+                  onClick={handleGoogleLogin}
                   className="w-full bg-black text-white font-medium py-3 px-4 rounded-lg shadow-md hover:scale-105 transform transition"
                 >
-                  Signup
+                  Sign in with Google
                 </button>
-              </form>
+              </div>
             ) : (
               <form className="space-y-6" onSubmit={handleLogin}>
                 {/* Username Field */}

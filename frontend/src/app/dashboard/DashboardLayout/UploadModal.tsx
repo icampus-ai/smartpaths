@@ -6,14 +6,12 @@ import { Check, X } from "lucide-react";
 interface UploadModalProps {
   isUploadMenuOpen: boolean;
   handleCloseUploadMenu: () => void;
-  handleModelQFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleModelQandAFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleStudentResponsesFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleDragOver: (event: React.DragEvent<HTMLDivElement>) => void;
   handleDrop: (event: React.DragEvent<HTMLDivElement>) => void;
   handleMouseDown: MouseEventHandler<HTMLDivElement>;
   handleMouseMove: MouseEventHandler<HTMLDivElement>;
-  isModelQUploaded: boolean;
   isModelQandAUploaded: boolean;
   isStudentResponsesUploaded: boolean;
   error: string | null;
@@ -22,14 +20,12 @@ interface UploadModalProps {
 const UploadModal: React.FC<UploadModalProps> = ({
   isUploadMenuOpen,
   handleCloseUploadMenu,
-  handleModelQFileChange,
   handleModelQandAFileChange,
   handleStudentResponsesFileChange,
   handleDragOver,
   handleDrop,
   handleMouseDown,
   handleMouseMove,
-  isModelQUploaded,
   isModelQandAUploaded,
   isStudentResponsesUploaded,
   error,
@@ -148,15 +144,6 @@ const UploadModal: React.FC<UploadModalProps> = ({
             </div>
 
             <div className="flex flex-col items-center">
-              {/* Model Q Upload */}
-              <label>
-                <input type="file" accept=".pdf,.docx" onChange={handleModelQFileChange} className="w-full h-full opacity-0" />
-                <div className="bg-[#2B2B2B] border-2 border-solid rounded-lg w-full h-12 flex items-center justify-center cursor-pointer text-white hover:bg-orange-500 hover:text-black">
-                  Model Q
-                  {isModelQUploaded && <Check className="text-lg text-green-500 ml-2" />}
-                </div>
-              </label>
-
               {/* Model Q&A Upload */}
               <label className="mt-2">
                 <input type="file" accept=".pdf,.docx" onChange={handleModelQandAFileChange} className="w-full h-full opacity-0" />
@@ -194,7 +181,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
         )}
 
         {/* Show error only if not all files are uploaded */}
-        {error && (!isModelQUploaded || !isModelQandAUploaded || !isStudentResponsesUploaded) && (
+        {error && (!isModelQandAUploaded || !isStudentResponsesUploaded) && (
           <p className="text-red-500 text-sm mt-2 px-4 text-center">{error}</p>
         )}
       </div>

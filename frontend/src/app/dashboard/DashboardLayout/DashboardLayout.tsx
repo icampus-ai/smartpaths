@@ -11,9 +11,6 @@ import ProfileModal from "../ProfileModal"; // Import ProfileModal
 const DashboardLayout: React.FC = () => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const [isUploadMenuOpen, setIsUploadMenuOpen] = useState(false);
-  const [modelQFile, setModelQFile] = useState<File | null>(null);
-  const [modelQFileUrl, setModelQFileUrl] = useState<string | null>(null);
-  const [isModelQUploaded, setIsModelQUploaded] = useState(false);
   const [modelQandAFile, setModelQandAFile] = useState<File | null>(null);
   const [modelQandAFileUrl, setModelQandAFileUrl] = useState<string | null>(null);
   const [isModelQandAUploaded, setIsModelQandAUploaded] = useState(false);
@@ -34,17 +31,6 @@ const DashboardLayout: React.FC = () => {
     setIsSidebarExpanded(!isSidebarExpanded);
   };
 
-  const handleModelQFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    if (event.target.files) {
-      const file = event.target.files[0];
-      const fileUrl = URL.createObjectURL(file);
-      setModelQFile(file);
-      setModelQFileUrl(fileUrl);
-      setIsModelQUploaded(true);
-      checkUploadStatus(true, isModelQandAUploaded, isStudentResponsesUploaded);
-    }
-  };
-
   const handleModelQandAFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     if (event.target.files) {
       const file = event.target.files[0];
@@ -52,7 +38,7 @@ const DashboardLayout: React.FC = () => {
       setModelQandAFile(file);
       setModelQandAFileUrl(fileUrl);
       setIsModelQandAUploaded(true);
-      checkUploadStatus(isModelQUploaded, true, isStudentResponsesUploaded);
+      checkUploadStatus(true, isStudentResponsesUploaded);
     }
   };
 
@@ -63,7 +49,7 @@ const DashboardLayout: React.FC = () => {
       setStudentResponsesFiles(files);
       setStudentResponsesFileUrls(fileUrls);
       setIsStudentResponsesUploaded(true);
-      checkUploadStatus(isModelQUploaded, isModelQandAUploaded, true);
+      checkUploadStatus(isModelQandAUploaded, true);
     }
   };
 
@@ -79,28 +65,20 @@ const DashboardLayout: React.FC = () => {
       setStudentResponsesFiles(files);
       setStudentResponsesFileUrls(fileUrls);
       setIsStudentResponsesUploaded(true);
-      checkUploadStatus(isModelQUploaded, isModelQandAUploaded, true);
+      checkUploadStatus(isModelQandAUploaded, true);
     }
   };
 
-  const checkUploadStatus = (modelUploaded: boolean, modelQandAUploaded: boolean, studentUploaded: boolean) => {
-    if (modelUploaded && modelQandAUploaded && studentUploaded) {
+  const checkUploadStatus = (modelQandAUploaded: boolean, studentUploaded: boolean) => {
+    if (modelQandAUploaded && studentUploaded) {
       setIsUploadMenuOpen(false);
       setError(null);
-    } else if (modelUploaded && modelQandAUploaded && !studentUploaded) {
+    } else if (modelQandAUploaded && !studentUploaded) {
       setError("Please upload Student Responses file");
-    } else if (modelUploaded && !modelQandAUploaded && studentUploaded) {
+    } else if (!modelQandAUploaded && studentUploaded) {
       setError("Please upload Model Q&A file");
-    } else if (!modelUploaded && modelQandAUploaded && studentUploaded) {
-      setError("Please upload Model Q file");
-    } else if (!modelUploaded && !modelQandAUploaded && studentUploaded) {
-      setError("Please upload Model Q and Model Q&A files");
-    } else if (!modelUploaded && modelQandAUploaded && !studentUploaded) {
-      setError("Please upload Model Q and Student Responses files");
-    } else if (modelUploaded && !modelQandAUploaded && !studentUploaded) {
-      setError("Please upload Model Q&A and Student Responses files");
-    } else if (!modelUploaded && !modelQandAUploaded && !studentUploaded) {
-      setError("Please upload Model Q, Model Q&A, and Student Responses files");
+    } else if (!modelQandAUploaded && !studentUploaded) {
+      setError("Please upload both Model Q&A and Student Responses files");
     }
   };
 
@@ -117,7 +95,7 @@ const DashboardLayout: React.FC = () => {
    * Evaluate Button Click Handler
    * --------------------------------------*/
   const handleEvaluateButtonClicked = async () => {
-    if (!modelQFile || !modelQandAFile || studentResponsesFiles.length === 0 || !selectedDifficulty) {
+    if (!modelQandAFile || studentResponsesFiles.length === 0 || !selectedDifficulty) {
       setError("Please make sure all files are uploaded and difficulty is selected.");
       return;
     }
@@ -125,7 +103,6 @@ const DashboardLayout: React.FC = () => {
     setIsLoading(true);
     try {
       const formData = new FormData();
-      formData.append("modelQuestion", modelQFile);
       formData.append("modelQuestionAnswer", modelQandAFile);
       studentResponsesFiles.forEach(file => formData.append("studentAnswers", file));
       formData.append("difficultyLevel", selectedDifficulty);
@@ -153,7 +130,6 @@ const DashboardLayout: React.FC = () => {
   };
 
   const handleBackToUpload = () => {
-    setIsModelQUploaded(false);
     setIsModelQandAUploaded(false);
     setIsStudentResponsesUploaded(false);
     setSelectedDifficulty(null);
@@ -184,7 +160,7 @@ const DashboardLayout: React.FC = () => {
           </h1>
           <p className="text-2xl text-black mt-4">Simplify. Systemize. Succeed.</p>
         </div>
-        {modelQFileUrl && modelQandAFileUrl && studentResponsesFileUrls.length > 0 ? (
+        {modelQandAFileUrl && studentResponsesFileUrls.length > 0 ? (
           <div className="flex flex-col flex-grow bg-white">
             <div className="flex flex-row flex-grow">
               <div className="flex flex-col items-center justify-center w-full bg-white overflow-auto">
@@ -198,7 +174,7 @@ const DashboardLayout: React.FC = () => {
                   </div>
                 ) : (
                   <FilePreviews
-                    modelQFileUrl={modelQFileUrl}
+                    modelQandAFileUrl={modelQandAFileUrl}
                     studentResponsesFileUrl={studentResponsesFileUrls[0]} // Pass the first file URL for preview
                     evaluationData={evaluationData} // Pass evaluationData to FilePreviews
                     selectedDifficulty={selectedDifficulty}
@@ -234,12 +210,10 @@ const DashboardLayout: React.FC = () => {
                 <UploadModal
                   isUploadMenuOpen={isUploadMenuOpen}
                   handleCloseUploadMenu={handleCloseUploadMenu}
-                  handleModelQFileChange={handleModelQFileChange}
                   handleModelQandAFileChange={handleModelQandAFileChange}
                   handleStudentResponsesFileChange={handleStudentResponsesFileChange}
                   handleDragOver={handleDragOver}
                   handleDrop={handleDrop}
-                  isModelQUploaded={isModelQUploaded}
                   isModelQandAUploaded={isModelQandAUploaded}
                   isStudentResponsesUploaded={isStudentResponsesUploaded}
                   error={error}
