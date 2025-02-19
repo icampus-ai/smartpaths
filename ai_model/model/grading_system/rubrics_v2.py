@@ -1,8 +1,8 @@
 import json
 import re
-from get_llama_response_from_groq import get_llama_response_from_groq
+from ai_model.model.grading_system.get_llama_response_from_groq import get_llama_response_from_groq
 
-def generate_rubrics_from_model_qa(model_question_and_answer: str) -> list:
+def generate_rubrics(model_question_and_answer: str) -> list:
     """
     Calls the LLaMA model to extract rubrics from the provided model question and answer.
     
@@ -81,16 +81,16 @@ def generate_rubrics_from_model_qa(model_question_and_answer: str) -> list:
         print("Raw LLaMA Response:", clean_response)
         return []
 
-# Example Usage:
-model_question_and_answer = """
-Question 1: What is the capital of France? — 5 Marks
-Answer: The capital of France is Paris.
+# # Example Usage:
+# model_question_and_answer = """
+# Question 1: What is the capital of France? — 5 Marks
+# Answer: The capital of France is Paris.
 
-Question 2: Explain the process of photosynthesis. — 10 Marks
-Answer: Photosynthesis is the process by which plants convert sunlight into energy, primarily occurring in the chloroplasts.
+# Question 2: Explain the process of photosynthesis. — 10 Marks
+# Answer: Photosynthesis is the process by which plants convert sunlight into energy, primarily occurring in the chloroplasts.
 
-Question 3: Discuss the impact of the Industrial Revolution on society. — 15 Marks
-Answer: The Industrial Revolution had a profound impact on society, leading to urbanization, the rise of factory work, and significant technological advancements.
-"""
-rubrics = generate_rubrics_from_model_qa(model_question_and_answer)
-print(json.dumps(rubrics, indent=2))
+# Question 3: Discuss the impact of the Industrial Revolution on society. — 15 Marks
+# Answer: The Industrial Revolution had a profound impact on society, leading to urbanization, the rise of factory work, and significant technological advancements.
+# """
+# rubrics = generate_rubrics(model_question_and_answer)
+# print(json.dumps(rubrics, indent=2))

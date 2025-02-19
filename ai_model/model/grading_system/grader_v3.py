@@ -1,6 +1,6 @@
 import re
 import json
-from get_llama_response_from_groq import get_llama_response_from_groq
+from ai_model.model.grading_system.get_llama_response_from_groq import get_llama_response_from_groq
 
 def grader(model_answer, student_answer, rubric):
     total_score = 0
