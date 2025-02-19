@@ -132,10 +132,10 @@ rubric = {
     }
 }
 
-model_answer = "The Industrial Revolution led to urbanization, factories, and changes in social structures."
-student_answer = "The Industrial Revolution created factories and made people move to cities."
+# model_answer = "The Industrial Revolution led to urbanization, factories, and changes in social structures."
+# student_answer = "The Industrial Revolution created factories and made people move to cities."
 
-result = grade_student_answers_v3(model_answer, student_answer, rubric)
+# result = grade_student_answers_v3(model_answer, student_answer, rubric)
 
-# Display the result
-print(json.dumps(result, indent=4))
+# # Display the result
+# print(json.dumps(result, indent=4))
