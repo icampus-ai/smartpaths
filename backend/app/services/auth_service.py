@@ -1,7 +1,7 @@
 import json
 import requests
 import os
-from flask import session, redirect, url_for, request
+from flask import session, redirect, url_for, request, jsonify
 from flask_login import UserMixin, login_user, logout_user
 from oauthlib.oauth2 import WebApplicationClient
 from dotenv import load_dotenv
@@ -107,9 +107,12 @@ def google_callback():
         "email": user.email,
         "picture": user.picture,
     }
-    print(f"user: {user.name}")
-    login_user(user)
-    return redirect("https://www.thesmartpaths.com/dashboard")
+    return jsonify({
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "picture": user.picture,
+    }), 200
 
 # Logout
 def google_logout():
