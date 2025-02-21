@@ -17,11 +17,11 @@ client = WebApplicationClient(GOOGLE_CLIENT_ID)
 
 # User class (No database, stored in session)
 class User(UserMixin):
-    def __init__(self, id, name, email, picture):
-        self.id = id
+    def __init__(self, id_, name, email, profile_pic):
+        self.id = id_
         self.name = name
         self.email = email
-        self.picture = picture
+        self.profile_pic = profile_pic
 
 # Load user from session
 def load_user(user_id):
@@ -37,16 +37,11 @@ def get_google_provider_cfg():
 # Google Login
 def google_login():
     google_provider_cfg = get_google_provider_cfg()
-    print(f"google_provider_cfg: {google_provider_cfg}")
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
-    print(f"authorization_endpoint: {authorization_endpoint}")
 
-    redirect_uri = url_for("auth.google_callback_route", _external=True)
-    redirect_uri = redirect_uri.replace("http://", "https://")  # force https
-    print(f"redirect_uri: {redirect_uri}")
     request_uri = client.prepare_request_uri(
         authorization_endpoint,
-        redirect_uri=redirect_uri,
+        redirect_uri=GOOGLE_REDIRECT_URI,
         scope=["openid", "email", "profile"],
     )
     print(f"request_uri: {request_uri}")
@@ -80,7 +75,7 @@ def google_callback():
     if token_response.status_code != 200:
         return "Failed to obtain token!", 400
 
-    client.parse_request_body_response(json.dumps(token_response.json()))
+    client.parse_request_body_response(token_response.text)
 
     # Get user info
     userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
@@ -94,10 +89,10 @@ def google_callback():
     # Create a User instance
     user_data = userinfo_response.json()
     user = User(
-        id=user_data["sub"],
+        id_=user_data["sub"],
         name=user_data["name"],
         email=user_data["email"],
-        picture=user_data["picture"],
+        profile_pic=user_data["picture"],
     )
 
     # Store user info in session
@@ -105,17 +100,25 @@ def google_callback():
         "id": user.id,
         "name": user.name,
         "email": user.email,
-        "picture": user.picture,
+        "picture": user.profile_pic,
     }
+    print(f"user: {user.name}")
+    login_user(user)
+
+    # Return token and user information as JSON
     return jsonify({
-        "id": user.id,
-        "name": user.name,
-        "email": user.email,
-        "picture": user.picture,
+        "access_token": token_response.json().get("access_token"),
+        "id_token": token_response.json().get("id_token"),
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "picture": user.profile_pic,
+        }
     }), 200
 
 # Logout
 def google_logout():
     logout_user()
     session.clear()
-    return redirect(url_for("auth.login"))
+    return jsonify({"message": "User logged out successfully"})
