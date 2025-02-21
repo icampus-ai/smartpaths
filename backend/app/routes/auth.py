@@ -12,7 +12,7 @@ auth_bp = Blueprint("auth", __name__)
 def login():
     return google_login()
 
-@auth_bp.route("/callback")
+@auth_bp.route("/api/callback")
 def google_callback_route():
     return google_callback()
 

@@ -13,6 +13,9 @@ load_dotenv()  # Load environment variables
 def create_app():
     app = Flask(__name__)
     
+    # Force Flask to use https URLs
+    app.config['PREFERRED_URL_SCHEME'] = 'https'
+    
     # Secure secret key
     app.secret_key = os.getenv("SECRET_KEY", "your-secure-random-key")
 
