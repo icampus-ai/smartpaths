@@ -21,12 +21,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, toggleSidebar, onProfileC
   useEffect(() => {
     const storedUsername = localStorage.getItem("username");
     const storedEmail = localStorage.getItem("email");
-    const storedImageUrl = localStorage.getItem("imageUrl");
 
     if (storedUsername && storedEmail) {
       setUsername(storedUsername);
       setEmail(storedEmail);
-      setImageUrl(storedImageUrl);
     }
   }, []);
 
