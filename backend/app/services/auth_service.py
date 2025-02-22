@@ -1,10 +1,11 @@
 import json
 import requests
 import os
-from flask import session, redirect, url_for, request
+from flask import session, redirect, url_for, request, jsonify
 from flask_login import UserMixin, login_user, logout_user
 from oauthlib.oauth2 import WebApplicationClient
 from dotenv import load_dotenv
+import urllib.parse
 
 load_dotenv()  # Load environment variables
 
@@ -12,6 +13,7 @@ GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI")
 GOOGLE_DISCOVERY_URL = os.getenv("GOOGLE_DISCOVERY_URL")
+FRONTEND_REDIRECT_URI = os.getenv("FRONTEND_REDIRECT_URI")
 
 client = WebApplicationClient(GOOGLE_CLIENT_ID)
 
@@ -111,7 +113,16 @@ def google_callback():
     login_user(user)
     print(f"current_user: {user.email}")
     print(f"session: {session}")
-    return redirect("http://localhost:3000/dashboard")
+    access_token = token_response.json().get("access_token")
+
+      # 🔥 Instead of returning JSON, redirect to React frontend with token
+    params = {
+        "token": access_token,
+        "name": user.name,
+        "email": user.email
+    }
+    query_string = urllib.parse.urlencode(params)
+    return redirect(f"FRONTEND_REDIRECT_URI?{query_string}")
 
 # Logout
 def google_logout():

@@ -12,11 +12,10 @@ auth_bp = Blueprint("auth", __name__)
 def login():
     return google_login()
 
-@auth_bp.route("/api/callback")
+@auth_bp.route("/api/google/callback")
 def google_callback_route():
     return google_callback()
 
-@auth_bp.route("/logout")
-@login_required
+@auth_bp.route("/api/google/logout", methods=["GET"])
 def logout():
     return google_logout()
