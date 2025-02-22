@@ -18,9 +18,10 @@ def create_app():
     
     # Secure secret key
     app.secret_key = os.getenv("SECRET_KEY", "your-secure-random-key")
+    FRONTEND_URI = os.getenv("FRONTEND_URI")
 
     # Configure CORS
-    CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "https://8d19-2001-861-e3c6-2290-6ddd-7b0e-2070-7b0f.ngrok-free.app"], "methods": ["GET", "POST", "PUT", "DELETE"], "supports_credentials": True}})
+    CORS(app, resources={r"/*": {"origins": [FRONTEND_URI, "https://8d19-2001-861-e3c6-2290-6ddd-7b0e-2070-7b0f.ngrok-free.app"], "methods": ["GET", "POST", "PUT", "DELETE"], "supports_credentials": True}})
 
     # Setup Login Manager
     login_manager = LoginManager()
