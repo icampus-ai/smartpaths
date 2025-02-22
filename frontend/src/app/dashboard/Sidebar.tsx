@@ -2,7 +2,16 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Home as HomeIcon, ChevronLeft, ChevronRight, User, BarChart2, UserCheck, Settings, LogOut } from "lucide-react";
+import {
+  Home as HomeIcon,
+  ChevronLeft,
+  ChevronRight,
+  User,
+  BarChart2,
+  UserCheck,
+  Settings,
+  LogOut
+} from "lucide-react";
 
 interface SidebarProps {
   isExpanded: boolean;
@@ -21,12 +30,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, toggleSidebar, onProfileC
   useEffect(() => {
     const storedUsername = localStorage.getItem("username");
     const storedEmail = localStorage.getItem("email");
-    const storedImageUrl = localStorage.getItem("imageUrl");
 
     if (storedUsername && storedEmail) {
       setUsername(storedUsername);
       setEmail(storedEmail);
-      setImageUrl(storedImageUrl);
     }
   }, []);
 
@@ -40,6 +47,28 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, toggleSidebar, onProfileC
   const handleNavigation = (path: string) => {
     setActiveMenu(path);
     router.push(path);
+  };
+
+  // Logout handler that calls the backend logout API, clears localStorage, and routes back to signup.
+  const handleLogout = async () => {
+    try {
+      const response = await fetch(
+        "https://8d19-2001-861-e3c6-2290-6ddd-7b0e-2070-7b0f.ngrok-free.app/api/google/logout",
+        {
+          method: "GET",
+          credentials: "include", // ensure session cookies are sent if required
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Logout failed");
+      }
+      localStorage.removeItem("username");
+      localStorage.removeItem("email");
+      localStorage.removeItem("imageUrl");
+      router.push("/signup");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return (
@@ -109,8 +138,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, toggleSidebar, onProfileC
           {isExpanded && <span className="font-medium text-lg">Usage</span>}
         </li>
         <li
-          className={`flex items-center gap-4 cursor-pointer hover:text-[#E0E0E0] transition-all ${activeMenu === "/signup" ? "scale-110" : ""}`}
-          onClick={() => handleNavigation("/signup")}
+          className="flex items-center gap-4 cursor-pointer hover:text-[#E0E0E0] transition-all"
+          onClick={handleLogout}  // call logout function on click
         >
           <LogOut className="text-xl text-[#FF6600]" />
           {isExpanded && <span className="font-medium text-lg">Logout</span>}
