@@ -55,6 +55,7 @@ const SignupPage: React.FC = () => {
       "https://8d19-2001-861-e3c6-2290-6ddd-7b0e-2070-7b0f.ngrok-free.app/api/google/login";
   };
 
+  
   return (
     <>
       <Header />
