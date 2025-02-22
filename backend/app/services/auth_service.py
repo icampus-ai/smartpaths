@@ -38,6 +38,7 @@ def get_google_provider_cfg():
 
 # Google Login
 def google_login():
+    session.clear()
     google_provider_cfg = get_google_provider_cfg()
     print(f"google_provider_cfg: {google_provider_cfg}")
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
@@ -112,7 +113,6 @@ def google_callback():
     print(f"user: {user.name}")
     login_user(user)
     print(f"current_user: {user.email}")
-    print(f"session: {session}")
     access_token = token_response.json().get("access_token")
 
       # 🔥 Instead of returning JSON, redirect to React frontend with token
@@ -122,10 +122,11 @@ def google_callback():
         "email": user.email
     }
     query_string = urllib.parse.urlencode(params)
-    return redirect(f"FRONTEND_REDIRECT_URI?{query_string}")
+    return redirect(f"{FRONTEND_REDIRECT_URI}?{query_string}")
+
 
 # Logout
 def google_logout():
     logout_user()
     session.clear()
-    return redirect(url_for("auth.login"))
+    return jsonify({"message": "User logged out successfully"})

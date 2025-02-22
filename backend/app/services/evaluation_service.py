@@ -4,12 +4,14 @@ import base64
 # from pdf2image import convert_from_path
 from docx import Document
 import os
+import json
 from ai_model.model.grading_system.grader import grade_student_answers_v2
 from ai_model.model.grading_system.grader_v3 import grade_student_answers_v3
 from ai_model.model.grading_system.rubrics import generate_rubrics
 from ai_model.model.grading_system.rubrics_v2 import generate_rubrics_v2
 from ai_model.model.grading_system.get_overall_feedback import get_overall_feedback
 from ai_model.model.grading_system.extract_text_from_image import extract_text
+
 from backend.app.utils.file_type import (
     extract_pdf_text, 
     extract_docx_text, 
@@ -135,10 +137,6 @@ def process_student_answers_v2(student_answer_file, file_type, model_answers, ge
     updated_student_content += "\n" + summary
 
     return file_name, updated_student_content
-
-import json
-
-import json
 
 def get_marks_for_question(rubrics_data, question_number):
     if isinstance(rubrics_data, str):
