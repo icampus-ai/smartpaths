@@ -141,24 +141,24 @@ def grade_student_answers_v3(model_answer: str, student_answer: str, rubric:dict
     return response
 
 # Example Usage
-rubric = {
-    "question_number": 3,
-    "question": "Discuss the impact of the Industrial Revolution on society.",
-    "marks": 15,
-    "bloom_taxonomy": "Analysis",
-    "rubric": {
-        "understanding": {"marks": 4, "description": "Explain the Industrial Revolution and its impact."},
-        "application": {"marks": 2, "description": "Provide real-world examples of the Industrial Revolution."},
-        "analysis": {"marks": 4, "description": "Analyze causes and effects of the Industrial Revolution."},
-        "synthesis": {"marks": 2, "description": "Synthesize the broader implications on society."},
-        "clarity_and_organization": {"marks": 3, "description": "Ensure clarity and logical structure of the response."}
-    }
-}
+# rubric = {
+#     "question_number": 3,
+#     "question": "Discuss the impact of the Industrial Revolution on society.",
+#     "marks": 15,
+#     "bloom_taxonomy": "Analysis",
+#     "rubric": {
+#         "understanding": {"marks": 4, "description": "Explain the Industrial Revolution and its impact."},
+#         "application": {"marks": 2, "description": "Provide real-world examples of the Industrial Revolution."},
+#         "analysis": {"marks": 4, "description": "Analyze causes and effects of the Industrial Revolution."},
+#         "synthesis": {"marks": 2, "description": "Synthesize the broader implications on society."},
+#         "clarity_and_organization": {"marks": 3, "description": "Ensure clarity and logical structure of the response."}
+#     }
+# }
 
-model_answer = "The Industrial Revolution led to urbanization, factories, and changes in social structures."
-student_answer = "The Industrial Revolution created factories and made people move to cities."
+# model_answer = "The Industrial Revolution led to urbanization, factories, and changes in social structures."
+# student_answer = "The Industrial Revolution created factories and made people move to cities."
 
-result = grade_student_answers_v3(model_answer, student_answer, rubric, "hard")
+# result = grade_student_answers_v3(model_answer, student_answer, rubric, "hard")
 
-# Display the result
-print(json.dumps(result, indent=4))
+# # Display the result
+# print(json.dumps(result, indent=4))
