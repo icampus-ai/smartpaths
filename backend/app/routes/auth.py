@@ -12,21 +12,10 @@ auth_bp = Blueprint("auth", __name__)
 def login():
     return google_login()
 
-@auth_bp.route("/callback")
+@auth_bp.route("/api/google/callback")
 def google_callback_route():
     return google_callback()
 
-@auth_bp.route("/dashboard")
-@login_required
-def dashboard():
-    return f"""
-    <h1>Welcome, {current_user.name}!</h1>
-    <img src='{current_user.picture}' width='100px' style='border-radius: 50%;'><br>
-    <p>Email: {current_user.email}</p>
-    <a href='/logout'>Logout</a>
-    """
-
-@auth_bp.route("/logout")
-@login_required
+@auth_bp.route("/api/google/logout", methods=["GET"])
 def logout():
     return google_logout()

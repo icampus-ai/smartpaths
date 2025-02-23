@@ -4,10 +4,14 @@ import base64
 # from pdf2image import convert_from_path
 from docx import Document
 import os
+import json
 from ai_model.model.grading_system.grader import grade_student_answers_v2
+from ai_model.model.grading_system.grader_v3 import grade_student_answers_v3
 from ai_model.model.grading_system.rubrics import generate_rubrics
+from ai_model.model.grading_system.rubrics_v2 import generate_rubrics_v2
 from ai_model.model.grading_system.get_overall_feedback import get_overall_feedback
 from ai_model.model.grading_system.extract_text_from_image import extract_text
+
 from backend.app.utils.file_type import (
     extract_pdf_text, 
     extract_docx_text, 
@@ -57,6 +61,12 @@ def process_model_files(model_question_paper, model_question_answer_file, file_t
     model_answers = extract_model_data(model_content)
     return model_question_paper_text, model_answers
 
+def process_model_files_v2(model_question_answer_file, file_type):
+    """Process model question paper and answer files."""
+    model_content = read_file_content(model_question_answer_file, file_type)
+    model_answers = extract_model_data(model_content)
+    return model_answers
+
 def process_student_answers(student_answer_file, file_type, model_answers, generated_rubrics, difficulty_level):
     """Process a single student's answers and return grading results."""
     file_name = student_answer_file.filename
@@ -91,6 +101,68 @@ def process_student_answers(student_answer_file, file_type, model_answers, gener
     updated_student_content += "\n" + summary
 
     return file_name, updated_student_content
+
+def process_student_answers_v2(student_answer_file, file_type, model_answers, generated_rubrics, difficulty_level):
+    """Process a single student's answers and return grading results."""
+    file_name = student_answer_file.filename
+    print(f"File name.............: {file_name}")
+    if file_type == 'image/jpeg' or file_type == 'image/png':
+        student_content = extract_text(student_answer_file)
+    else:  
+        student_content = read_file_content(student_answer_file, file_type)   
+    print(f"Student content........: {student_content}")
+    student_extracted_answers = extract_student_data(student_content)
+    print(f"Student extracted answers........: {student_extracted_answers}")
+    grading_results = {}
+    for question_number, qa in student_extracted_answers['questionAndAnswers'].items():
+        print("Inside process_stuend_answers")
+        print(f"question_number : {question_number}, qa : {qa}")
+        marks = get_marks_for_question(generated_rubrics, question_number)
+        print(f"marks : {marks['marks']}")
+        student_evaluated_outcome = grade_student_answers_v3(
+            model_answers.get(question_number),
+            qa['answer'],
+            generated_rubrics,
+            difficulty_level,
+            marks['marks']
+        )
+        grading_results[question_number] = student_evaluated_outcome
+
+    print(f"grading_results : {grading_results}")
+
+    updated_student_content, total_score, feedbacks = append_grading_results(student_content, grading_results)
+
+    # Generate overall summary
+    summary = generate_summary(total_score, generated_rubrics['model_total_score'], get_overall_feedback(feedbacks))
+    
+    # Combine the grading results with the summary
+    updated_student_content += "\n" + summary
+
+    return file_name, updated_student_content
+
+def get_marks_for_question(rubrics_data, question_number):
+    if isinstance(rubrics_data, str):
+        try:
+            rubrics_data = json.loads(rubrics_data)  # Convert JSON string to dictionary
+        except json.JSONDecodeError:
+            raise ValueError("Invalid JSON string received for rubrics")
+
+    if not isinstance(rubrics_data, dict) or "rubrics" not in rubrics_data:
+        raise ValueError("Invalid rubrics data format")
+
+    rubrics = rubrics_data["rubrics"]  # Extract the actual list
+    
+    # Find the first matching rubric and return it
+    for q in rubrics:
+        print(f"q['question_number'] : {q['question_number']}")
+        if q["question_number"] == int(question_number):
+            return q  # Return the first matching object
+    
+    return None  # Return None if no match is found
+
+
+
+
 
 def save_graded_file(updated_content, file_name, file_type):
     """Save graded content to the appropriate file format."""
@@ -138,3 +210,38 @@ def evaluate_student_answers(model_question_paper, model_question_answer_file, s
         })
 
     return answer_evaluated_report
+
+
+def evaluate_student_answers_v2(model_question_answer_file, student_answer_files, difficulty_level, file_type, rubrics):
+    """Evaluate student answers against model answers and rubrics."""
+    
+    model_content = read_file_content(model_question_answer_file, file_type)
+    model_answers = extract_model_data(model_content)
+    
+    answer_evaluated_report = []
+
+    print("Processing student files...", student_answer_files)
+    for student_answer_file in student_answer_files:
+        # Process student answers
+        print("Processing student files...")
+        file_name, updated_student_content = process_student_answers_v2(
+            student_answer_file, student_answer_file.content_type, model_answers, rubrics, difficulty_level
+        )
+        # Save graded file
+        save_graded_file(updated_student_content, file_name, student_answer_file.content_type)
+
+        # Encode graded content for report
+        encoded_content = base64.b64encode(updated_student_content.encode("utf-8")).decode("utf-8")
+        answer_evaluated_report.append({
+            "student_file": file_name,
+            "file": encoded_content
+        })
+
+    return answer_evaluated_report
+
+
+def generate_rubrics_from_model_question_answer(model_question_answer):
+    """Generate rubrics from the model question answer."""
+    model_question_answer_content = read_file_content(model_question_answer, model_question_answer.content_type)
+    print(f"Model question answer content: {model_question_answer_content}")
+    return generate_rubrics_v2(model_question_answer_content)

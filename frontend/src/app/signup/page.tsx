@@ -1,19 +1,38 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Header } from "../../sections/Header";
+import React, { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import abstract34 from "../../assets/abstract_33.png"; // Adjust the path as needed
-import studentsImage from "../../assets/student_1.png"; // Adjust the path as needed
+import { Header } from "../../sections/Header";
+import abstract34 from "../../assets/abstract_33.png";
+import studentsImage from "../../assets/student_1.png";
 
 const SignupPage: React.FC = () => {
   const router = useRouter();
+  const searchParams = useSearchParams(); // Hook from next/navigation
   const [isSignup, setIsSignup] = useState(true);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    // Read query params from the URL
+    const token = searchParams.get("token");
+    const name = searchParams.get("name");
+    const email = searchParams.get("email");
+    const picture = searchParams.get("picture");
+
+    // If a token is present, store all user info and go to dashboard
+    if (token) {
+      localStorage.setItem("username", name || "");
+      localStorage.setItem("email", email || "");
+      localStorage.setItem("imageUrl", picture || "");
+      router.push("/dashboard");
+    }
+  }, [router, searchParams]);
+
+  // Dummy local login
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (
@@ -21,17 +40,22 @@ const SignupPage: React.FC = () => {
       (username === "user" && password === "user")
     ) {
       localStorage.setItem("username", username);
+      localStorage.setItem("email", "user@example.com");
       router.push("/dashboard");
     } else {
       setErrorMessage("Invalid credentials");
     }
   };
 
+  // Trigger Google sign-in
   const handleGoogleLogin = () => {
-    // Redirect to your backend API for Google OAuth 2.0 authentication
-    window.location.href = "http://localhost:8000/api/auth/google";
+    setLoading(true);
+    // This should match your backend login endpoint
+    window.location.href =
+      "https://8d19-2001-861-e3c6-2290-6ddd-7b0e-2070-7b0f.ngrok-free.app/api/google/login";
   };
 
+  
   return (
     <>
       <Header />
@@ -48,7 +72,7 @@ const SignupPage: React.FC = () => {
         </div>
 
         {/* Title */}
-        <div className="relative z-10 text-center mb-10 mt-20"> {/* Added mt-20 for margin-top */}
+        <div className="relative z-10 text-center mb-10 mt-20">
           <h1 className="text-7xl font-extrabold text-gray-800">
             <span className="text-orange-500">Your</span>
             <span className="text-black"> Journey,</span>
@@ -63,13 +87,17 @@ const SignupPage: React.FC = () => {
             <div className="text-center flex justify-center gap-4 mb-4">
               <button
                 onClick={() => setIsSignup(true)}
-                className={`text-2xl font-bold px-4 py-2 rounded-lg transition-colors ${isSignup ? "bg-black text-white" : "bg-gray-200 text-gray-800"}`}
+                className={`text-2xl font-bold px-4 py-2 rounded-lg transition-colors ${
+                  isSignup ? "bg-black text-white" : "bg-gray-200 text-gray-800"
+                }`}
               >
                 Signup
               </button>
               <button
                 onClick={() => setIsSignup(false)}
-                className={`text-2xl font-bold px-4 py-2 rounded-lg transition-colors ${!isSignup ? "bg-black text-white" : "bg-gray-200 text-gray-800"}`}
+                className={`text-2xl font-bold px-4 py-2 rounded-lg transition-colors ${
+                  !isSignup ? "bg-black text-white" : "bg-gray-200 text-gray-800"
+                }`}
               >
                 Login
               </button>
@@ -79,9 +107,10 @@ const SignupPage: React.FC = () => {
               <div className="space-y-6">
                 <button
                   onClick={handleGoogleLogin}
-                  className="w-full bg-black text-white font-medium py-3 px-4 rounded-lg shadow-md hover:scale-105 transform transition"
+                  disabled={loading}
+                  className="w-full bg-black text-white font-medium py-3 px-4 rounded-lg shadow-md hover:scale-105 transform transition disabled:opacity-50"
                 >
-                  Sign in with Google
+                  {loading ? "Redirecting..." : "Sign in with Google"}
                 </button>
               </div>
             ) : (
@@ -131,7 +160,7 @@ const SignupPage: React.FC = () => {
 
             <div className="mt-6 text-center">
               <p className="text-gray-600 text-sm">
-                {isSignup ? "Already have an account?" : "Don't have an account?"} {" "}
+                {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
                 <button
                   onClick={() => setIsSignup(!isSignup)}
                   className="text-blue-500 hover:underline transition-colors"
