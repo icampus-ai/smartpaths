@@ -117,12 +117,14 @@ def process_student_answers_v2(student_answer_file, file_type, model_answers, ge
     for question_number, qa in student_extracted_answers['questionAndAnswers'].items():
         print("Inside process_stuend_answers")
         print(f"question_number : {question_number}, qa : {qa}")
+        marks = get_marks_for_question(generated_rubrics, question_number)
+        print(f"marks : {marks['marks']}")
         student_evaluated_outcome = grade_student_answers_v3(
             model_answers.get(question_number),
             qa['answer'],
             generated_rubrics,
             difficulty_level,
-            get_marks_for_question(generated_rubrics, question_number)
+            marks['marks']
         )
         grading_results[question_number] = student_evaluated_outcome
 
