@@ -1,16 +1,19 @@
 import json
 import re
 from ai_model.model.grading_system.get_llama_response_from_groq import get_llama_response_from_groq
+# from get_llama_response_from_groq import get_llama_response_from_groq
 
-def generate_rubrics_v2(model_question_and_answer: str) -> list:
+def generate_rubrics_v2(model_question_and_answer: str) -> dict:
     """
-    Calls the LLaMA model to extract rubrics from the provided model question and answer.
+    Calls the LLaMA model to extract rubrics from the provided model question and answer,
+    and returns a dictionary with the total marks and the list of rubric dictionaries.
     
     Args:
         model_question_and_answer (str): The combined model question and answer string.
     
     Returns:
-        list: A list of rubrics extracted from the model QA in the specified format.
+        dict: A dictionary with keys "total_marks" (sum of all individual marks)
+              and "rubrics" (the list of rubric dictionaries).
     """
     # Define the prompt to extract rubrics
     prompt = f"""
@@ -70,27 +73,33 @@ def generate_rubrics_v2(model_question_and_answer: str) -> list:
         clean_response = match.group(1)
     else:
         print("Error: Unable to extract valid JSON from the response.")
-        return []
+        return {}
     
     # Process the response into a list of JSON objects
     try:
         rubrics = json.loads(clean_response)
-        return rubrics
     except json.JSONDecodeError:
         print("Error: Failed to decode the LLaMA response as JSON.")
         print("Raw LLaMA Response:", clean_response)
-        return []
+        return {}
+    
+    # Calculate the total marks by summing the "marks" key for each question
+    total_marks = sum(item.get("marks", 0) for item in rubrics)
+    
+    # Return the result as a dictionary with total_marks and rubrics as keys
+    return {"total_marks": total_marks, "rubrics": rubrics}
 
-# # Example Usage:
-# model_question_and_answer = """
-# Question 1: What is the capital of France? — 5 Marks
-# Answer: The capital of France is Paris.
+# Example Usage:
+model_question_and_answer = """
+Question 1: What is the capital of France? — 5 Marks
+Answer: The capital of France is Paris.
 
-# Question 2: Explain the process of photosynthesis. — 10 Marks
-# Answer: Photosynthesis is the process by which plants convert sunlight into energy, primarily occurring in the chloroplasts.
+Question 2: Explain the process of photosynthesis. — 10 Marks
+Answer: Photosynthesis is the process by which plants convert sunlight into energy, primarily occurring in the chloroplasts.
 
-# Question 3: Discuss the impact of the Industrial Revolution on society. — 15 Marks
-# Answer: The Industrial Revolution had a profound impact on society, leading to urbanization, the rise of factory work, and significant technological advancements.
-# """
-# rubrics = generate_rubrics(model_question_and_answer)
-# print(json.dumps(rubrics, indent=2))
+Question 3: Discuss the impact of the Industrial Revolution on society. — 15 Marks
+Answer: The Industrial Revolution had a profound impact on society, leading to urbanization, the rise of factory work, and significant technological advancements.
+"""
+
+result = generate_rubrics_v2(model_question_and_answer)
+print(json.dumps(result, indent=2))

@@ -2,6 +2,8 @@ import re
 import json
 from ai_model.model.grading_system.get_llama_response_from_groq import get_llama_response_from_groq
 
+# from get_llama_response_from_groq import get_llama_response_from_groq
+
 def grader(model_answer, student_answer, rubric):
     total_score = 0
     category_breakdown = []
@@ -112,9 +114,30 @@ def grader(model_answer, student_answer, rubric):
     }
 
 
-def grade_student_answers_v3(model_answer: str, student_answer: str, rubric:dict, difficulty_level: str = "medium", maximum_score: float = 10) -> dict:
+def get_bucketed_score(total_score: float, max_score: float, difficulty_level: str = "medium") -> float:
+    score_percentage = (total_score / max_score) * 100
+    
+    if difficulty_level == "easy":
+        thresholds = [10, 20, 30, 40, 50, 60, 70]
+    elif difficulty_level == "medium":
+        thresholds = [12.5, 25, 37.5, 50, 62.5, 75, 80]
+    else:
+        thresholds = [10, 30, 50, 60, 70, 80, 90]
+
+    if score_percentage >= thresholds[-1]:
+        return round(max_score * 2) / 2
+
+    for i, threshold in enumerate(thresholds):
+        if score_percentage <= threshold:
+            score = (i + 1) * (max_score / len(thresholds))
+            return round(score * 2) / 2
+
+    return 0
+
+def grade_student_answers_v3(model_answer: str, student_answer: str, rubric:dict, difficulty_level: str = "medium") -> dict:
 
     response = grader(model_answer, student_answer, rubric)
+    response['score_achieved'] = get_bucketed_score(response['score_achieved'], response['maximum_score'], difficulty_level)
     return response
 
 # Example Usage
@@ -132,10 +155,10 @@ rubric = {
     }
 }
 
-# model_answer = "The Industrial Revolution led to urbanization, factories, and changes in social structures."
-# student_answer = "The Industrial Revolution created factories and made people move to cities."
+model_answer = "The Industrial Revolution led to urbanization, factories, and changes in social structures."
+student_answer = "The Industrial Revolution created factories and made people move to cities."
 
-# result = grade_student_answers_v3(model_answer, student_answer, rubric)
+result = grade_student_answers_v3(model_answer, student_answer, rubric, "hard")
 
-# # Display the result
-# print(json.dumps(result, indent=4))
+# Display the result
+print(json.dumps(result, indent=4))
