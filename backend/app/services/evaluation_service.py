@@ -95,7 +95,7 @@ def process_student_answers(student_answer_file, file_type, model_answers, gener
     updated_student_content, total_score, feedbacks = append_grading_results(student_content, grading_results)
 
     # Generate overall summary
-    summary = generate_summary(total_score, generated_rubrics['model_total_score'], get_overall_feedback(feedbacks))
+    summary = generate_summary(total_score, generated_rubrics['rubrics']['total_marks'], get_overall_feedback(feedbacks))
     
     # Combine the grading results with the summary
     updated_student_content += "\n" + summary
@@ -133,7 +133,8 @@ def process_student_answers_v2(student_answer_file, file_type, model_answers, ge
     updated_student_content, total_score, feedbacks = append_grading_results(student_content, grading_results)
 
     # Generate overall summary
-    summary = generate_summary(total_score, generated_rubrics['model_total_score'], get_overall_feedback(feedbacks))
+    print(f"generated_rubrics : {generated_rubrics['rubrics']}")
+    summary = generate_summary(total_score, generated_rubrics['rubrics']['total_marks'], get_overall_feedback(feedbacks))
     
     # Combine the grading results with the summary
     updated_student_content += "\n" + summary
@@ -150,7 +151,7 @@ def get_rubrics_for_question(rubrics_data, question_number):
     if not isinstance(rubrics_data, dict) or "rubrics" not in rubrics_data:
         raise ValueError("Invalid rubrics data format")
 
-    rubrics = rubrics_data["rubrics"]  # Extract the actual list
+    rubrics = rubrics_data["rubrics"]["rubrics"]  # Extract the actual list
     
     # Find the first matching rubric and return it
     for q in rubrics:
@@ -209,7 +210,7 @@ def evaluate_student_answers(model_question_paper, model_question_answer_file, s
     return answer_evaluated_report
 
 
-def evaluate_student_answers_v2(model_question_answer_file, student_answer_files, difficulty_level, file_type, rubrics):
+def evaluate_student_answers_v2(model_question_answer_file, student_answer_files, difficulty_level, file_type, rubrics: dict):
     """Evaluate student answers against model answers and rubrics."""
     
     model_content = read_file_content(model_question_answer_file, file_type)
