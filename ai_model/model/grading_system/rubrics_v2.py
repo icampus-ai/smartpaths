@@ -90,16 +90,16 @@ def generate_rubrics_v2(model_question_and_answer: str) -> dict:
     return {"total_marks": total_marks, "rubrics": rubrics}
 
 # Example Usage:
-model_question_and_answer = """
-Question 1: What is the capital of France? — 5 Marks
-Answer: The capital of France is Paris.
+# model_question_and_answer = """
+# Question 1: What is the capital of France? — 5 Marks
+# Answer: The capital of France is Paris.
 
-Question 2: Explain the process of photosynthesis. — 10 Marks
-Answer: Photosynthesis is the process by which plants convert sunlight into energy, primarily occurring in the chloroplasts.
+# Question 2: Explain the process of photosynthesis. — 10 Marks
+# Answer: Photosynthesis is the process by which plants convert sunlight into energy, primarily occurring in the chloroplasts.
 
-Question 3: Discuss the impact of the Industrial Revolution on society. — 15 Marks
-Answer: The Industrial Revolution had a profound impact on society, leading to urbanization, the rise of factory work, and significant technological advancements.
-"""
+# Question 3: Discuss the impact of the Industrial Revolution on society. — 15 Marks
+# Answer: The Industrial Revolution had a profound impact on society, leading to urbanization, the rise of factory work, and significant technological advancements.
+# """
 
-result = generate_rubrics_v2(model_question_and_answer)
-print(json.dumps(result, indent=2))
+# result = generate_rubrics_v2(model_question_and_answer)
+# print(json.dumps(result, indent=2))
