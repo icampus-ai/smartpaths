@@ -115,19 +115,19 @@ def process_student_answers_v2(student_answer_file, file_type, model_answers, ge
     print(f"Student extracted answers........: {student_extracted_answers}")
     grading_results = {}
     for question_number, qa in student_extracted_answers['questionAndAnswers'].items():
-        print("Inside process_stuend_answers")
+        print(f"-------------start of question {question_number} ---------------")
+        print("Inside process_student_answers")
         print(f"question_number : {question_number}, qa : {qa}")
-        marks = get_marks_for_question(generated_rubrics, question_number)
-        print(f"marks : {marks['marks']}")
+        rubrics_for_question = get_rubrics_for_question(generated_rubrics, question_number)
+        print(f"rubrics_for_question : {rubrics_for_question}")
         student_evaluated_outcome = grade_student_answers_v3(
             model_answers.get(question_number),
             qa['answer'],
-            generated_rubrics,
-            difficulty_level,
-            marks['marks']
+            rubrics_for_question,
+            difficulty_level
         )
         grading_results[question_number] = student_evaluated_outcome
-
+        print(f"------------- end of question {question_number} ---------------")
     print(f"grading_results : {grading_results}")
 
     updated_student_content, total_score, feedbacks = append_grading_results(student_content, grading_results)
@@ -140,7 +140,7 @@ def process_student_answers_v2(student_answer_file, file_type, model_answers, ge
 
     return file_name, updated_student_content
 
-def get_marks_for_question(rubrics_data, question_number):
+def get_rubrics_for_question(rubrics_data, question_number):
     if isinstance(rubrics_data, str):
         try:
             rubrics_data = json.loads(rubrics_data)  # Convert JSON string to dictionary
@@ -159,9 +159,6 @@ def get_marks_for_question(rubrics_data, question_number):
             return q  # Return the first matching object
     
     return None  # Return None if no match is found
-
-
-
 
 
 def save_graded_file(updated_content, file_name, file_type):
