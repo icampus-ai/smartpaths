@@ -118,16 +118,23 @@ def process_student_answers_v2(student_answer_file, file_type, model_answers, ge
         print(f"-------------start of question {question_number} ---------------")
         print("Inside process_student_answers")
         print(f"question_number : {question_number}, qa : {qa}")
-        rubrics_for_question = get_rubrics_for_question(generated_rubrics, question_number)
-        print(f"rubrics_for_question : {rubrics_for_question}")
-        student_evaluated_outcome = grade_student_answers_v3(
+    if isinstance(generated_rubrics, str):
+        try:
+            generated_rubrics = json.loads(generated_rubrics)  # Convert JSON string to dictionary
+        except json.JSONDecodeError:
+            raise ValueError("Invalid JSON string received for rubrics")
+    if not isinstance(generated_rubrics, dict) or "rubrics" not in generated_rubrics:
+        raise ValueError("Invalid rubrics data format")
+    rubrics_for_question = get_rubrics_for_question(generated_rubrics, question_number)
+    print(f"rubrics_for_question : {rubrics_for_question}")
+    student_evaluated_outcome = grade_student_answers_v3(
             model_answers.get(question_number),
             qa['answer'],
             rubrics_for_question,
             difficulty_level
-        )
-        grading_results[question_number] = student_evaluated_outcome
-        print(f"------------- end of question {question_number} ---------------")
+    )
+    grading_results[question_number] = student_evaluated_outcome
+    print(f"------------- end of question {question_number} ---------------")
     print(f"grading_results : {grading_results}")
 
     updated_student_content, total_score, feedbacks = append_grading_results(student_content, grading_results)
@@ -142,14 +149,6 @@ def process_student_answers_v2(student_answer_file, file_type, model_answers, ge
     return file_name, updated_student_content
 
 def get_rubrics_for_question(rubrics_data, question_number):
-    if isinstance(rubrics_data, str):
-        try:
-            rubrics_data = json.loads(rubrics_data)  # Convert JSON string to dictionary
-        except json.JSONDecodeError:
-            raise ValueError("Invalid JSON string received for rubrics")
-
-    if not isinstance(rubrics_data, dict) or "rubrics" not in rubrics_data:
-        raise ValueError("Invalid rubrics data format")
 
     rubrics = rubrics_data["rubrics"]["rubrics"]  # Extract the actual list
     
