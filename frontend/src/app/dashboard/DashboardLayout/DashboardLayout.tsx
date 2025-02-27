@@ -1,49 +1,57 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import Sidebar from "../Sidebar";
 import StepComponent from "../StepComponent";
 import UploadModal from "./UploadModal";
 import FilePreviews from "./FilePreviews";
-import ProfileModal from "../ProfileModal"; // Import ProfileModal
+import ProfileModal from "../ProfileModal";
 
 const DashboardLayout: React.FC = () => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const [isUploadMenuOpen, setIsUploadMenuOpen] = useState(false);
+
+  // Outer Model Q&A state
   const [modelQandAFile, setModelQandAFile] = useState<File | null>(null);
   const [modelQandAFileUrl, setModelQandAFileUrl] = useState<string | null>(null);
   const [isModelQandAUploaded, setIsModelQandAUploaded] = useState(false);
+
+  // Outer Student Responses state
   const [studentResponsesFiles, setStudentResponsesFiles] = useState<File[]>([]);
   const [studentResponsesFileUrls, setStudentResponsesFileUrls] = useState<string[]>([]);
   const [isStudentResponsesUploaded, setIsStudentResponsesUploaded] = useState(false);
+
+  // Additional states
   const [error, setError] = useState<string | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
-  const [isDifficultySelected, setIsDifficultySelected] = useState(false);
   const [evaluationData, setEvaluationData] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isEvaluationCompleted, setIsEvaluationCompleted] = useState(false);
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false); // State for Profile Modal
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   const router = useRouter();
 
+  // Toggle Sidebar
   const toggleSidebar = () => {
     setIsSidebarExpanded(!isSidebarExpanded);
   };
 
-  const handleModelQandAFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    if (event.target.files) {
+  // ------------------------------
+  // Outer Upload Logic
+  // ------------------------------
+  const handleModelQandAFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files?.length) {
       const file = event.target.files[0];
-      const fileUrl = URL.createObjectURL(file);
       setModelQandAFile(file);
-      setModelQandAFileUrl(fileUrl);
+      setModelQandAFileUrl(URL.createObjectURL(file));
       setIsModelQandAUploaded(true);
       checkUploadStatus(true, isStudentResponsesUploaded);
     }
   };
 
-  const handleStudentResponsesFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    if (event.target.files) {
+  const handleStudentResponsesFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files?.length) {
       const files = Array.from(event.target.files);
       const fileUrls = files.map(file => URL.createObjectURL(file));
       setStudentResponsesFiles(files);
@@ -53,6 +61,7 @@ const DashboardLayout: React.FC = () => {
     }
   };
 
+  // Drag & Drop for outer modal
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
   };
@@ -60,8 +69,13 @@ const DashboardLayout: React.FC = () => {
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     if (event.dataTransfer.items) {
-      const files = Array.from(event.dataTransfer.items).map(item => item.getAsFile()).filter(file => file !== null) as File[];
+      const files = Array.from(event.dataTransfer.items)
+        .map(item => item.getAsFile())
+        .filter(file => file !== null) as File[];
+
       const fileUrls = files.map(file => URL.createObjectURL(file));
+      // For the outer modal, we assume these are student responses
+      // (or you can adapt logic if you want to detect which one)
       setStudentResponsesFiles(files);
       setStudentResponsesFileUrls(fileUrls);
       setIsStudentResponsesUploaded(true);
@@ -69,6 +83,7 @@ const DashboardLayout: React.FC = () => {
     }
   };
 
+  // Check outer upload status
   const checkUploadStatus = (modelQandAUploaded: boolean, studentUploaded: boolean) => {
     if (modelQandAUploaded && studentUploaded) {
       setIsUploadMenuOpen(false);
@@ -77,7 +92,7 @@ const DashboardLayout: React.FC = () => {
       setError("Please upload Student Responses file");
     } else if (!modelQandAUploaded && studentUploaded) {
       setError("Please upload Model Q&A file");
-    } else if (!modelQandAUploaded && !studentUploaded) {
+    } else {
       setError("Please upload both Model Q&A and Student Responses files");
     }
   };
@@ -88,12 +103,11 @@ const DashboardLayout: React.FC = () => {
 
   const handleDifficultyClick = (difficulty: string) => {
     setSelectedDifficulty(difficulty);
-    setIsDifficultySelected(true);
   };
 
-  /* ----------------------------------------
-   * Evaluate Button Click Handler
-   * --------------------------------------*/
+  // ------------------------------
+  // Evaluate Button
+  // ------------------------------
   const handleEvaluateButtonClicked = async () => {
     if (!modelQandAFile || studentResponsesFiles.length === 0 || !selectedDifficulty) {
       setError("Please make sure all files are uploaded and difficulty is selected.");
@@ -119,7 +133,6 @@ const DashboardLayout: React.FC = () => {
       const data = await response.json();
       setEvaluationData(JSON.stringify(data));
       setIsEvaluationCompleted(true);
-
       console.log("Files evaluated successfully");
     } catch (error) {
       console.error("Error evaluating files:", error);
@@ -133,14 +146,16 @@ const DashboardLayout: React.FC = () => {
     setIsModelQandAUploaded(false);
     setIsStudentResponsesUploaded(false);
     setSelectedDifficulty(null);
-    setIsDifficultySelected(false);
     setIsEvaluationCompleted(false);
   };
 
   const handleBackToHome = () => {
-    router.push('/dashboard');
+    router.push("/dashboard");
   };
 
+  // ------------------------------
+  // Profile
+  // ------------------------------
   const handleProfileClick = () => {
     setIsProfileModalOpen(true);
   };
@@ -151,8 +166,16 @@ const DashboardLayout: React.FC = () => {
 
   return (
     <div className="flex h-screen">
-      <Sidebar isExpanded={isSidebarExpanded} toggleSidebar={toggleSidebar} onProfileClick={handleProfileClick} />
-      <main className={`flex-grow ${isSidebarExpanded ? "ml-60" : "ml-16"} flex flex-col min-h-screen bg-white p-4 overflow-auto`}>
+      <Sidebar
+        isExpanded={isSidebarExpanded}
+        toggleSidebar={toggleSidebar}
+        onProfileClick={handleProfileClick}
+      />
+      <main
+        className={`flex-grow ${
+          isSidebarExpanded ? "ml-60" : "ml-16"
+        } flex flex-col min-h-screen bg-white p-4 overflow-auto`}
+      >
         <div className="flex flex-col items-center justify-center">
           <h1 className="text-7xl text-black font-bold">
             <span className="text-orange-500">Smart</span>
@@ -160,6 +183,8 @@ const DashboardLayout: React.FC = () => {
           </h1>
           <p className="text-2xl text-black mt-4">Simplify. Systemize. Succeed.</p>
         </div>
+
+        {/* If the outer Q&A file and at least one Student Response are set, show FilePreviews */}
         {modelQandAFileUrl && studentResponsesFileUrls.length > 0 ? (
           <div className="flex flex-col flex-grow bg-white">
             <div className="flex flex-row flex-grow">
@@ -174,9 +199,13 @@ const DashboardLayout: React.FC = () => {
                   </div>
                 ) : (
                   <FilePreviews
+                    // Pass the outer Q&A file so that FilePreviews can fallback to it
+                    outerModelQandAFile={modelQandAFile}
+                    outerModelQandAFileUrl={modelQandAFileUrl}
+                    // Also pass the direct or initial file URLs
                     modelQandAFileUrl={modelQandAFileUrl}
-                    studentResponsesFileUrl={studentResponsesFileUrls[0]} // Pass the first file URL for preview
-                    evaluationData={evaluationData} // Pass evaluationData to FilePreviews
+                    studentResponsesFileUrl={studentResponsesFileUrls[0]}
+                    evaluationData={evaluationData}
                     selectedDifficulty={selectedDifficulty}
                     handleDifficultySelection={handleDifficultyClick}
                     handleEvaluateButtonClicked={handleEvaluateButtonClicked}
@@ -186,6 +215,7 @@ const DashboardLayout: React.FC = () => {
             </div>
           </div>
         ) : (
+          // If not uploaded, show Step instructions + outer Upload
           <div className="flex flex-col items-center justify-center flex-grow bg-white">
             {!isUploadMenuOpen ? (
               <>
@@ -219,15 +249,16 @@ const DashboardLayout: React.FC = () => {
                   error={error}
                   handleMouseDown={() => {}}
                   handleMouseMove={() => {}}
+                  handleSubmit={() => {}}
                 />
               </div>
             )}
           </div>
         )}
       </main>
-      {isProfileModalOpen && (
-        <ProfileModal onClose={handleCloseProfileModal} />
-      )}
+
+      {/* Profile Modal */}
+      {isProfileModalOpen && <ProfileModal onClose={handleCloseProfileModal} />}
     </div>
   );
 };

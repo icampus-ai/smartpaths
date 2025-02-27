@@ -48,6 +48,8 @@ def evaluation():
 
 @evaluation_bp.route('/api/generate_rubrics', methods=['POST'])
 def generate_rubrics_controller():
+    print("Inside generate_rubrics")
+    print(f"request.files : {request.files}")
     model_question_answer = request.files.get('model_question_answer')
     if not model_question_answer:
         return jsonify({"error": "Model question answer file is required"}), 400
@@ -64,6 +66,8 @@ def generate_rubrics_controller():
         return jsonify({"error": "Model question answer file must be a PDF, TXT, DOCX, JPEG, or PNG"}), 400
 
     rubrics = generate_rubrics_from_model_question_answer(model_question_answer)
+
+    print(f"rubrics : {rubrics}")
 
     return jsonify({
         "message": "Rubrics generated successfully",

@@ -1,7 +1,5 @@
 "use client";
-
-import React, { useState, MouseEventHandler } from "react";
-import { Check, X } from "lucide-react";
+import React from "react";
 
 interface UploadModalProps {
   isUploadMenuOpen: boolean;
@@ -10,11 +8,12 @@ interface UploadModalProps {
   handleStudentResponsesFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleDragOver: (event: React.DragEvent<HTMLDivElement>) => void;
   handleDrop: (event: React.DragEvent<HTMLDivElement>) => void;
-  handleMouseDown: MouseEventHandler<HTMLDivElement>;
-  handleMouseMove: MouseEventHandler<HTMLDivElement>;
   isModelQandAUploaded: boolean;
   isStudentResponsesUploaded: boolean;
   error: string | null;
+  handleMouseDown: () => void;
+  handleMouseMove: () => void;
+  handleSubmit: () => void;
 }
 
 const UploadModal: React.FC<UploadModalProps> = ({
@@ -24,166 +23,94 @@ const UploadModal: React.FC<UploadModalProps> = ({
   handleStudentResponsesFileChange,
   handleDragOver,
   handleDrop,
-  handleMouseDown,
-  handleMouseMove,
   isModelQandAUploaded,
   isStudentResponsesUploaded,
   error,
+  handleMouseDown,
+  handleMouseMove,
+  handleSubmit,
 }) => {
-  const [currentView, setCurrentView] = useState<"menu" | "upload" | "administrative" | "research">("menu");
-
   if (!isUploadMenuOpen) return null;
 
   return (
-    <div
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-    >
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm z-50 transition-all">
       <div
+        className="bg-white rounded-lg shadow-2xl max-w-md w-full p-8 relative transform transition-all duration-300 hover:scale-105"
         onDragOver={handleDragOver}
         onDrop={handleDrop}
-        className="bg-white h-auto w-80 border border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer relative z-10 mx-auto p-4 shadow-lg overflow-y-auto"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
       >
-        <div className="flex justify-center w-full p-2 bg-orange-500 text-white border-b border-orange-500">
-          <button onClick={handleCloseUploadMenu} className="text-black hover:text-gray-200">
-            <X className="text-lg text-black" />
-          </button>
+        <button
+          onClick={handleCloseUploadMenu}
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl focus:outline-none"
+        >
+          &times;
+        </button>
+        <h2 className="text-3xl font-bold mb-6 text-center text-orange-500">
+          Upload Files
+        </h2>
+
+        {/* Model Q&A File */}
+        <div className="mb-6">
+          <>
+            <label className="block mb-2 text-lg font-medium text-gray-700">
+              Model Q&A File:
+            </label>
+            <input
+              type="file"
+              accept=".pdf,.docx"
+              onChange={handleModelQandAFileChange}
+              className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
+            />
+          </>
+          {isModelQandAUploaded && (
+            <p className="text-green-600 mt-2 text-sm">
+              Model Q&A file uploaded successfully!
+            </p>
+          )}
         </div>
 
-        {currentView === "menu" ? (
-          <div className="w-full py-4">
-            <h2 className="text-xl font-bold text-center mb-4">Choose your tasks</h2>
-            <div className="flex flex-col items-center">
-              <button
-                className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black"
-                onClick={() => setCurrentView("administrative")}
-              >
-                Administrative
-              </button>
-              <button
-                className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black"
-                onClick={() => setCurrentView("upload")}
-              >
-                Evaluations
-              </button>
-              <button
-                className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black"
-                onClick={() => setCurrentView("research")}
-              >
-                Research
-              </button>
-            </div>
-          </div>
-        ) : currentView === "administrative" ? (
-          <div className="w-full py-4">
-            <h2 className="text-xl font-bold text-center mb-4">Administrative Options</h2>
-            <div className="flex flex-col items-center">
-              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
-                Admissions and Enrollment
-              </button>
-              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
-                Human Resources Management
-              </button>
-              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
-                Document Processing and Compliance
-              </button>
-            </div>
-            <div className="flex justify-center mt-4">
-              <button
-                className="py-2 px-4 bg-gray-300 text-black rounded-lg hover:bg-orange-500"
-                onClick={() => setCurrentView("menu")}
-              >
-                Back
-              </button>
-            </div>
-          </div>
-        ) : currentView === "research" ? (
-          <div className="w-full py-4">
-            <h2 className="text-xl font-bold text-center mb-4">Research Options</h2>
-            <div className="flex flex-col items-center">
-              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
-                Literature Discovery and Review
-              </button>
-              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
-                Manuscript Writing and Editing
-              </button>
-              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
-                Research Collaboration and Networking
-              </button>
-              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
-                Grant Proposal Development
-              </button>
-              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
-                Peer Review Assistance
-              </button>
-              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
-                Publication and Dissemination
-              </button>
-              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
-                Patent and Intellectual Property Analysis
-              </button>
-              <button className="w-full py-2 mb-2 bg-[#2B2B2B] text-white rounded-lg hover:bg-orange-500 hover:text-black">
-                Post-Research Impact Evaluation
-              </button>
-            </div>
-            <div className="flex justify-center mt-4">
-              <button
-                className="py-2 px-4 bg-gray-300 text-black rounded-lg hover:bg-orange-500"
-                onClick={() => setCurrentView("menu")}
-              >
-                Back
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="w-full py-4">
-            <div className="flex flex-col items-center justify-center mb-4 mt-4">
-              <p className="text-lg text-black">Drag and drop files here</p>
-              <p className="text-sm text-black">or click to upload</p>
-            </div>
+        {/* Student Responses File */}
+        <div className="mb-6">
+          <>
+            <label className="block mb-2 text-lg font-medium text-gray-700">
+              Student Responses File:
+            </label>
+            <input
+              type="file"
+              accept=".pdf,.docx"
+              onChange={handleStudentResponsesFileChange}
+              className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
+            />
+          </>
+          {isStudentResponsesUploaded && (
+            <p className="text-green-600 mt-2 text-sm">
+              Student Responses file uploaded successfully!
+            </p>
+          )}
+        </div>
 
-            <div className="flex flex-col items-center">
-              {/* Model Q&A Upload */}
-              <label className="mt-2">
-                <input type="file" accept=".pdf,.docx" onChange={handleModelQandAFileChange} className="w-full h-full opacity-0" />
-                <div className="bg-[#2B2B2B] border-2 border-solid rounded-lg w-full h-12 flex items-center justify-center cursor-pointer text-white hover:bg-orange-500 hover:text-black">
-                  Model Q&A
-                  {isModelQandAUploaded && <Check className="text-lg text-green-500 ml-2" />}
-                </div>
-              </label>
-
-              {/* Student Responses Upload */}
-              <label className="mt-2">
-                <input
-                  type="file"
-                  accept=".pdf,.docx,.jpg"
-                  onChange={handleStudentResponsesFileChange}
-                  className="w-full h-full opacity-0"
-                  multiple // Allow multiple file uploads
-                />
-                <div className="bg-[#2B2B2B] border-2 border-solid rounded-lg w-full h-12 flex items-center justify-center cursor-pointer text-white hover:bg-orange-500 hover:text-black">
-                  Student Responses
-                  {isStudentResponsesUploaded && <Check className="text-lg text-green-500 ml-2" />}
-                </div>
-              </label>
-            </div>
-
-            <div className="flex justify-center mt-4">
-              <button
-                className="py-2 px-4 bg-gray-300 text-black rounded-lg hover:bg-orange-500"
-                onClick={() => setCurrentView("menu")}
-              >
-                Back
-              </button>
-            </div>
-          </div>
+        {error && (
+          <p className="text-red-500 mb-4 text-center font-medium">
+            {error}
+          </p>
         )}
 
-        {/* Show error only if not all files are uploaded */}
-        {error && (!isModelQandAUploaded || !isStudentResponsesUploaded) && (
-          <p className="text-red-500 text-sm mt-2 px-4 text-center">{error}</p>
-        )}
+        <div className="flex justify-between mt-8">
+          <button
+            onClick={handleCloseUploadMenu}
+            className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-6 rounded shadow transition duration-300"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-6 rounded shadow transition duration-300"
+          >
+            Submit
+          </button>
+        </div>
       </div>
     </div>
   );
