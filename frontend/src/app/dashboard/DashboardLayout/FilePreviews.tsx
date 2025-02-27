@@ -12,7 +12,12 @@ interface FilePreviewsProps {
   evaluationData: string | null;
   selectedDifficulty: string | null;
   handleDifficultySelection: (difficulty: string) => void;
-  handleEvaluateButtonClicked: () => Promise<void>;
+  /**
+   * Updated signature:
+   * This callback receives the generated rubrics JSON (as a string)
+   * from this component when Evaluate is clicked.
+   */
+  handleEvaluateButtonClicked: (rubrics: string | null) => Promise<void>;
 }
 
 const FilePreviews: React.FC<FilePreviewsProps> = ({
@@ -30,9 +35,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
   const [modelQandABlobUrl, setModelQandABlobUrl] = useState<string | null>(
     initialModelQandAFileUrl
   );
-  const [studentResponsesFile, setStudentResponsesFile] = useState<File | null>(
-    null
-  );
+  const [studentResponsesFile, setStudentResponsesFile] = useState<File | null>(null);
   const [studentResponsesBlobUrl, setStudentResponsesBlobUrl] = useState<string | null>(
     initialStudentResponsesFileUrl
   );
@@ -43,6 +46,9 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
   const [isStudentResponsesUploaded, setIsStudentResponsesUploaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isGeneratingRubrics, setIsGeneratingRubrics] = useState(false);
+  /**
+   * Local state to store the generated rubrics JSON string.
+   */
   const [rubrics, setRubrics] = useState<string | null>(null);
   const [dropdown3, setDropdown3] = useState<string>("");
 
@@ -171,10 +177,12 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
   const handleDownloadReport = () => {
     if (evaluationData) {
       const decodedData = JSON.parse(evaluationData);
-      const decodedFileContent = atob(decodedData.files[0].file);
-      const doc = new jsPDF();
-      doc.text(decodedFileContent, 10, 10);
-      doc.save("evaluation_report.pdf");
+      if (decodedData?.files?.[0]?.file) {
+        const decodedFileContent = atob(decodedData.files[0].file);
+        const doc = new jsPDF();
+        doc.text(decodedFileContent, 10, 10);
+        doc.save("evaluation_report.pdf");
+      }
     }
   };
 
@@ -209,6 +217,14 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
         />
       );
     }
+  };
+
+  /**
+   * When the user clicks "Evaluate", we call the parent's
+   * handleEvaluateButtonClicked, passing in the rubrics JSON string.
+   */
+  const onEvaluateClick = () => {
+    handleEvaluateButtonClicked(rubrics);
   };
 
   return (
@@ -263,7 +279,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
       {selectedDifficulty && rubrics && (
         <div className="flex flex-col items-center mb-4">
           <button
-            onClick={handleEvaluateButtonClicked}
+            onClick={onEvaluateClick}
             className="py-2 px-6 rounded-lg bg-black text-white shadow-md mb-4 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-500"
           >
             Evaluate
@@ -321,6 +337,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
             error={error}
             handleMouseDown={() => {}}
             handleMouseMove={() => {}}
+            handleSubmit={() => {}}
           />
         </div>
       )}

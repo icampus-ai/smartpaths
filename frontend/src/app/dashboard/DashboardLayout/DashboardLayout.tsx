@@ -25,6 +25,8 @@ const DashboardLayout: React.FC = () => {
   // Additional states
   const [error, setError] = useState<string | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | null>(null);
+
+  // Store evaluation results
   const [evaluationData, setEvaluationData] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isEvaluationCompleted, setIsEvaluationCompleted] = useState(false);
@@ -53,7 +55,7 @@ const DashboardLayout: React.FC = () => {
   const handleStudentResponsesFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files?.length) {
       const files = Array.from(event.target.files);
-      const fileUrls = files.map(file => URL.createObjectURL(file));
+      const fileUrls = files.map((file) => URL.createObjectURL(file));
       setStudentResponsesFiles(files);
       setStudentResponsesFileUrls(fileUrls);
       setIsStudentResponsesUploaded(true);
@@ -70,12 +72,11 @@ const DashboardLayout: React.FC = () => {
     event.preventDefault();
     if (event.dataTransfer.items) {
       const files = Array.from(event.dataTransfer.items)
-        .map(item => item.getAsFile())
-        .filter(file => file !== null) as File[];
+        .map((item) => item.getAsFile())
+        .filter((file) => file !== null) as File[];
 
-      const fileUrls = files.map(file => URL.createObjectURL(file));
-      // For the outer modal, we assume these are student responses
-      // (or you can adapt logic if you want to detect which one)
+      const fileUrls = files.map((file) => URL.createObjectURL(file));
+      // For the outer modal, assume these are student responses
       setStudentResponsesFiles(files);
       setStudentResponsesFileUrls(fileUrls);
       setIsStudentResponsesUploaded(true);
@@ -101,14 +102,14 @@ const DashboardLayout: React.FC = () => {
     setIsUploadMenuOpen(false);
   };
 
-  const handleDifficultyClick = (difficulty: string) => {
-    setSelectedDifficulty(difficulty);
-  };
-
   // ------------------------------
   // Evaluate Button
   // ------------------------------
-  const handleEvaluateButtonClicked = async () => {
+  /**
+   * This function is called by FilePreviews and receives the rubrics JSON (as a string).
+   * It appends the rubrics to the FormData and sends everything to the backend.
+   */
+  const handleEvaluateButtonClicked = async (rubrics: string | null) => {
     if (!modelQandAFile || studentResponsesFiles.length === 0 || !selectedDifficulty) {
       setError("Please make sure all files are uploaded and difficulty is selected.");
       return;
@@ -118,8 +119,14 @@ const DashboardLayout: React.FC = () => {
     try {
       const formData = new FormData();
       formData.append("modelQuestionAnswer", modelQandAFile);
-      studentResponsesFiles.forEach(file => formData.append("studentAnswers", file));
+      studentResponsesFiles.forEach((file) => formData.append("studentAnswers", file));
       formData.append("difficultyLevel", selectedDifficulty);
+
+      // Add rubrics to the request
+      formData.append(
+        "rubrics",
+        new Blob([rubrics || "{}"], { type: "application/json" })
+      );
 
       const response = await fetch("http://localhost:8000/api/evaluate", {
         method: "POST",
@@ -133,24 +140,13 @@ const DashboardLayout: React.FC = () => {
       const data = await response.json();
       setEvaluationData(JSON.stringify(data));
       setIsEvaluationCompleted(true);
-      console.log("Files evaluated successfully");
+      console.log("Files evaluated successfully, including rubrics");
     } catch (error) {
       console.error("Error evaluating files:", error);
       setError("Error evaluating files. Please try again.");
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleBackToUpload = () => {
-    setIsModelQandAUploaded(false);
-    setIsStudentResponsesUploaded(false);
-    setSelectedDifficulty(null);
-    setIsEvaluationCompleted(false);
-  };
-
-  const handleBackToHome = () => {
-    router.push("/dashboard");
   };
 
   // ------------------------------
@@ -164,6 +160,9 @@ const DashboardLayout: React.FC = () => {
     setIsProfileModalOpen(false);
   };
 
+  // ------------------------------
+  // Rendering
+  // ------------------------------
   return (
     <div className="flex h-screen">
       <Sidebar
@@ -184,7 +183,6 @@ const DashboardLayout: React.FC = () => {
           <p className="text-2xl text-black mt-4">Simplify. Systemize. Succeed.</p>
         </div>
 
-        {/* If the outer Q&A file and at least one Student Response are set, show FilePreviews */}
         {modelQandAFileUrl && studentResponsesFileUrls.length > 0 ? (
           <div className="flex flex-col flex-grow bg-white">
             <div className="flex flex-row flex-grow">
@@ -199,7 +197,7 @@ const DashboardLayout: React.FC = () => {
                   </div>
                 ) : (
                   <FilePreviews
-                    // Pass the outer Q&A file so that FilePreviews can fallback to it
+                    // Pass the outer Q&A file so FilePreviews can fallback to it
                     outerModelQandAFile={modelQandAFile}
                     outerModelQandAFileUrl={modelQandAFileUrl}
                     // Also pass the direct or initial file URLs
@@ -207,7 +205,8 @@ const DashboardLayout: React.FC = () => {
                     studentResponsesFileUrl={studentResponsesFileUrls[0]}
                     evaluationData={evaluationData}
                     selectedDifficulty={selectedDifficulty}
-                    handleDifficultySelection={handleDifficultyClick}
+                    handleDifficultySelection={(diff) => setSelectedDifficulty(diff)}
+                    // Pass the callback that accepts rubrics
                     handleEvaluateButtonClicked={handleEvaluateButtonClicked}
                   />
                 )}
