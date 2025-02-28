@@ -59,7 +59,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
             </label>
             <input
               type="file"
-              accept=".pdf,.docx"
+              accept=".pdf,.docx,.jpg,.png"
               onChange={handleModelQandAFileChange}
               className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
             />
@@ -79,7 +79,8 @@ const UploadModal: React.FC<UploadModalProps> = ({
             </label>
             <input
               type="file"
-              accept=".pdf,.docx"
+              accept=".pdf,.docx,.jpg,.png"
+              multiple
               onChange={handleStudentResponsesFileChange}
               className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
             />
@@ -96,21 +97,6 @@ const UploadModal: React.FC<UploadModalProps> = ({
             {error}
           </p>
         )}
-
-        <div className="flex justify-between mt-8">
-          <button
-            onClick={handleCloseUploadMenu}
-            className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-6 rounded shadow transition duration-300"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSubmit}
-            className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-6 rounded shadow transition duration-300"
-          >
-            Submit
-          </button>
-        </div>
       </div>
     </div>
   );
