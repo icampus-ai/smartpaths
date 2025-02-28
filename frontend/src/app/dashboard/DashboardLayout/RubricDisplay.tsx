@@ -4,9 +4,11 @@ import React, { useState, useEffect } from "react";
 interface RubricDisplayProps {
   // The rubrics prop can be either a JSON string or an object
   rubrics: any | string;
+  // Optional callback to be invoked when the user submits customizations.
+  onSubmitCustomizations?: (customizedRubrics: any) => void;
 }
 
-const RubricDisplay: React.FC<RubricDisplayProps> = ({ rubrics }) => {
+const RubricDisplay: React.FC<RubricDisplayProps> = ({ rubrics, onSubmitCustomizations }) => {
   // Parse the input data
   let parsedData: any;
   if (typeof rubrics === "string") {
@@ -35,7 +37,7 @@ const RubricDisplay: React.FC<RubricDisplayProps> = ({ rubrics }) => {
     initialRubricItems = parsedData.rubrics.rubrics;
   }
 
-  // Local state to allow mark updates for each criterion
+  // Local state to allow updates for each rubric item
   const [rubricItems, setRubricItems] = useState<any[]>(initialRubricItems);
 
   // Update local state if the input changes
@@ -61,6 +63,33 @@ const RubricDisplay: React.FC<RubricDisplayProps> = ({ rubrics }) => {
       updatedItems[itemIndex] = currentItem;
       return updatedItems;
     });
+  };
+
+  // Handler to update the description for a given rubric item and criterion
+  const updateCriterionDescription = (
+    itemIndex: number,
+    criterionKey: string,
+    newDescription: string
+  ) => {
+    setRubricItems((prevItems) => {
+      const updatedItems = [...prevItems];
+      const currentItem = { ...updatedItems[itemIndex] };
+      if (currentItem.rubric && currentItem.rubric[criterionKey]) {
+        currentItem.rubric[criterionKey] = {
+          ...currentItem.rubric[criterionKey],
+          description: newDescription,
+        };
+      }
+      updatedItems[itemIndex] = currentItem;
+      return updatedItems;
+    });
+  };
+
+  // Handler for submitting customizations
+  const handleSubmit = () => {
+    if (onSubmitCustomizations) {
+      onSubmitCustomizations(rubricItems);
+    }
   };
 
   if (!rubricItems || rubricItems.length === 0) {
@@ -90,6 +119,12 @@ const RubricDisplay: React.FC<RubricDisplayProps> = ({ rubrics }) => {
           {item.rubric &&
             Object.entries(item.rubric).map(([key, value]) => {
               const criterion = value as { description: string; marks: number };
+              // Remap key "clarity_and_organization" to "Clarity and Organization"
+              const displayKey =
+                key === "clarity_and_organization"
+                  ? "Clarity and Organization"
+                  : key;
+
               return (
                 <div
                   key={key}
@@ -97,7 +132,7 @@ const RubricDisplay: React.FC<RubricDisplayProps> = ({ rubrics }) => {
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                     <h4 className="text-xl font-semibold text-gray-800 capitalize">
-                      {key}
+                      {displayKey}
                     </h4>
                     <div className="mt-2 sm:mt-0">
                       <span className="text-lg font-medium text-gray-700 mr-2">
@@ -118,12 +153,34 @@ const RubricDisplay: React.FC<RubricDisplayProps> = ({ rubrics }) => {
                       </select>
                     </div>
                   </div>
-                  <p className="text-gray-600 mt-2">{criterion.description}</p>
+                  <div className="mt-2">
+                    <label className="block text-gray-700 font-medium mb-1">
+                      Description:
+                    </label>
+                    <textarea
+                      className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
+                      value={criterion.description}
+                      onChange={(e) =>
+                        updateCriterionDescription(index, key, e.target.value)
+                      }
+                      rows={3}
+                    />
+                  </div>
                 </div>
               );
             })}
         </div>
       ))}
+      {onSubmitCustomizations && (
+        <div className="flex justify-end">
+          <button
+            onClick={handleSubmit}
+            className="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Submit Customizations
+          </button>
+        </div>
+      )}
     </div>
   );
 };
