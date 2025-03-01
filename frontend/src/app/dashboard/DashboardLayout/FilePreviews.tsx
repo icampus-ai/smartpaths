@@ -4,7 +4,7 @@ import UploadModal from "./UploadModal";
 import RubricDisplay from "./RubricDisplay";
 import EvaluationResults from "./EvaluationResults";
 import { jsPDF } from "jspdf";
-
+ 
 interface FilePreviewsProps {
   outerModelQandAFile?: File | null;
   outerModelQandAFileUrl?: string | null;
@@ -19,7 +19,7 @@ interface FilePreviewsProps {
    */
   handleEvaluateButtonClicked: (rubrics: any) => Promise<void>;
 }
-
+ 
 const FilePreviews: React.FC<FilePreviewsProps> = ({
   outerModelQandAFile = null,
   outerModelQandAFileUrl = null,
@@ -35,17 +35,17 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
   const [modelQandABlobUrl, setModelQandABlobUrl] = useState<string | null>(initialModelQandAFileUrl);
   const [studentResponsesFile, setStudentResponsesFile] = useState<File | null>(null);
   const [studentResponsesBlobUrl, setStudentResponsesBlobUrl] = useState<string | null>(initialStudentResponsesFileUrl);
-
+ 
   // UI states for uploads and errors
   const [isUploadModalOpen, setIsUploadModalOpen] = useState<boolean>(false);
   const [isModelQandAUploaded, setIsModelQandAUploaded] = useState(false);
   const [isStudentResponsesUploaded, setIsStudentResponsesUploaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+ 
   // Rubrics generation state (raw JSON object from the API)
   const [isGeneratingRubrics, setIsGeneratingRubrics] = useState(false);
   const [rubrics, setRubrics] = useState<any>(null);
-
+ 
   // Fallback to outer file if local file is not set
   useEffect(() => {
     if (!modelQandAFile && outerModelQandAFile) {
@@ -54,11 +54,11 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
       setIsModelQandAUploaded(true);
     }
   }, [modelQandAFile, outerModelQandAFile, outerModelQandAFileUrl]);
-
+ 
   // --- Upload Modal Handlers ---
   const handleFileUploadClick = () => setIsUploadModalOpen(true);
   const handleCloseUploadModal = () => setIsUploadModalOpen(false);
-
+ 
   const handleModelQandAFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) {
       const file = e.target.files[0];
@@ -68,7 +68,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
       checkUploadStatus(true, isStudentResponsesUploaded);
     }
   };
-
+ 
   const handleStudentResponsesFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) {
       const file = e.target.files[0];
@@ -78,9 +78,9 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
       checkUploadStatus(isModelQandAUploaded, true);
     }
   };
-
+ 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => e.preventDefault();
-
+ 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     if (e.dataTransfer.items) {
@@ -105,7 +105,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
       checkUploadStatus(isModelSet, isStudentResponsesUploaded);
     }
   };
-
+ 
   const checkUploadStatus = (modelUploaded: boolean, studentUploaded: boolean) => {
     if (modelUploaded && studentUploaded) {
       setIsUploadModalOpen(false);
@@ -118,7 +118,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
       setError("Please upload both Model Q&A and Student Responses files");
     }
   };
-
+ 
   // --- Rubrics Generation ---
   const handleGenerateRubrics = async () => {
     const finalModelFile = modelQandAFile || outerModelQandAFile;
@@ -145,12 +145,12 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
       setIsGeneratingRubrics(false);
     }
   };
-
+ 
   // --- Evaluate Button ---
   const onEvaluateClick = () => {
     handleEvaluateButtonClicked(rubrics);
   };
-
+ 
   // --- Download Report Handler (if needed) ---
   const handleDownloadReport = () => {
     if (!evaluationData) return;
@@ -165,7 +165,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
       console.error("Error downloading report:", err);
     }
   };
-
+ 
   // --- Render Model Q&A Preview ---
   const renderModelPreview = () => {
     if (!modelQandABlobUrl) return null;
@@ -178,7 +178,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
       return <iframe src={modelQandABlobUrl} title="File Preview" className="w-full h-full rounded-lg" />;
     }
   };
-
+ 
   // --- Render Right Column: either generated rubrics OR evaluated result ---
   const renderRightColumn = () => {
     if (evaluationData) {
@@ -206,7 +206,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
       return null;
     }
   };
-
+ 
   return (
     <div className="mt-8 w-full flex flex-col space-y-4 lg:space-y-0 lg:space-x-4 lg:flex-col relative">
       {/* Top Controls */}
@@ -220,7 +220,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
         <select
           value={selectedDifficulty || ""}
           onChange={(e) => handleDifficultySelection(e.target.value)}
-          className="w-1/6 p-1 border rounded-lg bg-white shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-transform duration-300 transform hover:scale-105"
+          className="w-1/6 p-1 border rounded-lg bg-white shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
         >
           <option value="">Select Difficulty</option>
           <option value="easy">Easy</option>
@@ -230,7 +230,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
         <div className="w-1/6 flex items-center justify-center">
           <button
             onClick={handleGenerateRubrics}
-            className="py-2 px-4 bg-gradient-to-r from-orange-400 to-orange-600 text-white rounded-lg shadow-lg transform hover:scale-110 transition-transform duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="py-2 px-4 bg-orange-500 text-white rounded hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500"
           >
             Generate Rubrics
           </button>
@@ -242,13 +242,13 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
               handleDownloadReport();
             }
           }}
-          className="w-1/6 p-1 border rounded-lg bg-white shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-transform duration-300 transform hover:scale-105"
+          className="w-1/6 p-1 border rounded-lg bg-white shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
         >
           <option value="">Status</option>
           <option value="download">Download Report</option>
         </select>
       </div>
-
+ 
       {/* Evaluate & Back Buttons (only if rubrics exist and evaluation not done yet) */}
       {selectedDifficulty && rubrics && !evaluationData && (
         <div className="flex flex-col items-center mb-4">
@@ -266,11 +266,11 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
           </button>
         </div>
       )}
-
+ 
       {/* 2-Column Layout */}
       <div className="flex flex-row space-x-4">
         {/* Left: Model Q&A Preview */}
-        {rubrics && modelQandABlobUrl && (
+        {modelQandABlobUrl && (
           <div className="flex-1 flex flex-col">
             <h2 className="text-4xl font-bold text-center mb-4 mt-8">
               <span className="text-orange-500">Model</span>
@@ -281,28 +281,13 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
             </div>
           </div>
         )}
-
-        {/* Center: Model Q&A Preview (initially) */}
-        {!rubrics && modelQandABlobUrl && (
-          <div className="flex-1 flex flex-col items-center">
-            <h2 className="text-4xl font-bold text-center mb-4 mt-8">
-              <span className="text-orange-500">Model</span>
-              <span className="text-black"> Q&A</span>
-            </h2>
-            <div className="min-h-[725px] min-w-[800px] max-h-[80vh] bg-gray-50 rounded-lg shadow-md p-4 overflow-auto">
-              {renderModelPreview()}
-            </div>
-          </div>
-        )}
-
+ 
         {/* Right: Either Rubrics or Evaluated Results */}
-        {rubrics && (
-          <div className="flex-1 flex flex-col">
-            {renderRightColumn()}
-          </div>
-        )}
+        <div className="flex-1 flex flex-col">
+          {renderRightColumn()}
+        </div>
       </div>
-
+ 
       {/* Upload Modal */}
       {isUploadModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
@@ -322,7 +307,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
           />
         </div>
       )}
-
+ 
       {/* Loading Overlay for Rubrics Generation */}
       {isGeneratingRubrics && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
@@ -338,5 +323,5 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
     </div>
   );
 };
-
+ 
 export default FilePreviews;
