@@ -220,7 +220,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
         <select
           value={selectedDifficulty || ""}
           onChange={(e) => handleDifficultySelection(e.target.value)}
-          className="w-1/6 p-1 border rounded-lg bg-white shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
+          className="w-1/6 p-1 border rounded-lg bg-white shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-transform duration-300 transform hover:scale-105"
         >
           <option value="">Select Difficulty</option>
           <option value="easy">Easy</option>
@@ -230,7 +230,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
         <div className="w-1/6 flex items-center justify-center">
           <button
             onClick={handleGenerateRubrics}
-            className="py-2 px-4 bg-orange-500 text-white rounded hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="py-2 px-4 bg-gradient-to-r from-orange-400 to-orange-600 text-white rounded-lg shadow-lg transform hover:scale-110 transition-transform duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
           >
             Generate Rubrics
           </button>
@@ -242,7 +242,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
               handleDownloadReport();
             }
           }}
-          className="w-1/6 p-1 border rounded-lg bg-white shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
+          className="w-1/6 p-1 border rounded-lg bg-white shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-transform duration-300 transform hover:scale-105"
         >
           <option value="">Status</option>
           <option value="download">Download Report</option>
@@ -270,7 +270,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
       {/* 2-Column Layout */}
       <div className="flex flex-row space-x-4">
         {/* Left: Model Q&A Preview */}
-        {modelQandABlobUrl && (
+        {rubrics && modelQandABlobUrl && (
           <div className="flex-1 flex flex-col">
             <h2 className="text-4xl font-bold text-center mb-4 mt-8">
               <span className="text-orange-500">Model</span>
@@ -282,10 +282,25 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
           </div>
         )}
 
+        {/* Center: Model Q&A Preview (initially) */}
+        {!rubrics && modelQandABlobUrl && (
+          <div className="flex-1 flex flex-col items-center">
+            <h2 className="text-4xl font-bold text-center mb-4 mt-8">
+              <span className="text-orange-500">Model</span>
+              <span className="text-black"> Q&A</span>
+            </h2>
+            <div className="min-h-[725px] min-w-[500px] max-h-[80vh] bg-gray-50 rounded-lg shadow-md p-4 overflow-auto">
+              {renderModelPreview()}
+            </div>
+          </div>
+        )}
+
         {/* Right: Either Rubrics or Evaluated Results */}
-        <div className="flex-1 flex flex-col">
-          {renderRightColumn()}
-        </div>
+        {rubrics && (
+          <div className="flex-1 flex flex-col">
+            {renderRightColumn()}
+          </div>
+        )}
       </div>
 
       {/* Upload Modal */}
