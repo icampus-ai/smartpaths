@@ -289,7 +289,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
               <span className="text-orange-500">Model</span>
               <span className="text-black"> Q&A</span>
             </h2>
-            <div className="min-h-[725px] min-w-[500px] max-h-[80vh] bg-gray-50 rounded-lg shadow-md p-4 overflow-auto">
+            <div className="min-h-[725px] min-w-[800px] max-h-[80vh] bg-gray-50 rounded-lg shadow-md p-4 overflow-auto">
               {renderModelPreview()}
             </div>
           </div>
