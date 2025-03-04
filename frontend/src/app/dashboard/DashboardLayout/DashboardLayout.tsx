@@ -47,7 +47,6 @@ const DashboardLayout: React.FC = () => {
       setModelQandAFile(file);
       setModelQandAFileUrl(URL.createObjectURL(file));
       setIsModelQandAUploaded(true);
-      // You may also add additional error clearing here if needed.
     }
   };
 
@@ -74,6 +73,7 @@ const DashboardLayout: React.FC = () => {
       const fileUrls = files.map((file) => URL.createObjectURL(file));
       setStudentResponsesFiles(files);
       setStudentResponsesFileUrls(fileUrls);
+      setIsStudentResponsesUploaded(true);
     }
   };
 
@@ -97,11 +97,6 @@ const DashboardLayout: React.FC = () => {
   // ------------------------------
   // Evaluate Button
   // ------------------------------
-  /**
-   * This function is called from FilePreviews and receives the generated rubrics
-   * as a JSON object (exactly as returned from the generate_rubrics API).
-   * It appends the rubrics (converted to a JSON string) along with other files.
-   */
   const handleEvaluateButtonClicked = async (rubrics: any) => {
     if (!modelQandAFile || studentResponsesFiles.length === 0 || !selectedDifficulty) {
       setError("Please make sure all files are uploaded and difficulty is selected.");
@@ -151,7 +146,11 @@ const DashboardLayout: React.FC = () => {
         toggleSidebar={toggleSidebar}
         onProfileClick={handleProfileClick}
       />
-      <main className={`flex-grow ${isSidebarExpanded ? "ml-60" : "ml-16"} flex flex-col min-h-screen bg-white p-4 overflow-auto`}>
+      <main
+        className={`flex-grow ${
+          isSidebarExpanded ? "ml-60" : "ml-16"
+        } flex flex-col min-h-screen bg-white p-4 overflow-auto`}
+      >
         <div className="flex flex-col items-center justify-center">
           <h1 className="text-7xl text-black font-bold">
             <span className="text-orange-500">Smart</span>
@@ -181,6 +180,18 @@ const DashboardLayout: React.FC = () => {
                     selectedDifficulty={selectedDifficulty}
                     handleDifficultySelection={(diff) => setSelectedDifficulty(diff)}
                     handleEvaluateButtonClicked={handleEvaluateButtonClicked}
+                    // Pass these callbacks so inner uploads update outer state
+                    onModelQandAFileChange={(file) => {
+                      setModelQandAFile(file);
+                      setModelQandAFileUrl(URL.createObjectURL(file));
+                      setIsModelQandAUploaded(true);
+                    }}
+                    onStudentResponsesFileChange={(file) => {
+                      // If multiple files are allowed, you might merge here instead of replacing.
+                      setStudentResponsesFiles([file]);
+                      setStudentResponsesFileUrls([URL.createObjectURL(file)]);
+                      setIsStudentResponsesUploaded(true);
+                    }}
                   />
                 )}
               </div>
@@ -198,7 +209,10 @@ const DashboardLayout: React.FC = () => {
                   <StepComponent />
                 </div>
                 <div className="w-full flex items-center justify-center mt-8">
-                  <button onClick={() => setIsUploadMenuOpen(true)} className="text-lg py-2 px-6 rounded-lg text-black hover:text-white hover:bg-[#2B2B2B]">
+                  <button
+                    onClick={() => setIsUploadMenuOpen(true)}
+                    className="text-lg py-2 px-6 rounded-lg text-black hover:text-white hover:bg-[#2B2B2B]"
+                  >
                     Start Uploading Files &nbsp; &#8594;
                   </button>
                 </div>

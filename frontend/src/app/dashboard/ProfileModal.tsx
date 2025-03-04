@@ -107,7 +107,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold">User Profile</h2>
+          <h2 className="text-xl font-bold">
+            <span className="text-orange-500">User</span>
+            <span className="text-black"> Profile</span>
+          </h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -324,7 +327,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
         <div className="mt-4 flex justify-end">
           <button
             onClick={handleSave}
-            className="flex items-center px-4 py-2 text-white bg-green-500 rounded hover:bg-green-600"
+            className="flex items-center px-4 py-2 text-black bg-orange-500 rounded hover:bg-green-600"
           >
             <Save className="mr-2" />
             Save

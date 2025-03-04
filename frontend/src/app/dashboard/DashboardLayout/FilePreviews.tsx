@@ -18,6 +18,11 @@ interface FilePreviewsProps {
    * from this component when Evaluate is clicked.
    */
   handleEvaluateButtonClicked: (rubrics: any) => Promise<void>;
+  /**
+   * Optional callbacks to update parent state when new files are uploaded.
+   */
+  onModelQandAFileChange?: (file: File) => void;
+  onStudentResponsesFileChange?: (file: File) => void;
 }
 
 const FilePreviews: React.FC<FilePreviewsProps> = ({
@@ -29,24 +34,42 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
   selectedDifficulty,
   handleDifficultySelection,
   handleEvaluateButtonClicked,
+  onModelQandAFileChange,
+  onStudentResponsesFileChange,
 }) => {
-  // Local states for files and blob URLs
+  // -----------------------------
+  // State for files and previews (local state)
+  // -----------------------------
   const [modelQandAFile, setModelQandAFile] = useState<File | null>(null);
   const [modelQandABlobUrl, setModelQandABlobUrl] = useState<string | null>(initialModelQandAFileUrl);
   const [studentResponsesFile, setStudentResponsesFile] = useState<File | null>(null);
-  const [studentResponsesBlobUrl, setStudentResponsesBlobUrl] = useState<string | null>(initialStudentResponsesFileUrl);
+  const [studentResponsesBlobUrl, setStudentResponsesBlobUrl] = useState<string | null>(
+    initialStudentResponsesFileUrl
+  );
 
-  // UI states for uploads and errors
+  // -----------------------------
+  // UI / Upload states
+  // -----------------------------
   const [isUploadModalOpen, setIsUploadModalOpen] = useState<boolean>(false);
   const [isModelQandAUploaded, setIsModelQandAUploaded] = useState(false);
   const [isStudentResponsesUploaded, setIsStudentResponsesUploaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Rubrics generation state (raw JSON object from the API)
+  // -----------------------------
+  // Rubrics & generation
+  // -----------------------------
   const [isGeneratingRubrics, setIsGeneratingRubrics] = useState(false);
   const [rubrics, setRubrics] = useState<any>(null);
 
-  // Fallback to outer file if local file is not set
+  // -----------------------------
+  // Carousel Navigation
+  // -----------------------------
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // -----------------------------
+  // Effects
+  // -----------------------------
+  // If an outer Model Q&A file is provided, use it
   useEffect(() => {
     if (!modelQandAFile && outerModelQandAFile) {
       setModelQandAFile(outerModelQandAFile);
@@ -55,26 +78,41 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
     }
   }, [modelQandAFile, outerModelQandAFile, outerModelQandAFileUrl]);
 
-  // --- Upload Modal Handlers ---
+  // Reset the carousel index whenever the available views change
+  useEffect(() => {
+    setCurrentSlide(0);
+  }, [modelQandABlobUrl, rubrics, evaluationData]);
+
+  // -----------------------------
+  // Upload Modal Handlers
+  // -----------------------------
   const handleFileUploadClick = () => setIsUploadModalOpen(true);
   const handleCloseUploadModal = () => setIsUploadModalOpen(false);
 
+  // When a new Model Q&A file is uploaded, update local state and clear previous rubrics.
+  // Also call the parent callback (if provided) to update parent state.
   const handleModelQandAFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) {
       const file = e.target.files[0];
       setModelQandAFile(file);
       setModelQandABlobUrl(URL.createObjectURL(file));
       setIsModelQandAUploaded(true);
+      setRubrics(null); // clear previous rubrics
+      if (onModelQandAFileChange) onModelQandAFileChange(file);
       checkUploadStatus(true, isStudentResponsesUploaded);
     }
   };
 
+  // When a new Student Responses file is uploaded, update local state and clear previous rubrics.
+  // Also call the parent callback (if provided) to update parent state.
   const handleStudentResponsesFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) {
       const file = e.target.files[0];
       setStudentResponsesFile(file);
       setStudentResponsesBlobUrl(URL.createObjectURL(file));
       setIsStudentResponsesUploaded(true);
+      setRubrics(null); // clear previous rubrics
+      if (onStudentResponsesFileChange) onStudentResponsesFileChange(file);
       checkUploadStatus(isModelQandAUploaded, true);
     }
   };
@@ -94,15 +132,19 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
             setModelQandABlobUrl(URL.createObjectURL(file));
             setIsModelQandAUploaded(true);
             isModelSet = true;
+            if (onModelQandAFileChange) onModelQandAFileChange(file);
           } else if (!isStudentSet) {
             setStudentResponsesFile(file);
             setStudentResponsesBlobUrl(URL.createObjectURL(file));
             setIsStudentResponsesUploaded(true);
             isStudentSet = true;
+            if (onStudentResponsesFileChange) onStudentResponsesFileChange(file);
           }
         }
       }
-      checkUploadStatus(isModelSet, isStudentResponsesUploaded);
+      // Clear rubrics since new files are uploaded.
+      setRubrics(null);
+      checkUploadStatus(isModelSet, isStudentSet);
     }
   };
 
@@ -119,7 +161,9 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
     }
   };
 
-  // --- Rubrics Generation ---
+  // -----------------------------
+  // Generate Rubrics
+  // -----------------------------
   const handleGenerateRubrics = async () => {
     const finalModelFile = modelQandAFile || outerModelQandAFile;
     if (!finalModelFile) {
@@ -136,7 +180,7 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
       });
       if (!resp.ok) throw new Error("Failed to generate rubrics");
       const data = await resp.json();
-      // Store the rubrics exactly as returned by the backend.
+      // Preserve rubrics in local state
       setRubrics(data);
     } catch (err) {
       console.error("Error generating rubrics:", err);
@@ -146,12 +190,17 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
     }
   };
 
-  // --- Evaluate Button ---
+  // -----------------------------
+  // Evaluate
+  // -----------------------------
   const onEvaluateClick = () => {
+    // Re-run the evaluation using current file states.
     handleEvaluateButtonClicked(rubrics);
   };
 
-  // --- Download Report Handler (if needed) ---
+  // -----------------------------
+  // Download Report (optional)
+  // -----------------------------
   const handleDownloadReport = () => {
     if (!evaluationData) return;
     try {
@@ -166,52 +215,160 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
     }
   };
 
-  // --- Render Model Q&A Preview ---
+  // -----------------------------
+  // Render Helpers
+  // -----------------------------
+  /**
+   * Model Q&A Preview
+   * - Displays the file using embed/iframe without internal headers.
+   */
   const renderModelPreview = () => {
     if (!modelQandABlobUrl) return null;
-    const fileName = modelQandAFile?.name?.toLowerCase() || "";
-    if (fileName.endsWith(".pdf")) {
-      return <embed src={modelQandABlobUrl} type="application/pdf" className="w-full h-full rounded-lg" />;
-    } else if (fileName.endsWith(".docx")) {
-      return <iframe src={modelQandABlobUrl} title="DOCX Preview" className="w-full h-full rounded-lg" />;
-    } else {
-      return <iframe src={modelQandABlobUrl} title="File Preview" className="w-full h-full rounded-lg" />;
-    }
+    return (
+      <div className="h-full w-full">
+        {modelQandAFile?.name?.toLowerCase().endsWith(".pdf") ? (
+          <embed src={modelQandABlobUrl} type="application/pdf" className="w-full h-full" />
+        ) : modelQandAFile?.name?.toLowerCase().endsWith(".docx") ? (
+          <iframe src={modelQandABlobUrl} title="DOCX Preview" className="w-full h-full" />
+        ) : (
+          <iframe src={modelQandABlobUrl} title="File Preview" className="w-full h-full" />
+        )}
+      </div>
+    );
   };
 
-  // --- Render Right Column: either generated rubrics OR evaluated result ---
-  const renderRightColumn = () => {
-    if (evaluationData) {
-      return (
-        <div className="flex-1 flex flex-col">
-          <h2 className="text-4xl font-bold text-center mb-4 mt-8">
-            <span className="text-orange-500">Evaluation</span>
-            <span className="text-black"> Results</span>
-          </h2>
-          <div className="min-h-[600px] min-w-[500px] max-h-[80vh] bg-gray-50 rounded-lg shadow-md p-4 overflow-auto">
-            <EvaluationResults evaluationData={evaluationData} />
-          </div>
-        </div>
-      );
-    } else if (rubrics) {
-      return (
-        <div className="flex-1 flex flex-col">
-          <h2 className="text-4xl font-bold text-center mb-4 mt-8">
-            <span className="text-orange-500">Generated</span>
-            <span className="text-black"> Rubrics</span>
-          </h2>
-          <div className="min-h-[600px] min-w-[500px] max-h-[80vh] bg-gray-50 rounded-lg shadow-md p-4 overflow-auto">
-            <RubricDisplay rubrics={rubrics} />
-          </div>
-        </div>
-      );
-    } else {
-      return null;
-    }
+  /**
+   * Rubrics View
+   * - Displays the rubric content without internal headers.
+   */
+  const renderRubricsView = () => {
+    if (!rubrics) return null;
+    return (
+      <div className="h-full w-full p-4 overflow-auto">
+        <RubricDisplay rubrics={rubrics} />
+      </div>
+    );
   };
 
+  /**
+   * Evaluation Results View
+   * - Displays evaluation results without internal headers.
+   */
+  const renderEvaluationView = () => {
+    if (!evaluationData) return null;
+    return (
+      <div className="h-full w-full p-4 overflow-auto">
+        <EvaluationResults evaluationData={evaluationData} />
+      </div>
+    );
+  };
+
+  // -----------------------------
+  // Build Carousel Views
+  // -----------------------------
+  interface View {
+    key: string;
+    title: JSX.Element;
+    content: JSX.Element | null;
+  }
+  const availableViews: View[] = [];
+  if (modelQandABlobUrl) {
+    availableViews.push({
+      key: "model",
+      title: (
+        <>
+          <span className="text-orange-500">Model</span>
+          <span className="text-black"> Q&amp;A</span>
+        </>
+      ),
+      content: renderModelPreview(),
+    });
+  }
+  if (rubrics || (evaluationData && rubrics)) {
+    availableViews.push({
+      key: "rubrics",
+      title: (
+        <>
+          <span className="text-orange-500">Generated</span>
+          <span className="text-black"> Rubrics</span>
+        </>
+      ),
+      content: renderRubricsView(),
+    });
+  }
+  if (evaluationData) {
+    availableViews.push({
+      key: "evaluation",
+      title: (
+        <>
+          <span className="text-orange-500">Evaluation</span>
+          <span className="text-black"> Results</span>
+        </>
+      ),
+      content: renderEvaluationView(),
+    });
+  }
+
+  // -----------------------------
+  // Carousel Navigation
+  // -----------------------------
+  const handlePrev = () => {
+    setCurrentSlide((prev) => (prev > 0 ? prev - 1 : prev));
+  };
+
+  const handleNext = () => {
+    setCurrentSlide((prev) => (prev < availableViews.length - 1 ? prev + 1 : prev));
+  };
+
+  // -----------------------------
+  // Central Carousel Preview
+  // -----------------------------
+  const renderCentralPreview = () => {
+    if (availableViews.length === 0) return null;
+    return (
+      <div className="relative w-full flex flex-col items-center h-[80vh]">
+        {/* Large heading for the current view */}
+        <h2 className="text-4xl font-bold text-center mb-4 mt-8">
+          {availableViews[currentSlide].title}
+        </h2>
+        {/* Row layout: Button - Preview - Button */}
+        <div className="flex w-full max-w-5xl h-full items-center justify-center space-x-4">
+          {/* Left Button */}
+          {availableViews.length > 1 && (
+            <button
+              onClick={handlePrev}
+              disabled={currentSlide === 0}
+              className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+            >
+              Previous
+            </button>
+          )}
+          {/* Main preview area */}
+          <div className="flex-1 h-full">
+            <div className="bg-gray-50 rounded-lg shadow-md h-full overflow-hidden p-2">
+              <div className="w-full h-full">{availableViews[currentSlide].content}</div>
+            </div>
+          </div>
+          {/* Right Button */}
+          {availableViews.length > 1 && (
+            <button
+              onClick={handleNext}
+              disabled={currentSlide === availableViews.length - 1}
+              className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // -----------------------------
+  // Main Render
+  // -----------------------------
   return (
-    <div className="mt-8 w-full flex flex-col space-y-4 lg:space-y-0 lg:space-x-4 lg:flex-col relative">
+    <div className="mt-8 w-full flex flex-col relative">
       {/* Top Controls */}
       <div className="w-full flex justify-between mb-4 p-2 border rounded-lg bg-white shadow-sm space-x-2">
         <button
@@ -252,8 +409,8 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
         </select>
       </div>
 
-      {/* Evaluate & Back Buttons (only if rubrics exist and evaluation not done yet) */}
-      {selectedDifficulty && rubrics && !evaluationData && (
+      {/* Evaluate & Back Buttons (always shown when difficulty & rubrics exist) */}
+      {selectedDifficulty && rubrics && (
         <div className="flex flex-col items-center mb-4">
           <button
             onClick={onEvaluateClick}
@@ -261,50 +418,11 @@ const FilePreviews: React.FC<FilePreviewsProps> = ({
           >
             Evaluate
           </button>
-          <button
-            onClick={() => handleDifficultySelection("")}
-            className="py-2 px-6 rounded-lg text-sm text-black shadow-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
-          >
-            Back
-          </button>
         </div>
       )}
 
-      {/* 2-Column Layout */}
-      <div className="flex flex-row space-x-4">
-        {/* Left: Model Q&A Preview */}
-        {(rubrics || evaluationData) && modelQandABlobUrl && (
-          <div className="flex-1 flex flex-col">
-            <h2 className="text-4xl font-bold text-center mb-4 mt-8">
-              <span className="text-orange-500">Model</span>
-              <span className="text-black"> Q&A</span>
-            </h2>
-            <div className="min-h-[725px] min-w-[500px] max-h-[80vh] bg-gray-50 rounded-lg shadow-md p-4 overflow-auto">
-              {renderModelPreview()}
-            </div>
-          </div>
-        )}
-
-        {/* Center: Model Q&A Preview (initially) */}
-        {!rubrics && !evaluationData && modelQandABlobUrl && (
-          <div className="flex-1 flex flex-col items-center">
-            <h2 className="text-4xl font-bold text-center mb-4 mt-8">
-              <span className="text-orange-500">Model</span>
-              <span className="text-black"> Q&A</span>
-            </h2>
-            <div className="min-h-[725px] min-w-[500px] max-h-[80vh] bg-gray-50 rounded-lg shadow-md p-4 overflow-auto">
-              {renderModelPreview()}
-            </div>
-          </div>
-        )}
-
-        {/* Right: Either Rubrics or Evaluated Results */}
-        {(rubrics || evaluationData) && (
-          <div className="flex-1 flex flex-col">
-            {renderRightColumn()}
-          </div>
-        )}
-      </div>
+      {/* Central Carousel Preview */}
+      {renderCentralPreview()}
 
       {/* Upload Modal */}
       {isUploadModalOpen && (
