@@ -52,7 +52,12 @@ def extract_categories_from_response(response):
     
     return categories
 
-def grader(model_answer, student_answer, rubric):
+def grader(model_answer, student_answer, rubric, adjustment:str = ""):
+    """
+    Performs grading evaulation for all categories in the rubric.
+    Requieres model answer, student answer, and rubric as input.
+    Optionally takes an adjustment string to provide context for the model on where it is overgrading.
+    """
     start_time = time.time()
     
     rubric_str = "\n".join([
@@ -61,11 +66,15 @@ def grader(model_answer, student_answer, rubric):
     ])
     
     prompt = f"""
+    You are receiving this prompt without prior context. Respond as if this is your first time seeing it.
+
     Model Answer: {model_answer}
     Student Answer: {student_answer}
     
     Rubric:
     {rubric_str}
+
+    {adjustment}
     
     Based on the above, evaluate the student's answer for each rubric category.
     Provide the following format:
@@ -75,7 +84,7 @@ def grader(model_answer, student_answer, rubric):
     * Justification: Explanation of score deductions
     * Feedback: Suggestions for improvement
     """
-    
+
     response = get_llama_response_from_groq(prompt)
     print("\n--- Llama Response ---")
     print(response)
@@ -181,12 +190,114 @@ def get_bucketed_score(total_score: float, max_score: float, difficulty_level: s
     # Default case (if somehow none of the above conditions are met)
     return round(total_score * 2) / 2
 
-def grade_student_answers_v3(model_answer: str, student_answer: str, rubric: dict, difficulty_level: str = "medium") -> dict:
-    response = grader(model_answer, student_answer, rubric)
+def grade_student_answers_v3(model_answer: str, student_answer: str, rubric: dict, difficulty_level: str = "medium", adjustment:str = "") -> dict:
+    response = grader(model_answer, student_answer, rubric, adjustment)
     if response:
         response["score_achieved"] = get_bucketed_score(response["score_achieved"], response["maximum_score"], difficulty_level)
         print(f"Returning this response from grader: {response}")
     return response
+
+def extract_categories_for_adjustments(response):
+    """
+    Extract grading categories from LLM response with a more robust approach.
+    Returns a list of dictionaries containing category information ready to be used for adjustments.
+    """
+    # Split the response by category headers
+    category_headers = re.findall(r'\*\*([^*]+?)\s*\((\d+)\s*marks?\)\*\*', response)
+    if not category_headers:
+        print("Warning: No category headers found in response")
+        return []
+    
+    # Split the text by the category headers to get sections
+    section_splits = re.split(r'\*\*[^*]+?\s*\(\d+\s*marks?\)\*\*', response)
+    
+    # The first split is usually empty or contains intro text
+    content_sections = section_splits[1:]
+    
+    categories = []
+    for i, (category_name, max_marks_str) in enumerate(category_headers):
+        if i < len(content_sections):
+            section_content = content_sections[i]
+            
+            # Extract score
+            score_match = re.search(r'\*\s*Score:\s*(\d+)/(\d+)', section_content, re.IGNORECASE)
+            score = int(score_match.group(1)) if score_match else 0
+
+            # Skip perfect score categories
+            max_marks = int(max_marks_str)
+            print(f"Score: {score}, Max Marks: {max_marks}, Value: {score == max_marks}")
+            if score == max_marks:
+                continue
+            
+            # Extract justification
+            # * Needs to be phrased in a way that warns the model to be careful doing these actions
+            justif_match = re.search(r'\*\s*Justification:\s*(.*?)(?=\*\s*Feedback|\*\s*[A-Za-z]|\Z)', 
+                                    section_content, re.IGNORECASE | re.DOTALL)
+            justification = justif_match.group(1).strip() if justif_match else "No justification provided."
+            
+            # Clean up category name
+            clean_category = category_name.strip().lower().replace(" ", "_")
+            
+            categories.append({
+                "rubric_category": clean_category,
+                "score_assigned": score,
+                "justification": justification,
+            })
+    
+    return categories
+
+def get_base_answer_adjustments(model_answer, rubric):
+    """
+    Runs grading task against given sample answer and rubric.
+    Returns corrective information to 'lower' the bar for the student.
+    Returns this information as a dictionary of fixes for each category, that details
+    how the model overgraded and the point value it assigned the base answer.  
+    """
+    
+    rubric_str = "\n".join([
+        f"{category.capitalize()} ({details['marks']} marks): {details['description']}" 
+        for category, details in rubric['rubric'].items() if details['marks'] > 0
+    ])
+    
+    prompt = f"""
+    You are receiving this prompt without prior context. Respond as if this is your first time seeing it.
+    Model Answer: {model_answer}
+    Example Answer: {model_answer}
+    
+    Rubric:
+    {rubric_str}
+    
+    Based on the above, evaluate the Instructors's example answer for each rubric category.
+    Provide the following format:
+    
+    **Category Name (X marks)**
+    * Score: Y/X
+    * Justification: Explanation of score for only this Category. If all points were given simply have "N/A" instead.
+    """
+    response = get_llama_response_from_groq(prompt)
+    print("\n--- Llama Response - 4 Adjustments ---")
+    print(response)
+    
+    try:
+        # Use our improved extraction function
+        category_breakdown = extract_categories_for_adjustments(response)
+        adjustment = ""
+
+        if category_breakdown:
+            for category in category_breakdown:
+                adjustment_str += f"In the past you mistakenly evaluated a perfect resonse for the {category['rubric_category']} category as {category['score_assigned']}. "
+                adjustment_str += f"You gave the justification: \"{category['justification']}\" when making this mistake. Penalize less heavily for similar mistakes.\n"
+        
+        return adjustment
+        
+        
+    except Exception as e:
+        print(f"Error while parsing: {e}")
+        print(f"Exception details: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return None
+ 
 
 
 # # Example Usage

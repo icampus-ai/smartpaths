@@ -6,7 +6,7 @@ from docx import Document
 import os
 import json
 from ai_model.model.grading_system.grader import grade_student_answers_v2
-from ai_model.model.grading_system.grader_v3 import grade_student_answers_v3
+from ai_model.model.grading_system.grader_v3 import grade_student_answers_v3, get_base_answer_adjustments
 from ai_model.model.grading_system.rubrics import generate_rubrics
 from ai_model.model.grading_system.rubrics_v2 import generate_rubrics_v2
 from ai_model.model.grading_system.get_overall_feedback import get_overall_feedback
@@ -104,20 +104,26 @@ def process_student_answers(student_answer_file, file_type, model_answers, gener
 
 def process_student_answers_v2(student_answer_file, file_type, model_answers, generated_rubrics, difficulty_level):
     """Process a single student's answers and return grading results."""
+    #File handling
     file_name = student_answer_file.filename
-    print(f"File name.............: {file_name}")
+    # print(f"File name.............: {file_name}")
+    #Image route
     if file_type == 'image/jpeg' or file_type == 'image/png':
         student_content = extract_text(student_answer_file)
     else:  
-        student_content = read_file_content(student_answer_file, file_type)   
-    print(f"Student content........: {student_content}")
+        student_content = read_file_content(student_answer_file, file_type) 
+
+    #Extract answers from the content  
+    # print(f"Student content........: {student_content}")
     student_extracted_answers = extract_student_data(student_content)
-    print(f"Student extracted answers........: {student_extracted_answers}")
+    # print(f"Student extracted answers........: {student_extracted_answers}")
+
+    #Loop through and grade each question
     grading_results = {}
     for question_number, qa in student_extracted_answers['questionAndAnswers'].items():
-        print(f"-------------start of question {question_number} ---------------")
-        print("Inside process_student_answers")
-        print(f"question_number : {question_number}, qa : {qa}")
+        # print(f"-------------start of question {question_number} ---------------")
+        # print("Inside process_student_answers")
+        # print(f"question_number : {question_number}, qa : {qa}")
         if isinstance(generated_rubrics, str):
             try:
                 generated_rubrics = json.loads(generated_rubrics)  # Convert JSON string to dictionary
@@ -125,13 +131,20 @@ def process_student_answers_v2(student_answer_file, file_type, model_answers, ge
                 raise ValueError("Invalid JSON string received for rubrics")
         if not isinstance(generated_rubrics, dict) or "rubrics" not in generated_rubrics:
             raise ValueError("Invalid rubrics data format")
+        
         rubrics_for_question = get_rubrics_for_question(generated_rubrics, question_number)
-        print(f"rubrics_for_question : {rubrics_for_question}")
+        # print(f"rubrics_for_question : {rubrics_for_question}")
+
+        #Get adjustment based upon instructor's answer
+        adjustmentStr = get_base_answer_adjustments(model_answers.get(question_number), rubrics_for_question)
+
+        #Call grading
         student_evaluated_outcome = grade_student_answers_v3(
                 model_answers.get(question_number),
                 qa['answer'],
                 rubrics_for_question,
-                difficulty_level
+                difficulty_level,
+                adjustmentStr
         )
         grading_results[question_number] = student_evaluated_outcome
         print(f"------------- end of question {question_number} ---------------")
